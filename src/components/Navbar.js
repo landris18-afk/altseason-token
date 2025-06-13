@@ -1,14 +1,40 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsVisible(!entry.isIntersecting);
+      },
+      {
+        threshold: 0,
+      }
+    );
+
+    const aboutSection = document.getElementById('about-section');
+    if (aboutSection) {
+      observer.observe(aboutSection);
+    }
+
+    return () => {
+      if (aboutSection) {
+        observer.unobserve(aboutSection);
+      }
+    };
+  }, []);
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-md border-b border-yellow-500/20">
+    <nav className={`fixed top-0 left-0 right-0 transition-all duration-300 ${
+      isVisible 
+        ? 'translate-y-0 bg-black/80 backdrop-blur-md border-b border-yellow-500/20 z-[90]' 
+        : '-translate-y-full z-[-1]'
+    }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}

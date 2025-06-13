@@ -8,7 +8,7 @@ import SectionDivider from './SectionDivider';
 
 const About = () => {
     return (
-        <section id="about" className="relative min-h-screen flex items-center justify-center py-20 px-4 md:px-8 lg:px-16 bg-black">
+        <section id="about-section" className="relative min-h-screen flex items-center justify-center py-12 md:py-20 px-4 md:px-8 lg:px-16 bg-black">
             {/* Content */}
             <div className="relative z-10 flex flex-col-reverse md:flex-row items-center justify-between gap-12 max-w-7xl mx-auto">
                 {/* Text Content */}
@@ -31,7 +31,7 @@ const About = () => {
 
                 {/* Bull Image */}
                 <div className="flex-1 flex justify-center w-full">
-                    <div className="relative w-full aspect-square max-w-[300px] md:max-w-[400px] lg:max-w-[500px]">
+                    <div className="relative w-full aspect-square max-w-[400px] md:max-w-[400px] lg:max-w-[500px]">
                         <Image
                             src="/images/bull.png"
                             alt="Bull"
@@ -39,7 +39,7 @@ const About = () => {
                             className="object-contain"
                             priority
                             quality={100}
-                            sizes="(max-width: 768px) 300px, (max-width: 1024px) 400px, 500px"
+                            sizes="(max-width: 768px) 400px, (max-width: 1024px) 400px, 500px"
                         />
                     </div>
                 </div>
