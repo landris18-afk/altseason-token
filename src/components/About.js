@@ -1,12 +1,26 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { pumpFunUrl } from '@/config';
 import SectionDivider from './SectionDivider';
 
 const About = () => {
+    const imageRef = useRef(null);
+
+    useEffect(() => {
+        const reloadGif = () => {
+            if (imageRef.current) {
+                const img = imageRef.current;
+                img.src = img.src;
+            }
+        };
+
+        const interval = setInterval(reloadGif, 8000);
+        return () => clearInterval(interval);
+    }, []);
+
     return (
         <section id="about-section" className="relative min-h-screen flex items-center justify-center py-12 md:py-20 px-4 md:px-8 lg:px-16 bg-black">
             {/* Content */}
@@ -14,7 +28,7 @@ const About = () => {
                 {/* Text Content */}
                 <div className="flex-1 text-center md:text-left">
                     <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-yellow-500">
-                        ALTSEASON
+                        ALTSEASON 2025
                     </h1>
                     <p className="text-lg md:text-xl lg:text-2xl mb-8 text-gray-300">
                         The first token that pays you to hold during altseason. 
@@ -33,7 +47,8 @@ const About = () => {
                 <div className="flex-1 flex justify-center w-full">
                     <div className="relative w-full aspect-square max-w-[400px] md:max-w-[400px] lg:max-w-[500px]">
                         <Image
-                            src="/images/bull.png"
+                            ref={imageRef}
+                            src="/images/bullgif.gif"
                             alt="Bull"
                             fill
                             className="object-contain"
