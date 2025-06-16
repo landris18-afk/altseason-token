@@ -35,7 +35,7 @@ const gameLevels = [
 const LevelUpModal = ({ isOpen, onClose, levelName, twitterUrl }) => {
   if (!isOpen) return null;
   return (
-    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-[9999] p-4">
       <div className="bg-gray-900 border-2 border-green-500/50 rounded-2xl shadow-lg shadow-green-500/20 p-8 max-w-md w-full text-center text-white animate-fade-in-up">
         <FaCheckCircle className="text-6xl text-green-400 mx-auto mb-4" />
         <h3 className="text-3xl font-bold mb-2">LEVEL UP!</h3>
@@ -66,7 +66,7 @@ const LevelUpModal = ({ isOpen, onClose, levelName, twitterUrl }) => {
 const CustomModal = ({ isOpen, onClose, onConfirm, title, children, confirmText, cancelText, showConfirmButton = true }) => {
   if (!isOpen) return null;
   return (
-    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-[9999] p-4">
       <div className="bg-gray-900 border-2 border-yellow-500/30 rounded-2xl shadow-lg shadow-yellow-500/20 w-full max-w-lg flex flex-col max-h-[90vh] animate-fade-in-up">
         <h3 className="text-2xl font-bold p-6 border-b border-gray-700">{title}</h3>
         <div className="flex-grow overflow-y-auto p-6 space-y-4">{children}</div>
