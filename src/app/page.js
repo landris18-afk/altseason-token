@@ -1,25 +1,28 @@
 'use client';
 
-import Header from '@/components/Header'
 import About from '@/components/About'
-import LaunchInfo from '@/components/Tokenomics'
+import Tokenomics from '@/components/Tokenomics'
 import Roadmap from '@/components/Roadmap'
 import HowToBuy from '@/components/HowToBuy'
-import Footer from '@/components/Footer'
+import Header from '@/components/Header'
 import SectionDivider from '@/components/SectionDivider'
+import BullRunGame from '@/components/BullRunGame'
 
 export default function Home() {
   return (
     <main className="min-h-screen bg-black text-white">
       <Header />
-      <About />
-      <SectionDivider />
-      <LaunchInfo />
-      <SectionDivider />
-      <Roadmap />
-      <SectionDivider />
-      <HowToBuy />
-      <SectionDivider />
+      <div className="pt-20">
+        <About />
+        <SectionDivider />
+        <Tokenomics />
+        <SectionDivider />
+        <BullRunGame />
+        <SectionDivider />
+        <Roadmap />
+        <SectionDivider />
+        <HowToBuy />
+      </div>
     </main>
   )
 }

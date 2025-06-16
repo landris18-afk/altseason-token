@@ -70,6 +70,7 @@ const Header = () => {
       const sections = [
         { id: 'about', elementId: 'about-section' },
         { id: 'tokenomics', elementId: 'tokenomics' },
+        { id: 'game', elementId: 'game' },
         { id: 'roadmap', elementId: 'roadmap' },
         { id: 'how-to-buy', elementId: 'how-to-buy' }
       ];
@@ -96,6 +97,13 @@ const Header = () => {
   const menuItemClass = (sectionId) =>
     `text-lg font-semibold px-6 py-2 transition-all duration-300 relative group cursor-pointer text-center whitespace-nowrap w-full md:w-auto ${
       activeSection === sectionId ? 'bg-yellow-500 text-black' : 'text-white hover:text-yellow-500'
+    }`;
+
+  const gameMenuItemClass = (sectionId) =>
+    `text-lg font-semibold px-6 py-2 transition-all duration-300 relative group cursor-pointer text-center whitespace-nowrap w-full md:w-auto ${
+      activeSection === sectionId 
+        ? 'bg-yellow-500 text-black hover:bg-yellow-600' 
+        : 'text-white hover:text-yellow-500'
     }`;
 
   if (isMobile && !isVisible) {
@@ -160,7 +168,7 @@ const Header = () => {
               onClick={(e) => handleClick(e, 'about')}
               className={menuItemClass('about')}
             >
-              $altseason
+              $assbull
             </a>
             <div className="w-px h-6 bg-yellow-500/20 mx-2"></div>
             <a
@@ -169,6 +177,14 @@ const Header = () => {
               className={menuItemClass('tokenomics')}
             >
               Launch Info
+            </a>
+            <div className="w-px h-6 bg-yellow-500/20 mx-2"></div>
+            <a
+              href="#game"
+              onClick={(e) => handleClick(e, 'game')}
+              className={gameMenuItemClass('game')}
+            >
+              Bull Run Clicker
             </a>
             <div className="w-px h-6 bg-yellow-500/20 mx-2"></div>
             <a
@@ -231,7 +247,7 @@ const Header = () => {
               onClick={(e) => handleClick(e, 'about')}
               className={menuItemClass('about')}
             >
-              $altseason
+              $assbull
             </a>
             <a
               href="#tokenomics"
@@ -239,6 +255,13 @@ const Header = () => {
               className={menuItemClass('tokenomics')}
             >
               Launch Info
+            </a>
+            <a
+              href="#game"
+              onClick={(e) => handleClick(e, 'game')}
+              className={gameMenuItemClass('game')}
+            >
+              Bull Run Clicker
             </a>
             <a
               href="#roadmap"
