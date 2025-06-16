@@ -31,8 +31,7 @@ const About = () => {
                         ALTSEASON 2025
                     </h1>
                     <p className="text-lg md:text-xl lg:text-2xl mb-8 text-gray-300">
-                        The first token that pays you to hold during altseason. 
-                        Join the revolution and earn rewards while the market grows.
+                    Altseason Bull 2025 is the ultimate meme token for the crypto community that’s eagerly awaiting the next altseason. With a bullish symbol and the playful ticker '$ASSBULL', we’re creating a space where excitement, humor, and crypto culture come together to celebrate the upcoming market surge
                     </p>
                     <Link 
                         href="https://pump.fun/token/altseason" 

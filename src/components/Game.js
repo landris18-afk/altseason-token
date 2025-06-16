@@ -5,6 +5,7 @@ import React, { useState, useEffect } from 'react';
 const Game = () => {
   const [score, setScore] = useState(0);
   const [multiplier, setMultiplier] = useState(1);
+  const [showDescription, setShowDescription] = useState(false);
   const [upgrades, setUpgrades] = useState({
     autoClicker: 0,
     multiplier: 0
@@ -74,7 +75,31 @@ const Game = () => {
     <section id="game" className="py-20 bg-gray-500/50 text-white relative overflow-hidden">
       <div className="container mx-auto px-6 lg:px-8 text-center">
         <h2 className="text-4xl md:text-5xl font-bold mb-4">Bull Run Clicker</h2>
-        <p className="text-lg text-yellow-400 mb-8">Click to earn points and buy upgrades!</p>
+        <p className="text-lg text-yellow-400 mb-4">Click to earn points and buy upgrades!</p>
+        
+        <button
+          onClick={() => setShowDescription(true)}
+          className="text-yellow-400 hover:text-yellow-300 underline mb-8"
+        >
+          What is this game?
+        </button>
+
+        {showDescription && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-gray-800 rounded-xl p-8 max-w-2xl w-full relative">
+              <button
+                onClick={() => setShowDescription(false)}
+                className="absolute top-4 right-4 text-gray-400 hover:text-white"
+              >
+                ✕
+              </button>
+              <h3 className="text-2xl font-bold text-yellow-400 mb-4">About Bull Run Clicker</h3>
+              <p className="text-gray-300 text-left">
+                Welcome to Bull Rum Clicker — the only game for degens so desperate for altseason bull they're smashing their mouse like maniacs. Every click is a 1 dollar virtual marketcap, and the more you hammer that button, the faster you level up to unlock sick upgrades. When you're done smashing, flex your insane score on Twitter and prove you're the ultimate alt bull degenerate.
+              </p>
+            </div>
+          </div>
+        )}
 
         <div className="max-w-2xl mx-auto bg-white/10 backdrop-blur-md p-8 rounded-xl border border-white/20">
           <div className="text-4xl font-bold mb-8">
