@@ -4,11 +4,11 @@
 import { useState, useEffect } from 'react';
 import { FaSync, FaQuestionCircle, FaCheckCircle } from 'react-icons/fa';
 import { FaXTwitter } from 'react-icons/fa6';
+import Image from 'next/image';
 
-// --- SZINTEK ADATSTRUKTÚRÁJA ---
+// --- SZINTEK ADATSTRUKTÚRÁJA (JAVÍTVA) ---
 const gameLevels = [
-  // A 0. index jelöli az 1. szintet
-  { threshold: 0, name: "Wet-Noodle-Handed Normie Who Missed Every Pump Since 2013" }, // Starting Rank
+  { threshold: 0, name: "Wet-Noodle-Handed Normie Who Missed Every Pump Since 2013" },
   { threshold: 100, name: "Sandbox Bull Noob" },
   { threshold: 500, name: "AssSweating Bull of Hopium" },
   { threshold: 1000, name: "Half-Liquidated Clickslave with Bull Delusions" },
@@ -18,7 +18,8 @@ const gameLevels = [
   { threshold: 50000, name: "Fulltime Candlestick Cultist with Melted Brain" },
   { threshold: 100000, name: "Bull Who Sold His Soul for One Green Candle" },
   { threshold: 200000, name: "Keyboard-Eating Bull of the Final Dump" },
-  { threshold: 500000, name: "Broken Bull Who Screams \"ALTSEASON\" in His Sleep" },
+  // JAVÍTVA: Az idézőjelek el lettek távolítva a build hiba elkerülése érdekében
+  { threshold: 500000, name: "Broken Bull Who Screams ALTSEASON in His Sleep" },
   { threshold: 800000, name: "No-Wallet, Only Hopium Bull" },
   { threshold: 1000000, name: "Reality-Denying Bull Who Sees Charts in Clouds" },
   { threshold: 5000000, name: "Schizo Bull Having Zoom Calls with Satoshi" },
@@ -130,7 +131,10 @@ const BullRunGame = () => {
     }
   }, [gameState.marketCap, gameState.levelIndex, isLoaded]);
 
-  const handlePumpClick = () => setGameState(prev => ({ ...prev, marketCap: prev.marketCap + prev.clickPower }));
+  const handlePumpClick = (e) => {
+    setGameState(prev => ({ ...prev, marketCap: prev.marketCap + prev.clickPower }));
+    e.currentTarget.blur();
+  };
 
   const buyUpgrade = (id) => {
     const upgrade = gameState.upgrades.find(u => u.id === id);
@@ -178,7 +182,8 @@ const BullRunGame = () => {
 
   const yourWebsiteUrl = "https://your-website-url.com";
   const yourTwitterHandle = "YourTwitterHandle";
-  const shareText = `I reached the "${currentLevel.name}" rank on the $AS25 Bull Run Clicker! Can you beat me?`;
+  // --- VÉGLEGESEN JAVÍTOTT MEGOSZTÁSI SZÖVEG ---
+  const shareText = `I have reached the rank of ${currentLevel.name} on the $AS25 Bull Run Clicker! Can you beat me?`;
   const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(yourWebsiteUrl)}&hashtags=Altseason2025,AS25,Solana,memecoin,pumpfun&via=${yourTwitterHandle}`;
 
   if (!isLoaded) { return (<div className="text-center py-20"><p>Loading Game...</p></div>); }
@@ -187,12 +192,17 @@ const BullRunGame = () => {
     <>
       <LevelUpModal isOpen={isLevelUpModalOpen} onClose={() => setIsLevelUpModalOpen(false)} levelName={currentLevel.name} twitterUrl={twitterUrl} />
       <CustomModal isOpen={isResetModalOpen} onClose={() => setIsResetModalOpen(false)} onConfirm={confirmReset} title="Reset Game" confirmText="Yes, Reset!" cancelText="Cancel">
+        {/* JAVÍTVA: Aposztróf cserélve */}
         <p>Are you sure you want to reset? All your progress and upgrades will be permanently deleted!</p>
       </CustomModal>
       <CustomModal isOpen={isRulesModalOpen} onClose={() => setIsRulesModalOpen(false)} title="How to Play" cancelText="Got it!" showConfirmButton={false}>
         <div className="text-gray-300">
           <p className="font-bold text-white">The Goal:</p><p>Pump the Virtual Market Cap to reach new levels and become the ultimate bull!</p><br/>
-          <p className="font-bold text-white">How to Play:</p><p>1. Smash "PUMP THE BULL" to increase the market cap.</p><p>2. Use your earnings to buy Upgrades.</p><p>3. Reach the "Next Level" target to level up and earn rewards!</p><br/>
+          <p className="font-bold text-white">How to Play:</p>
+          {/* JAVÍTVA: Idézőjelek cserélve */}
+          <p>1. Smash &quot;PUMP THE BULL&quot; to increase the market cap.</p>
+          <p>2. Use your earnings to buy Upgrades.</p>
+          <p>3. Reach the &quot;Next Level&quot; target to level up and earn rewards!</p><br/>
           <p className="font-bold text-white">Compete:</p><p>Share your rank on X to challenge your friends!</p>
         </div>
       </CustomModal>
@@ -204,11 +214,17 @@ const BullRunGame = () => {
           
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="relative lg:col-span-2 bg-black/50 p-8 rounded-2xl border border-white/10 overflow-hidden">
-                <img 
+                {/* A háttérkép ideiglenesen kikommentelve */}
+                {/*
+                <Image 
                     src="/images/bika-karakter.png"
                     alt="Bull Character"
-                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-full object-contain opacity-10 z-0 pointer-events-none"
+                    layout="fill"
+                    objectFit="contain"
+                    className="opacity-10 z-0 pointer-events-none"
+                    priority={true}
                 />
+                */}
 
                 <div className="relative z-10 flex flex-col justify-between h-full min-h-[500px]">
                     <div>
@@ -227,12 +243,8 @@ const BullRunGame = () => {
                     <div className="flex-grow flex flex-col justify-center items-center">
                         <h3 className="text-3xl font-bold text-yellow-400">Virtual Market Cap</h3>
                         <p className={`${marketCapSizeClass} font-mono font-bold my-2 text-white drop-shadow-lg`}>${formattedMarketCap}</p>
-                        {/* --- JAVÍTOTT GOMB --- */}
                         <button 
-                            onClick={(e) => {
-                                handlePumpClick();
-                                e.currentTarget.blur(); // Elveszi a fókuszt a gombról
-                            }}
+                            onClick={handlePumpClick}
                             className="bg-yellow-500 text-black font-bold py-6 px-12 rounded-full text-2xl transition-transform duration-100 hover:scale-105 active:scale-95 shadow-lg shadow-yellow-500/20 mt-4"
                         >
                             PUMP THE BULL
