@@ -164,11 +164,11 @@ const Header = () => {
           {/* Menü - desktop */}
           <nav className="flex flex-row items-center">
             <a
-              href="#about-section"
+              href="#about"
               onClick={(e) => handleClick(e, 'about')}
               className={menuItemClass('about')}
             >
-              $assbull
+              $ASSBULL
             </a>
             <div className="w-px h-6 bg-yellow-500/20 mx-2"></div>
             <a
@@ -243,11 +243,11 @@ const Header = () => {
         <div className="fixed left-0 right-0 top-20 w-screen bg-black/80 backdrop-blur-lg border-b border-yellow-500/20 shadow-xl z-[200] md:hidden">
           <div className="flex flex-col items-center py-2">
             <a
-              href="#about-section"
+              href="#about"
               onClick={(e) => handleClick(e, 'about')}
               className={menuItemClass('about')}
             >
-              $assbull
+              $ASSBULL
             </a>
             <a
               href="#tokenomics"

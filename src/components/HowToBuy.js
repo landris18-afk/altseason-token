@@ -9,7 +9,7 @@ const HowToBuy = () => {
             <div className="container mx-auto px-6 lg:px-8 text-center">
                 <h2 className="text-4xl md:text-5xl font-bold mb-6">The Only Way To Buy</h2>
                 <p className="text-lg text-gray-400 max-w-3xl mx-auto mb-8">
-                    To ensure fairness and safety, $altseason is launching exclusively on Pump.fun. Click the button below to go to the official page.
+                    To ensure fairness and safety, $ASSBULL is launching exclusively on Pump.fun. Click the button below to go to the official page.
                 </p>
                 
                 <a

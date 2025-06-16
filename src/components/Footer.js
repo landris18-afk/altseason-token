@@ -12,7 +12,7 @@ const Footer = () => {
             © {new Date().getFullYear()} Altseason Token. All rights reserved.
           </p>
           <p className="text-gray-500 text-xs mt-2 max-w-2xl mx-auto">
-            Disclaimer: $assbull is a meme token with no intrinsic value or expectation of financial return. It is for entertainment purposes only. Always do your own research.
+            Disclaimer: $ASSBULL is a meme token with no intrinsic value or expectation of financial return. It is for entertainment purposes only. Always do your own research.
           </p>
         </div>
       </div>
