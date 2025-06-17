@@ -1,9 +1,13 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  swcMinify: true,
+  images: {
+    domains: ['raw.githubusercontent.com'],
+  },
   experimental: {
-    appDir: true
+    serverActions: {
+      allowedOrigins: ['localhost:3000'],
+    }
   }
 };
 

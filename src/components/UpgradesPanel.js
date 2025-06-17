@@ -34,7 +34,7 @@ const UpgradesPanel = ({
               <div className="flex justify-between items-center">
                 <div>
                   <p className="font-bold">{u.name} <span className="text-xs">(Lvl {u.level})</span></p>
-                  <p className="text-sm">{u.description}</p>
+                  <p className="text-sm" dangerouslySetInnerHTML={{ __html: u.description.replace(/'/g, '&apos;') }} />
                 </div>
                 <p className="font-bold text-lg">${fmt(cost)}</p>
               </div>
@@ -52,7 +52,7 @@ const UpgradesPanel = ({
               <div className="text-left">
                 <p className="font-bold text-white flex items-center">
                   <FaBolt className="text-yellow-400 mr-2" />
-                  Solana Bull's Blessing
+                  Solana Bull&apos;s Blessing
                 </p>
                 <p className="text-sm text-gray-300 mt-1">
                   Permanently multiply your passive income by 10x!

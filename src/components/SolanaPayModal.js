@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { createQR } from '@solana/pay';
 import { Connection, PublicKey } from '@solana/web3.js';
 import { FaHourglassHalf, FaCheckCircle, FaExclamationTriangle, FaTimes, FaWallet } from 'react-icons/fa';
+import Image from 'next/image';
 
 // Használj egy megbízható RPC végpontot
 const SOLANA_RPC_URL = process.env.NEXT_PUBLIC_SOLANA_RPC_URL || "https://api.devnet.solana.com";
@@ -103,11 +104,14 @@ const SolanaPayModal = ({ isOpen, onClose, onPaymentSuccess }) => {
             {/* Desktop QR Code */}
             <div className="hidden sm:block bg-white/5 rounded-xl p-4">
               {qrCode && (
-                <img 
-                  src={qrCode} 
-                  alt="Solana Pay QR Code" 
-                  className="w-48 h-48 sm:w-56 sm:h-56 bg-white p-3 rounded-lg shadow-lg"
-                />
+                <div className="relative w-48 h-48 sm:w-56 sm:h-56 bg-white p-3 rounded-lg shadow-lg">
+                  <Image 
+                    src={qrCode} 
+                    alt="Solana Pay QR Code" 
+                    fill
+                    className="object-contain"
+                  />
+                </div>
               )}
             </div>
             {/* Mobile Payment Button */}
@@ -180,7 +184,7 @@ const SolanaPayModal = ({ isOpen, onClose, onPaymentSuccess }) => {
       <div className="bg-gray-900 border-2 border-purple-500/50 rounded-xl shadow-lg shadow-purple-500/20 w-full max-w-2xl text-white animate-fade-in-up my-2 sm:my-4">
         {/* Header */}
         <div className="sticky top-0 bg-gray-900 z-10 flex items-center justify-between p-3 sm:p-4 border-b border-gray-800">
-          <h3 className="text-lg sm:text-xl font-bold">Solana Bull's Blessing</h3>
+          <h3 className="text-lg sm:text-xl font-bold">Solana Bull&apos;s Blessing</h3>
           <button 
             onClick={onClose}
             className="text-gray-400 hover:text-white transition-colors p-1.5 hover:bg-gray-800 rounded-lg"
