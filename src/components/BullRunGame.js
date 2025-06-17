@@ -4,6 +4,8 @@
 import { useState, useEffect } from 'react';
 import { FaSync, FaQuestionCircle, FaCheckCircle } from 'react-icons/fa';
 import { FaXTwitter } from 'react-icons/fa6';
+import UpgradesPanel from './UpgradesPanel';
+import SolanaPayModal from './SolanaPayModal';
 
 // --- SZÍNEK SZINTENKÉNT ---
 // Index 0: sárga, index 1: zöld (később bővíthető)
@@ -29,7 +31,8 @@ const gameLevels = [
   { threshold: 0,   name: "Wet-Noodle-Handed Normie Who Missed Every Pump Since 2013" },
   { threshold: 100, name: "Sandbox Bull Noob" },
   { threshold: 500, name: "AssSweating Bull of Hopium" },
-  // ... többi szint ...
+  { threshold: 2500, name: "Diamond Handed Degen" },
+  { threshold: 10000, name: "Gigachad of Green Candles" },
 ];
 
 const LevelUpModal = ({ isOpen, onClose, levelName, twitterUrl }) => {
@@ -90,6 +93,7 @@ const getInitialState = () => ({
   clickPower: 1,
   passiveIncome: 0,
   levelIndex: 0,
+  hasPremiumUpgrade: false,
   upgrades: [
     { id: 1, name: "Diamond Hands", description: "+1 Click Power", baseCost: 50, level: 0, power: 1, type: 'click' },
     { id: 2, name: "Shill Army", description: "+1 MC/sec",         baseCost: 200, level: 0, power: 1, type: 'passive' },
@@ -104,41 +108,46 @@ export default function BullRunGame() {
   const [isLevelUpModalOpen, setIsLevelUpModalOpen] = useState(false);
   const [isResetModalOpen, setIsResetModalOpen] = useState(false);
   const [isRulesModalOpen, setIsRulesModalOpen] = useState(false);
+  const [isSolanaModalOpen, setIsSolanaModalOpen] = useState(false);
 
   // Load & persist
   useEffect(() => {
     const saved = localStorage.getItem('bullRunGameState_v3');
     if (saved) {
       const parsed = JSON.parse(saved);
-      const merged = getInitialState().upgrades.map(init =>
-        parsed.upgrades.find(u => u.id === init.id) || init
+      const initialState = getInitialState();
+      const mergedUpgrades = initialState.upgrades.map(init =>
+        (parsed.upgrades && parsed.upgrades.find(u => u.id === init.id)) || init
       );
-      setGameState({ ...getInitialState(), ...parsed, upgrades: merged });
+      setGameState({ ...initialState, ...parsed, upgrades: mergedUpgrades });
     }
     setIsLoaded(true);
   }, []);
+
   useEffect(() => {
     if (isLoaded) localStorage.setItem('bullRunGameState_v3', JSON.stringify(gameState));
   }, [gameState, isLoaded]);
 
-  // Prevent scroll when any modal open
+  // MÓDOSÍTÁS: Scroll tiltása, ha BÁRMELYIK modal nyitva van
   useEffect(() => {
-    document.body.style.overflow = (isResetModalOpen || isRulesModalOpen || isLevelUpModalOpen) ? 'hidden' : 'unset';
+    const anyModalOpen = isResetModalOpen || isRulesModalOpen || isLevelUpModalOpen || isSolanaModalOpen;
+    document.body.style.overflow = anyModalOpen ? 'hidden' : 'unset';
     return () => { document.body.style.overflow = 'unset'; };
-  }, [isResetModalOpen, isRulesModalOpen, isLevelUpModalOpen]);
+  }, [isResetModalOpen, isRulesModalOpen, isLevelUpModalOpen, isSolanaModalOpen]);
 
-  // Level-up detection
+  // Szintlépés figyelése
   useEffect(() => {
     if (!isLoaded) return;
-    const nextIdx = gameState.levelIndex + 1;
-    if (nextIdx < gameLevels.length && gameState.marketCap >= gameLevels[nextIdx].threshold) {
-      setGameState(prev => ({ ...prev, levelIndex: nextIdx }));
+    const nextLevel = gameLevels[gameState.levelIndex + 1];
+    if (nextLevel && gameState.marketCap >= nextLevel.threshold) {
+      setGameState(prev => ({ ...prev, levelIndex: prev.levelIndex + 1 }));
       setIsLevelUpModalOpen(true);
     }
   }, [gameState.marketCap, gameState.levelIndex, isLoaded]);
 
-  // Actions
+  // Akciók
   const handlePump = () => setGameState(p => ({ ...p, marketCap: p.marketCap + p.clickPower }));
+  
   const buyUpgrade = id => {
     const u = gameState.upgrades.find(x => x.id === id);
     if (!u) return;
@@ -147,40 +156,61 @@ export default function BullRunGame() {
       setGameState(p => ({
         ...p,
         marketCap: p.marketCap - cost,
-        clickPower: u.type === 'click'   ? p.clickPower + u.power   : p.clickPower,
-        passiveIncome: u.type === 'passive'? p.passiveIncome + u.power: p.passiveIncome,
+        clickPower: u.type === 'click' ? p.clickPower + u.power : p.clickPower,
+        passiveIncome: u.type === 'passive' ? p.passiveIncome + u.power : p.passiveIncome,
         upgrades: p.upgrades.map(x => x.id === id ? { ...x, level: x.level + 1 } : x)
       }));
     }
   };
+
+  // MÓDOSÍTÁS: Passzív jövedelem kezelése a 10x szorzóval
   useEffect(() => {
     if (gameState.passiveIncome > 0) {
-      const iv = setInterval(() => setGameState(p => ({ ...p, marketCap: p.marketCap + p.passiveIncome })), 1000);
-      return () => clearInterval(iv);
+      const incomeInterval = setInterval(() => {
+        setGameState(p => {
+          const incomeToAdd = p.hasPremiumUpgrade ? p.passiveIncome * 10 : p.passiveIncome;
+          return { ...p, marketCap: p.marketCap + incomeToAdd };
+        });
+      }, 1000);
+      return () => clearInterval(incomeInterval);
     }
-  }, [gameState.passiveIncome]);
-  const confirmReset = () => { localStorage.removeItem('bullRunGameState_v3'); setGameState(getInitialState()); setIsResetModalOpen(false); };
+  }, [gameState.passiveIncome, gameState.hasPremiumUpgrade]);
 
-  // Format & destructure
+  const confirmReset = () => {
+    localStorage.removeItem('bullRunGameState_v3');
+    setGameState(getInitialState());
+    setIsResetModalOpen(false);
+  };
+
+  // ÚJ: funkció a sikeres fizetés után
+  const activatePremiumUpgrade = () => {
+    setGameState(p => ({ ...p, hasPremiumUpgrade: true }));
+  };
+
+  // Formázás és változók
   const fmt = n => Math.round(n).toLocaleString('en-US');
-  const { marketCap, clickPower, passiveIncome, upgrades, levelIndex } = gameState;
+  const { marketCap, clickPower, passiveIncome, upgrades, levelIndex, hasPremiumUpgrade } = gameState;
+  const displayedPassiveIncome = hasPremiumUpgrade ? passiveIncome * 10 : passiveIncome;
   const current = gameLevels[levelIndex];
-  const next    = gameLevels[levelIndex + 1];
-  const prog    = next ? Math.min(((marketCap - current.threshold) / (next.threshold - current.threshold)) * 100, 100) : 100;
+  const next = gameLevels[levelIndex + 1];
+  const prog = next ? Math.min(((marketCap - current.threshold) / (next.threshold - current.threshold)) * 100, 100) : 100;
+  
+  // Biztonságosabb színválasztás
+  const colorIndex = Math.min(levelIndex, levelColors.length - 1);
   const {
     text: currentTextColor,
     buttonBg: currentButtonBg,
     buttonShadow: currentButtonShadow,
     barFrom: currentBarFrom,
     barTo: currentBarTo
-  } = levelColors[levelIndex] || levelColors[0];
+  } = levelColors[colorIndex];
 
   if (!isLoaded) {
-    return <div className="text-center py-20"><p>Loading Game...</p></div>;
+    return <div className="min-h-screen bg-gray-900 flex items-center justify-center text-white"><p>Loading Game...</p></div>;
   }
 
-  const shareText = `I have reached the rank of ${current.name} on the $AS25 Bull Run Clicker!`;
-  const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent("https://your-website-url.com")}&hashtags=Altseason2025,AS25&via=YourTwitterHandle`;
+  const shareText = `I have reached the rank of ${current.name} on the Bull Run Clicker!`;
+  const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent("https://your-website-url.com")}&hashtags=BullRun,ClickerGame`;
 
   return (
     <>
@@ -200,16 +230,19 @@ export default function BullRunGame() {
           <p>Share your rank on X to challenge friends!</p>
         </div>
       </CustomModal>
+      <SolanaPayModal
+        isOpen={isSolanaModalOpen}
+        onClose={() => setIsSolanaModalOpen(false)}
+        onPaymentSuccess={activatePremiumUpgrade}
+      />
 
       <section id="game" className="py-20 bg-gray-900 text-white">
         <div className="container mx-auto px-6 text-center">
           <h2 className="text-4xl md:text-5xl font-bold mb-4">Bull Run Clicker</h2>
           <p className="text-lg text-gray-400 mb-12">How high can you pump the market cap?</p>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
             {/* Main Panel */}
             <div className="lg:col-span-2 bg-black/50 p-8 rounded-2xl border border-white/10 flex flex-col justify-between">
-
               {/* Progress Bar */}
               <div className="mb-4">
                 <div className="md:hidden">
@@ -278,48 +311,15 @@ export default function BullRunGame() {
             </div>
 
             {/* Upgrades Panel */}
-            <div className="bg-black/50 p-6 rounded-2xl border border-white/10 flex flex-col">
-              <h3 className="text-2xl font-bold mb-4">Upgrades</h3>
-              <div className="space-y-3 flex-grow overflow-y-auto">
-                {upgrades.map(u => {
-                  const cost = Math.floor(u.baseCost * 1.15 ** u.level);
-                  const canBuy = marketCap >= cost;
-                  return (
-                    <button
-                      key={u.id}
-                      onClick={() => buyUpgrade(u.id)}
-                      disabled={!canBuy}
-                      className={`w-full text-left p-3 rounded-lg border-2 transition-all ${
-                        canBuy
-                          ? 'border-yellow-500/50 bg-gray-800 hover:bg-yellow-500 hover:text-black'
-                          : 'border-gray-700 bg-gray-800/50 text-gray-500 cursor-not-allowed'
-                      }`}
-                    >
-                      <div className="flex justify-between items-center">
-                        <div>
-                          <p className="font-bold">{u.name} <span className="text-xs">(Lvl {u.level})</span></p>
-                          <p className="text-sm">{u.description}</p>
-                        </div>
-                        <p className="font-bold text-lg">${fmt(cost)}</p>
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-              <div className="mt-auto pt-4 border-t-2 border-white/10 text-center">
-                <div className="flex justify-around">
-                  <div>
-                    <p className="text-gray-400 text-sm">MC / Click</p>
-                    <p className="font-bold text-white text-lg">{fmt(clickPower)}</p>
-                  </div>
-                  <div>
-                    <p className="text-gray-400 text-sm">MC / Second</p>
-                    <p className="font-bold text-white text-lg">{fmt(passiveIncome)}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
+            <UpgradesPanel 
+              upgrades={upgrades}
+              marketCap={marketCap}
+              buyUpgrade={buyUpgrade}
+              clickPower={clickPower}
+              passiveIncome={passiveIncome}
+              hasPremiumUpgrade={hasPremiumUpgrade}
+              onSolanaUpgradeClick={() => setIsSolanaModalOpen(true)}
+            />
           </div>
         </div>
       </section>
