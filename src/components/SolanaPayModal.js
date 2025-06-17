@@ -7,7 +7,7 @@ import Image from 'next/image';
 // Használj egy megbízható RPC végpontot
 const SOLANA_RPC_URL = process.env.NEXT_PUBLIC_SOLANA_RPC_URL || "https://api.devnet.solana.com";
 
-const SolanaPayModal = ({ isOpen, onClose, onPaymentSuccess }) => {
+const SolanaPayModal = ({ isOpen, onClose, onPaymentSuccess, currentLevel }) => {
   const [paymentStatus, setPaymentStatus] = useState('loading');
   const [qrCode, setQrCode] = useState(null);
   const [error, setError] = useState(null);
@@ -21,7 +21,13 @@ const SolanaPayModal = ({ isOpen, onClose, onPaymentSuccess }) => {
       setPaymentStatus('loading');
       setError(null);
       try {
-        const response = await fetch('/api/transaction', { method: 'POST' });
+        const response = await fetch('/api/transaction', { 
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ currentLevel })
+        });
         if (!response.ok) throw new Error('Failed to fetch payment details');
         const data = await response.json();
         paymentDataRef.current = data;
@@ -48,7 +54,7 @@ const SolanaPayModal = ({ isOpen, onClose, onPaymentSuccess }) => {
         clearInterval(intervalRef.current);
       }
     };
-  }, [isOpen]);
+  }, [isOpen, currentLevel]);
 
   useEffect(() => {
     if (paymentStatus !== 'qrReady' || !paymentDataRef.current) return;
@@ -143,6 +149,9 @@ const SolanaPayModal = ({ isOpen, onClose, onPaymentSuccess }) => {
               <div className="bg-purple-900/30 rounded-lg p-3">
                 <p className="font-mono text-base sm:text-lg text-purple-300">
                   Amount: {paymentDataRef.current?.amount} SOL
+                </p>
+                <p className="text-sm text-purple-400 mt-1">
+                  Current Level: {currentLevel + 1} ({(currentLevel + 2)}x multiplier)
                 </p>
               </div>
               <div>

@@ -93,12 +93,86 @@ const getInitialState = () => ({
   clickPower: 1,
   passiveIncome: 0,
   levelIndex: 0,
+  solanaBlessingLevel: 0,
   hasPremiumUpgrade: false,
   upgrades: [
-    { id: 1, name: "Diamond Hands", description: "+1 Click Power", baseCost: 50, level: 0, power: 1, type: 'click' },
-    { id: 2, name: "Shill Army", description: "+1 MC/sec",         baseCost: 200, level: 0, power: 1, type: 'passive' },
-    { id: 3, name: "To The Moon Rocket", description: "+10 Click Power", baseCost: 1000, level: 0, power: 10, type: 'click' },
-    { id: 4, name: "CEX Listing Rumors", description: "+5 MC/sec",     baseCost: 2500, level: 0, power: 5, type: 'passive' },
+    // Click Power fejlesztések
+    { 
+      id: 1, 
+      name: "Diamond Hands", 
+      description: "+1 Click Power", 
+      baseCost: 100, 
+      level: 0, 
+      power: 1, 
+      type: 'click' 
+    },
+    { 
+      id: 2, 
+      name: "Bull's Strength", 
+      description: "+5 Click Power", 
+      baseCost: 400, 
+      level: 0, 
+      power: 5, 
+      type: 'click',
+      requirements: {
+        upgradeId: 1,
+        level: 5
+      }
+    },
+    { 
+      id: 3, 
+      name: "Moon Shot", 
+      description: "+10 Click Power", 
+      baseCost: 500, 
+      level: 0, 
+      power: 10, 
+      type: 'click',
+      requirements: {
+        upgradeId: 2,
+        level: 5
+      }
+    },
+
+    // Passzív jövedelem fejlesztések
+    { 
+      id: 4, 
+      name: "Shill Army", 
+      description: "+1 MC/sec", 
+      baseCost: 10000, 
+      level: 0, 
+      power: 1, 
+      type: 'passive',
+      requirements: {
+        upgradeId: 3,
+        level: 3
+      }
+    },
+    { 
+      id: 5, 
+      name: "FOMO Generator", 
+      description: "+10 MC/sec", 
+      baseCost: 80000, 
+      level: 0, 
+      power: 10, 
+      type: 'passive',
+      requirements: {
+        upgradeId: 4,
+        level: 5
+      }
+    },
+    { 
+      id: 6, 
+      name: "Whale Magnet", 
+      description: "+50 MC/sec", 
+      baseCost: 250000, 
+      level: 0, 
+      power: 50, 
+      type: 'passive',
+      requirements: {
+        upgradeId: 5,
+        level: 5
+      }
+    }
   ]
 });
 
@@ -163,18 +237,19 @@ export default function BullRunGame() {
     }
   };
 
-  // MÓDOSÍTÁS: Passzív jövedelem kezelése a 10x szorzóval
+  // MÓDOSÍTÁS: Passzív jövedelem és Click Power kezelése a szorzóval
   useEffect(() => {
-    if (gameState.passiveIncome > 0) {
+    if (gameState.passiveIncome > 0 || gameState.clickPower > 1) {
       const incomeInterval = setInterval(() => {
         setGameState(p => {
-          const incomeToAdd = p.hasPremiumUpgrade ? p.passiveIncome * 10 : p.passiveIncome;
+          const multiplier = p.solanaBlessingLevel + 1; // 0 = nincs, 1 = 2x, 2 = 3x, stb.
+          const incomeToAdd = p.passiveIncome * multiplier;
           return { ...p, marketCap: p.marketCap + incomeToAdd };
         });
       }, 1000);
       return () => clearInterval(incomeInterval);
     }
-  }, [gameState.passiveIncome, gameState.hasPremiumUpgrade]);
+  }, [gameState.passiveIncome, gameState.solanaBlessingLevel]);
 
   const confirmReset = () => {
     localStorage.removeItem('bullRunGameState_v3');
@@ -187,10 +262,27 @@ export default function BullRunGame() {
     setGameState(p => ({ ...p, hasPremiumUpgrade: true }));
   };
 
+  // ÚJ: Solana Bull's Blessing vásárlás kezelése
+  const buySolanaBlessing = () => {
+    const currentLevel = gameState.solanaBlessingLevel;
+    if (currentLevel >= 9) return; // Maximum 10x (0-9 szint)
+
+    const basePrice = 0.05; // Első szint ára
+    const price = basePrice * Math.pow(1.5, currentLevel); // 50% emelkedés minden szinten
+
+    // Itt majd a Solana fizetés kezelése lesz
+    // Sikeres fizetés után:
+    setGameState(p => ({
+      ...p,
+      solanaBlessingLevel: p.solanaBlessingLevel + 1
+    }));
+  };
+
   // Formázás és változók
   const fmt = n => Math.round(n).toLocaleString('en-US');
-  const { marketCap, clickPower, passiveIncome, upgrades, levelIndex, hasPremiumUpgrade } = gameState;
-  const displayedPassiveIncome = hasPremiumUpgrade ? passiveIncome * 10 : passiveIncome;
+  const { marketCap, clickPower, passiveIncome, upgrades, levelIndex, solanaBlessingLevel, hasPremiumUpgrade } = gameState;
+  const displayedClickPower = clickPower * (solanaBlessingLevel + 1);
+  const displayedPassiveIncome = passiveIncome * (solanaBlessingLevel + 1);
   const current = gameLevels[levelIndex];
   const next = gameLevels[levelIndex + 1];
   const prog = next ? Math.min(((marketCap - current.threshold) / (next.threshold - current.threshold)) * 100, 100) : 100;
@@ -206,7 +298,24 @@ export default function BullRunGame() {
   } = levelColors[colorIndex];
 
   if (!isLoaded) {
-    return <div className="min-h-screen bg-gray-900 flex items-center justify-center text-white"><p>Loading Game...</p></div>;
+    return (
+      <div className="min-h-screen bg-gray-900 flex flex-col items-center justify-center text-white">
+        <div className="relative w-24 h-24 mb-8">
+          <div className="absolute inset-0 border-4 border-yellow-500/30 rounded-full animate-pulse"></div>
+          <div className="absolute inset-0 border-4 border-t-yellow-500 rounded-full animate-spin"></div>
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="w-16 h-16 bg-yellow-500/20 rounded-full animate-ping"></div>
+          </div>
+        </div>
+        <h2 className="text-2xl font-bold mb-2 animate-pulse">Loading Bull Run Clicker</h2>
+        <p className="text-gray-400 text-sm">Preparing your bull market adventure...</p>
+        <div className="mt-8 flex gap-2">
+          <div className="w-2 h-2 bg-yellow-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+          <div className="w-2 h-2 bg-yellow-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+          <div className="w-2 h-2 bg-yellow-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+        </div>
+      </div>
+    );
   }
 
   const shareText = `I have reached the rank of ${current.name} on the Bull Run Clicker!`;
@@ -234,6 +343,7 @@ export default function BullRunGame() {
         isOpen={isSolanaModalOpen}
         onClose={() => setIsSolanaModalOpen(false)}
         onPaymentSuccess={activatePremiumUpgrade}
+        currentLevel={solanaBlessingLevel}
       />
 
       <section id="game" className="py-20 bg-gray-900 text-white">
@@ -315,8 +425,8 @@ export default function BullRunGame() {
               upgrades={upgrades}
               marketCap={marketCap}
               buyUpgrade={buyUpgrade}
-              clickPower={clickPower}
-              passiveIncome={passiveIncome}
+              clickPower={displayedClickPower}
+              passiveIncome={displayedPassiveIncome}
               hasPremiumUpgrade={hasPremiumUpgrade}
               onSolanaUpgradeClick={() => setIsSolanaModalOpen(true)}
             />

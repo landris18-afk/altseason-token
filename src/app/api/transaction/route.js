@@ -6,7 +6,6 @@ import { Keypair } from '@solana/web3.js';
 // --- FONTOS BEÁLLÍTÁSOK ---
 // Ide írd be azt a Solana címet, ahova a fizetéseket szeretnéd kapni!
 const SHOP_WALLET_ADDRESS = '3VpyCTVChpdUHGHnRgDdo29MggEoAoTHp5B27RNFdnZx'; 
-const transactionAmount = 0.05; // Az összeg SOL-ban
 
 // GET kérés kezelése (a Solana Pay specifikáció része)
 export async function GET(req) {
@@ -22,8 +21,15 @@ export async function GET(req) {
 // POST kérés kezelése (ez hozza létre a tényleges fizetési kérelmet)
 export async function POST(req) {
   try {
-    // Minden fizetéshez egyedi referencia-azonosítót generálunk.
-    // Ez a kulcsa annak, hogy később ellenőrizni tudjuk a tranzakciót.
+    // Kiolvassuk a jelenlegi szintet a kérésből
+    const { currentLevel } = await req.json();
+    
+    // Számoljuk ki az árát a jelenlegi szint alapján
+    const basePrice = 0.05; // Alap ár
+    const priceMultiplier = Math.pow(1.5, currentLevel); // 50% növekedés minden szinten
+    const transactionAmount = basePrice * priceMultiplier;
+
+    // Minden fizetéshez egyedi referencia-azonosítót generálunk
     const reference = new Keypair().publicKey.toBase58();
 
     const body = {
