@@ -197,6 +197,7 @@ const SolanaPayModal = ({ isOpen, onClose, onPaymentSuccess, currentLevel }) => 
           <button 
             onClick={onClose}
             className="text-gray-400 hover:text-white transition-colors p-1.5 hover:bg-gray-800 rounded-lg"
+            disabled={paymentStatus === 'confirmed'}
           >
             <FaTimes className="text-lg sm:text-xl" />
           </button>
@@ -211,7 +212,12 @@ const SolanaPayModal = ({ isOpen, onClose, onPaymentSuccess, currentLevel }) => 
         <div className="sticky bottom-0 bg-gray-900 z-10 p-3 sm:p-4 border-t border-gray-800">
           <button 
             onClick={onClose} 
-            className="w-full bg-gray-800 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors"
+            className={`w-full font-semibold py-2 px-4 rounded-lg transition-colors ${
+              paymentStatus === 'confirmed' 
+                ? 'bg-green-500 text-white' 
+                : 'bg-gray-800 hover:bg-gray-700 text-white'
+            }`}
+            disabled={paymentStatus === 'confirmed'}
           >
             {paymentStatus === 'confirmed' ? 'Close' : 'Cancel'}
           </button>
@@ -221,4 +227,4 @@ const SolanaPayModal = ({ isOpen, onClose, onPaymentSuccess, currentLevel }) => 
   );
 };
 
-export default SolanaPayModal; 
+export default SolanaPayModal;

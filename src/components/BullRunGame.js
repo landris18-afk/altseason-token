@@ -2,49 +2,175 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { FaSync, FaQuestionCircle, FaCheckCircle } from 'react-icons/fa';
+import { FaSync, FaQuestionCircle, FaCheckCircle, FaTimes } from 'react-icons/fa';
 import { FaXTwitter } from 'react-icons/fa6';
 import UpgradesPanel from './UpgradesPanel';
 import SolanaPayModal from './SolanaPayModal';
 
 // --- SZÍNEK SZINTENKÉNT ---
-// Index 0: sárga, index 1: zöld (később bővíthető)
 const levelColors = [
-  {
+  { // 0. szint - sárga
     text: 'text-yellow-400',
     buttonBg: 'bg-yellow-500',
     buttonShadow: 'shadow-yellow-500/20',
     barFrom: 'from-yellow-400',
-    barTo: 'to-orange-500'
+    barTo: 'to-yellow-600'
   },
-  {
+  { // 1. szint - narancssárga
+    text: 'text-orange-400',
+    buttonBg: 'bg-orange-500',
+    buttonShadow: 'shadow-orange-500/20',
+    barFrom: 'from-orange-400',
+    barTo: 'to-orange-600'
+  },
+  { // 2. szint - rózsaszín
+    text: 'text-pink-400',
+    buttonBg: 'bg-pink-500',
+    buttonShadow: 'shadow-pink-500/20',
+    barFrom: 'from-pink-400',
+    barTo: 'to-pink-600'
+  },
+  { // 3. szint - piros
+    text: 'text-red-400',
+    buttonBg: 'bg-red-500',
+    buttonShadow: 'shadow-red-500/20',
+    barFrom: 'from-red-400',
+    barTo: 'to-red-600'
+  },
+  { // 4. szint - lila
+    text: 'text-purple-400',
+    buttonBg: 'bg-purple-500',
+    buttonShadow: 'shadow-purple-500/20',
+    barFrom: 'from-purple-400',
+    barTo: 'to-purple-600'
+  },
+  { // 5. szint - kék
+    text: 'text-blue-400',
+    buttonBg: 'bg-blue-500',
+    buttonShadow: 'shadow-blue-500/20',
+    barFrom: 'from-blue-400',
+    barTo: 'to-blue-600'
+  },
+  { // 6. szint - türkiz
+    text: 'text-cyan-400',
+    buttonBg: 'bg-cyan-500',
+    buttonShadow: 'shadow-cyan-500/20',
+    barFrom: 'from-cyan-400',
+    barTo: 'to-cyan-600'
+  },
+  { // 7. szint - zöld
     text: 'text-green-400',
     buttonBg: 'bg-green-500',
     buttonShadow: 'shadow-green-500/20',
     barFrom: 'from-green-400',
     barTo: 'to-green-600'
   },
+  { // 8. szint - smaragd
+    text: 'text-emerald-400',
+    buttonBg: 'bg-emerald-500',
+    buttonShadow: 'shadow-emerald-500/20',
+    barFrom: 'from-emerald-400',
+    barTo: 'to-emerald-600'
+  },
+  { // 9. szint - türkiz
+    text: 'text-teal-400',
+    buttonBg: 'bg-teal-500',
+    buttonShadow: 'shadow-teal-500/20',
+    barFrom: 'from-teal-400',
+    barTo: 'to-teal-600'
+  },
+  { // 10. szint - indigó
+    text: 'text-indigo-400',
+    buttonBg: 'bg-indigo-500',
+    buttonShadow: 'shadow-indigo-500/20',
+    barFrom: 'from-indigo-400',
+    barTo: 'to-indigo-600'
+  },
+  { // 11. szint - lila
+    text: 'text-violet-400',
+    buttonBg: 'bg-violet-500',
+    buttonShadow: 'shadow-violet-500/20',
+    barFrom: 'from-violet-400',
+    barTo: 'to-violet-600'
+  },
+  { // 12. szint - rózsaszín
+    text: 'text-fuchsia-400',
+    buttonBg: 'bg-fuchsia-500',
+    buttonShadow: 'shadow-fuchsia-500/20',
+    barFrom: 'from-fuchsia-400',
+    barTo: 'to-fuchsia-600'
+  },
+  { // 13. szint - sárga
+    text: 'text-amber-400',
+    buttonBg: 'bg-amber-500',
+    buttonShadow: 'shadow-amber-500/20',
+    barFrom: 'from-amber-400',
+    barTo: 'to-amber-600'
+  },
+  { // 14. szint - narancssárga
+    text: 'text-orange-400',
+    buttonBg: 'bg-orange-500',
+    buttonShadow: 'shadow-orange-500/20',
+    barFrom: 'from-orange-400',
+    barTo: 'to-orange-600'
+  },
+  { // 15. szint - piros
+    text: 'text-red-400',
+    buttonBg: 'bg-red-500',
+    buttonShadow: 'shadow-red-500/20',
+    barFrom: 'from-red-400',
+    barTo: 'to-red-600'
+  },
+  { // 16. szint - lila
+    text: 'text-purple-400',
+    buttonBg: 'bg-purple-500',
+    buttonShadow: 'shadow-purple-500/20',
+    barFrom: 'from-purple-400',
+    barTo: 'to-purple-600'
+  },
+  { // 17. szint - kék
+    text: 'text-blue-400',
+    buttonBg: 'bg-blue-500',
+    buttonShadow: 'shadow-blue-500/20',
+    barFrom: 'from-blue-400',
+    barTo: 'to-blue-600'
+  }
 ];
 
 // --- SZINTEK ADATSTRUKTÚRÁJA ---
 const gameLevels = [
-  { threshold: 0,   name: "Wet-Noodle-Handed Normie Who Missed Every Pump Since 2013" },
+  { threshold: 0, name: "Wet-Noodle-Handed Normie Who Missed Every Pump Since 2013" },
   { threshold: 100, name: "Sandbox Bull Noob" },
   { threshold: 500, name: "AssSweating Bull of Hopium" },
-  { threshold: 2500, name: "Diamond Handed Degen" },
-  { threshold: 10000, name: "Gigachad of Green Candles" },
+  { threshold: 1000, name: "Half-Liquidated Clickslave with Bull Delusions" },
+  { threshold: 5000, name: "Goat-Humping Bull Whispering to Charts at 3AM" },
+  { threshold: 10000, name: "Mouse-Mashing Madbull Who Hears Pump Voices" },
+  { threshold: 25000, name: "Injecting Pure RSI into Eyeballs Bull" },
+  { threshold: 50000, name: "Fulltime Candlestick Cultist with Melted Brain" },
+  { threshold: 100000, name: "Bull Who Sold His Soul for One Green Candle" },
+  { threshold: 200000, name: "Keyboard-Eating Bull of the Final Dump" },
+  { threshold: 500000, name: "Broken Bull Who Screams \"ALTSEASON\" in His Sleep" },
+  { threshold: 800000, name: "No-Wallet, Only Hopium Bull" },
+  { threshold: 1000000, name: "Reality-Denying Bull Who Sees Charts in Clouds" },
+  { threshold: 5000000, name: "Schizo Bull Having Zoom Calls with Satoshi" },
+  { threshold: 10000000, name: "Astral Plane Bull Trying to Long the Moon" },
+  { threshold: 100000000, name: "Cosmic Degenerate Who Thinks the Pump is a Person" },
+  { threshold: 1000000000, name: "4th-Dimensional BULL Who Trades with Telepathy" },
+  { threshold: 10000000000, name: "Time-Lost ASSBULL Who's Been Clicking Since 2017" }
 ];
 
-const LevelUpModal = ({ isOpen, onClose, levelName, twitterUrl }) => {
+const LevelUpModal = ({ isOpen, onClose, levelName, twitterUrl, levelIndex }) => {
   if (!isOpen) return null;
+  const currentLevelColor = levelColors[levelIndex] || levelColors[0];
+  
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-[9999] p-4">
-      <div className="bg-gray-900 border-2 border-green-500/50 rounded-2xl shadow-lg shadow-green-500/20 p-8 max-w-md w-full text-center text-white animate-fade-in-up">
-        <FaCheckCircle className="text-6xl text-green-400 mx-auto mb-4" />
-        <h3 className="text-3xl font-bold mb-2">LEVEL UP!</h3>
-        <p className="text-gray-300 text-lg mb-4">Congratulations, you have become:</p>
-        <p className="text-2xl font-bold text-yellow-400 mb-6">{levelName}</p>
-        <div className="pt-4 border-t border-gray-700">
+      <div className="bg-gray-900 border-2 border-white border-opacity-50 rounded-2xl shadow-lg p-8 max-w-md w-full text-center text-white animate-fade-in-up">
+        <FaCheckCircle className="text-6xl text-yellow-400 mx-auto mb-4" />
+        <h3 className="text-3xl font-bold mb-2 text-white">LEVEL UP!</h3>
+        <p className="text-white text-lg mb-4">Congratulations, you have become:</p>
+        <p className={`text-2xl font-bold ${currentLevelColor.text} mb-6`}>{levelName}</p>
+        <div className="pt-4 border-t border-white/20">
           <a
             href={twitterUrl}
             target="_blank"
@@ -57,7 +183,7 @@ const LevelUpModal = ({ isOpen, onClose, levelName, twitterUrl }) => {
         </div>
         <button
           onClick={onClose}
-          className="mt-6 bg-gray-600 font-semibold py-2 px-8 rounded-lg hover:bg-gray-500 transition-all w-full"
+          className="mt-6 bg-yellow-500 font-semibold py-2 px-8 rounded-lg hover:opacity-90 transition-all w-full text-gray-900"
         >
           Continue Pumping
         </button>
@@ -95,6 +221,7 @@ const getInitialState = () => ({
   levelIndex: 0,
   solanaBlessingLevel: 0,
   hasPremiumUpgrade: false,
+  totalClicks: 0,
   upgrades: [
     // Click Power fejlesztések
     { 
@@ -183,6 +310,24 @@ export default function BullRunGame() {
   const [isResetModalOpen, setIsResetModalOpen] = useState(false);
   const [isRulesModalOpen, setIsRulesModalOpen] = useState(false);
   const [isSolanaModalOpen, setIsSolanaModalOpen] = useState(false);
+  const [isTermsModalOpen, setIsTermsModalOpen] = useState(false);
+  const [isTermsAccepted, setIsTermsAccepted] = useState(false);
+  const [isCheckboxChecked, setIsCheckboxChecked] = useState(false);
+  const [pumpSound, setPumpSound] = useState(null);
+  const [levelUpSound, setLevelUpSound] = useState(null);
+  const [unlockSound, setUnlockSound] = useState(null);
+  const [upgradeSound, setUpgradeSound] = useState(null);
+  const [lastMarketCap, setLastMarketCap] = useState(0);
+  const [subThousandAccumulator, setSubThousandAccumulator] = useState(0);
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  // Initialize audio
+  useEffect(() => {
+    setPumpSound(new Audio('/sound/pumpthebull.wav'));
+    setLevelUpSound(new Audio('/sound/level.wav'));
+    setUnlockSound(new Audio('/sound/unlock.wav'));
+    setUpgradeSound(new Audio('/sound/Upgrades.wav'));
+  }, []);
 
   // Load & persist
   useEffect(() => {
@@ -209,31 +354,275 @@ export default function BullRunGame() {
     return () => { document.body.style.overflow = 'unset'; };
   }, [isResetModalOpen, isRulesModalOpen, isLevelUpModalOpen, isSolanaModalOpen]);
 
-  // Szintlépés figyelése
+  // Level up check
   useEffect(() => {
-    if (!isLoaded) return;
-    const nextLevel = gameLevels[gameState.levelIndex + 1];
-    if (nextLevel && gameState.marketCap >= nextLevel.threshold) {
-      setGameState(prev => ({ ...prev, levelIndex: prev.levelIndex + 1 }));
-      setIsLevelUpModalOpen(true);
-    }
-  }, [gameState.marketCap, gameState.levelIndex, isLoaded]);
+    if (isLoaded) {
+      // Ellenőrizzük, hogy érvényes-e a jelenlegi szint
+      if (!gameLevels[gameState.levelIndex]) {
+        console.log('Invalid level detected, resetting game...');
+        confirmReset();
+        return;
+      }
 
-  // Akciók
-  const handlePump = () => setGameState(p => ({ ...p, marketCap: p.marketCap + p.clickPower }));
-  
-  const buyUpgrade = id => {
-    const u = gameState.upgrades.find(x => x.id === id);
-    if (!u) return;
-    const cost = Math.floor(u.baseCost * 1.15 ** u.level);
-    if (gameState.marketCap >= cost) {
+      const currentLevel = gameLevels[gameState.levelIndex];
+      const nextLevel = gameLevels[gameState.levelIndex + 1];
+      
+      // Csak akkor nézzük a következő szintet, ha van még következő szint
+      if (nextLevel && gameState.marketCap >= nextLevel.threshold) {
+        if (levelUpSound) {
+          levelUpSound.currentTime = 0;
+          levelUpSound.play().catch(error => console.log('Audio playback failed:', error));
+        }
+        setIsLevelUpModalOpen(true);
+        setGameState(p => ({ ...p, levelIndex: p.levelIndex + 1 }));
+
+        // Új szinten frissítjük a használatokat
+        const newUses = {};
+        gameState.upgrades.forEach(upgrade => {
+          if (upgrade.id === 1) {
+            newUses[upgrade.id] = Infinity; // Diamond Hands: végtelen
+          } else if (upgrade.id === 2) {
+            newUses[upgrade.id] = 5; // Bull's Strength: 5 használat
+          } else if (upgrade.id === 3) {
+            newUses[upgrade.id] = 4; // Moon Shot: 4 használat
+          } else if (upgrade.id === 4) {
+            newUses[upgrade.id] = 3; // Shill Army: 3 használat
+          } else if (upgrade.id === 5) {
+            newUses[upgrade.id] = 2; // FOMO Generator: 2 használat
+          } else if (upgrade.id === 6) {
+            newUses[upgrade.id] = 1; // Whale Magnet: 1 használat
+          }
+        });
+        setGameState(p => ({ ...p, usesLeft: newUses }));
+      }
+    }
+  }, [gameState.marketCap, gameState.levelIndex, isLoaded, gameState.upgrades, levelUpSound]);
+
+  // Disable scroll when modal is open
+  useEffect(() => {
+    if (isTermsModalOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isTermsModalOpen]);
+
+  // Check for newly unlocked upgrades
+  useEffect(() => {
+    if (isLoaded) {
+      const shouldBeUnlocked = gameState.upgrades.filter(upgrade => {
+        if (!upgrade.requirements) return true;
+        const requiredUpgrade = gameState.upgrades.find(u => u.id === upgrade.requirements.upgradeId);
+        return requiredUpgrade && requiredUpgrade.level >= upgrade.requirements.level;
+      });
+
+      const newlyUnlocked = shouldBeUnlocked.filter(upgrade => !upgrade.isUnlocked);
+
+      if (newlyUnlocked.length > 0 && unlockSound) {
+        unlockSound.currentTime = 0;
+        unlockSound.play().catch(error => console.log('Audio playback failed:', error));
+      }
+
+      if (newlyUnlocked.length > 0) {
+        setGameState(p => ({
+          ...p,
+          upgrades: p.upgrades.map(upgrade => 
+            newlyUnlocked.some(u => u.id === upgrade.id)
+              ? { ...upgrade, isUnlocked: true }
+              : upgrade
+          )
+        }));
+      }
+    }
+  }, [gameState.upgrades, gameState.levelIndex, isLoaded, unlockSound]);
+
+  // Reset upgrades unlock status when level changes
+  useEffect(() => {
+    if (isLoaded) {
       setGameState(p => ({
         ...p,
-        marketCap: p.marketCap - cost,
-        clickPower: u.type === 'click' ? p.clickPower + u.power : p.clickPower,
-        passiveIncome: u.type === 'passive' ? p.passiveIncome + u.power : p.passiveIncome,
-        upgrades: p.upgrades.map(x => x.id === id ? { ...x, level: x.level + 1 } : x)
+        upgrades: p.upgrades.map(upgrade => ({
+          ...upgrade,
+          isUnlocked: !upgrade.requirements || 
+            (p.upgrades.find(u => u.id === upgrade.requirements.upgradeId)?.level >= upgrade.requirements.level)
+        }))
       }));
+    }
+  }, [gameState.levelIndex, isLoaded]);
+
+  const getUpgradeCost = (upgrade) => {
+    const getPriceMultiplier = (id) => {
+      if (id === 1) return 1.02; // Diamond Hands: 2% growth
+      if (id === 5 || id === 6) return 1.15; // FOMO Generator és Whale Magnet
+      return 1.10; // Minden más fejlesztés
+    };
+    const cost = upgrade.baseCost * getPriceMultiplier(upgrade.id) ** upgrade.level;
+    return Math.round(cost); // Kerekítés a legközelebbi egész számra
+  };
+
+  // Akciók
+  const handlePump = () => {
+    if (gameState.levelIndex >= gameLevels.length - 1) return;
+    
+    if (pumpSound) {
+      pumpSound.currentTime = 0;
+      pumpSound.play().catch(error => console.log('Audio playback failed:', error));
+    }
+    
+    const newIncrement = gameState.clickPower * (gameState.solanaBlessingLevel + 1);
+    
+    // Asztali nézet: fő számláló növekszik, ha M alatt van
+    if (window.innerWidth >= 768) { // md breakpoint
+      if (gameState.marketCap < 1e6) {
+        setGameState(p => ({
+          ...p,
+          marketCap: p.marketCap + newIncrement,
+          totalClicks: (p.totalClicks || 0) + 1
+        }));
+      } else {
+        // M felett a második számláló növekszik
+        const newAccumulator = subThousandAccumulator + newIncrement;
+        
+        // 100M felett 1M-ig gyűjtünk
+        if (gameState.marketCap >= 1e8) {
+          if (newAccumulator >= 1e6) {
+            const millionsToAdd = Math.floor(newAccumulator / 1e6);
+            const remainder = newAccumulator % 1e6;
+            
+            setSubThousandAccumulator(remainder);
+            setGameState(p => ({
+              ...p,
+              marketCap: p.marketCap + (millionsToAdd * 1e6),
+              totalClicks: (p.totalClicks || 0) + 1
+            }));
+          } else {
+            setSubThousandAccumulator(newAccumulator);
+            setGameState(p => ({
+              ...p,
+              totalClicks: (p.totalClicks || 0) + 1
+            }));
+          }
+        }
+        // 1M és 100M között 100K-ig gyűjtünk
+        else {
+          if (newAccumulator >= 1e5) {
+            const hundredsToAdd = Math.floor(newAccumulator / 1e5);
+            const remainder = newAccumulator % 1e5;
+            
+            setSubThousandAccumulator(remainder);
+            setGameState(p => ({
+              ...p,
+              marketCap: p.marketCap + (hundredsToAdd * 1e5),
+              totalClicks: (p.totalClicks || 0) + 1
+            }));
+          } else {
+            setSubThousandAccumulator(newAccumulator);
+            setGameState(p => ({
+              ...p,
+              totalClicks: (p.totalClicks || 0) + 1
+            }));
+          }
+        }
+      }
+    } else {
+      // Mobilnézet: ugyanaz a logika
+      if (gameState.marketCap >= 1000) {
+        const newAccumulator = subThousandAccumulator + newIncrement;
+        
+        // 100M felett 1M-ig gyűjtünk
+        if (gameState.marketCap >= 1e8) {
+          if (newAccumulator >= 1e6) {
+            const millionsToAdd = Math.floor(newAccumulator / 1e6);
+            const remainder = newAccumulator % 1e6;
+            
+            setSubThousandAccumulator(remainder);
+            setGameState(p => ({
+              ...p,
+              marketCap: p.marketCap + (millionsToAdd * 1e6),
+              totalClicks: (p.totalClicks || 0) + 1
+            }));
+          } else {
+            setSubThousandAccumulator(newAccumulator);
+            setGameState(p => ({
+              ...p,
+              totalClicks: (p.totalClicks || 0) + 1
+            }));
+          }
+        }
+        // 1M és 100M között 100K-ig gyűjtünk
+        else {
+          if (newAccumulator >= 1e5) {
+            const hundredsToAdd = Math.floor(newAccumulator / 1e5);
+            const remainder = newAccumulator % 1e5;
+            
+            setSubThousandAccumulator(newAccumulator);
+            setGameState(p => ({
+              ...p,
+              marketCap: p.marketCap + (hundredsToAdd * 1e5),
+              totalClicks: (p.totalClicks || 0) + 1
+            }));
+          } else {
+            setSubThousandAccumulator(newAccumulator);
+            setGameState(p => ({
+              ...p,
+              totalClicks: (p.totalClicks || 0) + 1
+            }));
+          }
+        }
+      } else {
+        setGameState(p => ({
+          ...p,
+          marketCap: p.marketCap + newIncrement,
+          totalClicks: (p.totalClicks || 0) + 1
+        }));
+      }
+    }
+  };
+  
+  const handleUpgrade = (upgrade) => {
+    const cost = getUpgradeCost(upgrade);
+    if (gameState.marketCap >= cost) {
+      if (upgradeSound) {
+        upgradeSound.currentTime = 0;
+        upgradeSound.play().catch(error => console.log('Audio playback failed:', error));
+      }
+
+      // Ellenőrizzük, hogy ez egy új unlock-e
+      const wasLocked = !upgrade.isUnlocked;
+      
+      setGameState(p => {
+        // Csökkentjük a használatot
+        const newUses = { ...p.usesLeft };
+        if (upgrade.id !== 1) { // Diamond Hands kivételével minden upgrade-nek van használata
+          newUses[upgrade.id] = (newUses[upgrade.id] ?? 0) - 1;
+          // Ha elfogyott a használat, akkor lezárjuk az upgrade-et
+          if (newUses[upgrade.id] <= 0) {
+            newUses[upgrade.id] = 0;
+          }
+        }
+
+        return {
+          ...p,
+          marketCap: p.marketCap - cost,
+          clickPower: p.clickPower + (upgrade.type === 'click' ? upgrade.power : 0),
+          passiveIncome: p.passiveIncome + (upgrade.type === 'passive' ? upgrade.power : 0),
+          usesLeft: newUses,
+          upgrades: p.upgrades.map(u => 
+            u.id === upgrade.id 
+              ? { ...u, level: u.level + 1, isUnlocked: true }
+              : u
+          )
+        };
+      });
+
+      // Ha ez egy új unlock, játszuk le a hangot
+      if (wasLocked && unlockSound) {
+        unlockSound.currentTime = 0;
+        unlockSound.play().catch(error => console.log('Audio playback failed:', error));
+      }
     }
   };
 
@@ -249,17 +638,36 @@ export default function BullRunGame() {
       }, 1000);
       return () => clearInterval(incomeInterval);
     }
-  }, [gameState.passiveIncome, gameState.solanaBlessingLevel]);
+  }, [gameState.passiveIncome, gameState.solanaBlessingLevel, gameState.clickPower]);
 
   const confirmReset = () => {
     localStorage.removeItem('bullRunGameState_v3');
-    setGameState(getInitialState());
+    const initialState = getInitialState();
+    setGameState({
+      ...initialState,
+      levelIndex: 0,
+      marketCap: 0,
+      totalClicks: 0,
+      clickPower: 1,
+      passiveIncome: 0,
+      solanaBlessingLevel: 0,
+      hasPremiumUpgrade: false,
+      upgrades: initialState.upgrades.map(upgrade => ({
+        ...upgrade,
+        level: 0,
+        isUnlocked: false
+      }))
+    });
     setIsResetModalOpen(false);
   };
 
   // ÚJ: funkció a sikeres fizetés után
   const activatePremiumUpgrade = () => {
-    setGameState(p => ({ ...p, hasPremiumUpgrade: true }));
+    setGameState(p => ({ 
+      ...p, 
+      hasPremiumUpgrade: true,
+      solanaBlessingLevel: p.solanaBlessingLevel + 1 
+    }));
   };
 
   // ÚJ: Solana Bull's Blessing vásárlás kezelése
@@ -278,6 +686,12 @@ export default function BullRunGame() {
     }));
   };
 
+  const acceptTerms = () => {
+    if (!isCheckboxChecked) return;
+    setIsTermsAccepted(true);
+    setIsTermsModalOpen(false);
+  };
+
   // Formázás és változók
   const fmt = n => Math.round(n).toLocaleString('en-US');
   const { marketCap, clickPower, passiveIncome, upgrades, levelIndex, solanaBlessingLevel, hasPremiumUpgrade } = gameState;
@@ -285,7 +699,32 @@ export default function BullRunGame() {
   const displayedPassiveIncome = passiveIncome * (solanaBlessingLevel + 1);
   const current = gameLevels[levelIndex];
   const next = gameLevels[levelIndex + 1];
-  const prog = next ? Math.min(((marketCap - current.threshold) / (next.threshold - current.threshold)) * 100, 100) : 100;
+  
+  // Progress bar számítása
+  useEffect(() => {
+    setIsDesktop(window.innerWidth >= 768);
+    const handleResize = () => {
+      setIsDesktop(window.innerWidth >= 768);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const prog = isDesktop ? // md breakpoint
+    (marketCap < 1e6 ? 
+      Math.min(((marketCap - current.threshold) / (next ? next.threshold - current.threshold : 100)) * 100, 100) : // M alatt a fő számhoz
+      (marketCap >= 1e8 ? 
+        Math.min((subThousandAccumulator / 1e6) * 100, 100) : // 100M felett 1M-ig
+        Math.min((subThousandAccumulator / 1e5) * 100, 100)  // 1M és 100M között 100K-ig
+      )
+    ) : // mobilnézet
+    (marketCap >= 1000 ? 
+      (marketCap >= 1e8 ? 
+        Math.min((subThousandAccumulator / 1e6) * 100, 100) : // 100M felett 1M-ig
+        Math.min((subThousandAccumulator / 1e5) * 100, 100)  // 1M és 100M között 100K-ig
+      ) :
+      Math.min(((marketCap - current.threshold) / (next ? next.threshold - current.threshold : 100)) * 100, 100)  // K alatt a fő számhoz
+    );
   
   // Biztonságosabb színválasztás
   const colorIndex = Math.min(levelIndex, levelColors.length - 1);
@@ -318,12 +757,143 @@ export default function BullRunGame() {
     );
   }
 
+  if (!isTermsAccepted) {
+    return (
+      <section id="game" className="py-20 bg-gray-900 text-white relative">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto">
+            {/* Blurred Game Content */}
+            <div className="backdrop-blur-md">
+              <div className="flex justify-between items-center mb-8">
+                <div className="text-center">
+                  <h1 className="text-4xl font-bold mb-2">Bull Run Clicker</h1>
+                  <p className="text-gray-400">Pump the market to the moon!</p>
+                </div>
+              </div>
+              <div className="bg-gray-800/50 rounded-2xl p-8 mb-8 text-center">
+                <div className="text-6xl font-bold mb-4">$0</div>
+                <p className="text-gray-400">Market Cap</p>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="bg-gray-800/50 rounded-2xl p-6">
+                  <h2 className="text-xl font-bold mb-4">Upgrades</h2>
+                  <div className="space-y-4">
+                    <div className="bg-gray-700/50 rounded-lg p-4">
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <h3 className="font-bold">Diamond Hands</h3>
+                          <p className="text-sm text-gray-400">+1 MC per click</p>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-yellow-400">$100</div>
+                          <div className="text-sm text-gray-400">Level 0</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Locked Game Overlay */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="bg-gray-900/95 border-2 border-yellow-500/30 rounded-2xl p-8 max-w-lg w-full text-center shadow-lg shadow-yellow-500/20">
+                <div className="text-4xl mb-4">🔒</div>
+                <h2 className="text-2xl font-bold text-yellow-400 mb-4">Bull Run Clicker</h2>
+                <p className="text-gray-300 mb-6">
+                  Accept the terms and conditions to start your bull market adventure!
+                </p>
+                <button
+                  onClick={() => setIsTermsModalOpen(true)}
+                  className="bg-yellow-500 text-black font-bold py-2 px-8 rounded-lg hover:bg-yellow-400 transition-all"
+                >
+                  Unlock Game
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Terms Modal */}
+        {isTermsModalOpen && (
+          <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-[9999] p-4">
+            <div className="bg-gray-900 border-2 border-yellow-500/30 rounded-2xl shadow-lg shadow-yellow-500/20 w-full max-w-[95%] sm:max-w-2xl flex flex-col max-h-[90vh] animate-fade-in-up">
+              <div className="flex justify-between items-center p-4 sm:p-6 border-b border-gray-700">
+                <h3 className="text-xl sm:text-2xl font-bold text-yellow-400">Terms and Conditions</h3>
+                <button onClick={() => setIsTermsModalOpen(false)} className="text-gray-400 hover:text-white">
+                  <FaTimes />
+                </button>
+              </div>
+              <div className="flex-grow overflow-y-auto p-4 sm:p-6 space-y-4 bg-gray-900">
+                <div className="bg-gray-800/50 p-4 rounded-lg">
+                  <p className="text-gray-300 text-base sm:text-lg mb-4">
+                    Welcome to Bull Run Clicker! Before you start playing, please read and accept our terms:
+                  </p>
+                  <div className="space-y-3 sm:space-y-4 text-gray-400 text-sm sm:text-base">
+                    <p>1. This is a virtual game for entertainment purposes only.</p>
+                    <p>2. The Market Cap and all in-game currencies are virtual and have no real-world value.</p>
+                    <p>3. No real money can be earned or withdrawn from this game.</p>
+                    <p>4. All progress and upgrades are stored locally in your browser.</p>
+                    <p>5. The game may be reset or modified at any time without notice.</p>
+                    <p>6. By accepting these terms, you acknowledge that this is purely a game and not a financial investment.</p>
+                  </div>
+                </div>
+              </div>
+              <div className="flex flex-col space-y-4 p-4 sm:p-6 border-t border-gray-700 bg-gray-900">
+                <label className="flex items-center space-x-3 cursor-pointer group">
+                  <div className="relative">
+                    <input
+                      type="checkbox"
+                      checked={isCheckboxChecked}
+                      onChange={(e) => setIsCheckboxChecked(e.target.checked)}
+                      className="sr-only"
+                    />
+                    <div className={`w-6 h-6 border-2 rounded-md transition-all duration-200 flex items-center justify-center
+                      ${isCheckboxChecked 
+                        ? 'bg-yellow-500 border-yellow-500' 
+                        : 'border-yellow-500/50 group-hover:border-yellow-500'}`}
+                    >
+                      {isCheckboxChecked && (
+                        <svg className="w-4 h-4 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
+                        </svg>
+                      )}
+                    </div>
+                  </div>
+                  <span className="text-gray-300 group-hover:text-white transition-colors">
+                    I have read and agree to the terms and conditions
+                  </span>
+                </label>
+                <button
+                  onClick={acceptTerms}
+                  disabled={!isCheckboxChecked}
+                  className={`bg-yellow-500 text-black font-bold py-2 px-6 sm:px-8 rounded-lg transition-all text-sm sm:text-base
+                    ${isCheckboxChecked 
+                      ? 'hover:bg-yellow-400' 
+                      : 'opacity-50 cursor-not-allowed'}`}
+                >
+                  I Accept
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </section>
+    );
+  }
+
   const shareText = `I have reached the rank of ${current.name} on the Bull Run Clicker!`;
   const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent("https://your-website-url.com")}&hashtags=BullRun,ClickerGame`;
 
   return (
     <>
-      <LevelUpModal isOpen={isLevelUpModalOpen} onClose={() => setIsLevelUpModalOpen(false)} levelName={current.name} twitterUrl={twitterUrl} />
+      <LevelUpModal
+        isOpen={isLevelUpModalOpen}
+        onClose={() => setIsLevelUpModalOpen(false)}
+        levelName={gameLevels[gameState.levelIndex]?.name || "Unknown Level"}
+        twitterUrl={`https://twitter.com/intent/tweet?text=I%20just%20reached%20the%20${encodeURIComponent(gameLevels[gameState.levelIndex]?.name || "Unknown Level")}%20level%20in%20Bull%20Run!%20Can%20you%20beat%20my%20rank?%20Play%20now:%20https://bullrun.altseason.io`}
+        levelIndex={gameState.levelIndex}
+      />
       <CustomModal isOpen={isResetModalOpen} onClose={() => setIsResetModalOpen(false)} onConfirm={confirmReset} title="Reset Game" confirmText="Yes, Reset!" cancelText="Cancel">
         <p>Are you sure you want to reset? All your progress and upgrades will be permanently deleted!</p>
       </CustomModal>
@@ -364,7 +934,7 @@ export default function BullRunGame() {
                     <span className="text-gray-400 font-normal">Current Rank: </span>
                     <span className={currentTextColor}>{current.name}</span>
                   </p>
-                  <p className="text-sm text-gray-400">{ next ? `Next: $${fmt(next.threshold)}` : "MAX LEVEL" }</p>
+                  <p className="text-sm text-gray-400">{ next ? `Next: $${fmt(marketCap)}/${fmt(next.threshold)}` : "MAX LEVEL" }</p>
                 </div>
                 <div className="w-full bg-gray-700 rounded-full h-4 mt-1">
                   <div
@@ -373,22 +943,70 @@ export default function BullRunGame() {
                   />
                 </div>
                 <div className="md:hidden text-right mt-1">
-                  <p className="text-sm text-gray-400">{ next ? `Next: $${fmt(next.threshold)}` : "MAX" }</p>
+                  <p className="text-sm text-gray-400">{ next ? `Next: $${fmt(marketCap)}/${fmt(next.threshold)}` : "MAX" }</p>
                 </div>
               </div>
 
               {/* Market Cap & Pump Button */}
-              <div className="flex flex-col items-center">
-                <h3 className={`text-2xl md:text-3xl font-bold ${currentTextColor}`}>Virtual Market Cap</h3>
-                <p className={`${marketCap < 1e5 ? 'text-8xl' : marketCap < 1e9 ? 'text-6xl' : 'text-5xl'} font-mono font-bold my-2 text-white drop-shadow-lg`}>
-                  ${fmt(marketCap)}
-                </p>
-                <button
-                  onClick={handlePump}
-                  className={`${currentButtonBg} text-black font-bold py-6 px-10 rounded-full text-lg md:text-3xl transition-transform duration-100 hover:scale-105 active:scale-95 shadow-lg ${currentButtonShadow} mt-4`}
-                >
-                  PUMP THE BULL
-                </button>
+              <div className="flex flex-col items-center mb-6">
+                <h3 className="text-2xl md:text-3xl font-bold text-yellow-400">Virtual Market Cap</h3>
+                
+                {/* Asztali nézet */}
+                <div className="hidden md:flex flex-col items-center">
+                  <p className={`${
+                    marketCap < 1e8 ? 'text-8xl' : 'text-6xl'
+                  } font-mono font-bold my-2 text-white drop-shadow-lg`}>
+                    ${marketCap >= 1e12 ? 
+                      `${(marketCap / 1e12).toFixed(1)}T` :
+                      marketCap >= 1e9 ? 
+                        `${(marketCap / 1e9).toFixed(1)}B` :
+                        marketCap >= 1e6 ? 
+                          `${(marketCap / 1e6).toFixed(1)}M` :
+                          fmt(marketCap)
+                    }
+                  </p>
+                  {marketCap >= 1e6 && marketCap < 1e12 && (
+                    <p className="text-4xl font-mono font-bold text-white">
+                      +${fmt(subThousandAccumulator)}
+                    </p>
+                  )}
+                  {marketCap >= 1e12 && (
+                    <p className="text-4xl font-mono font-bold text-white">
+                      +${fmt(Math.min(subThousandAccumulator, 99999999))}
+                    </p>
+                  )}
+                </div>
+
+                {/* Mobilnézet */}
+                <div className="md:hidden flex flex-col items-center">
+                  <p className="text-6xl font-mono font-bold my-2 text-white drop-shadow-lg">
+                    ${marketCap >= 1e6 ? 
+                      `${(marketCap / 1e6).toFixed(1)}M` :
+                      marketCap >= 1e3 ? 
+                        `${(marketCap / 1e3).toFixed(1)}K` :
+                        fmt(marketCap)
+                    }
+                  </p>
+                  {marketCap >= 1e3 && (
+                    <p className="text-3xl font-mono font-bold text-white">
+                      +${fmt(subThousandAccumulator)}
+                    </p>
+                  )}
+                </div>
+
+                <div className="mt-4">
+                  <button
+                    onClick={handlePump}
+                    disabled={gameState.levelIndex >= gameLevels.length - 1}
+                    className={`relative py-6 px-12 rounded-full font-bold text-2xl transition-all duration-300 ${
+                      gameState.levelIndex >= gameLevels.length - 1
+                        ? 'cursor-not-allowed bg-gray-800 border-2 border-gray-700'
+                        : 'bg-yellow-500 hover:opacity-90 active:scale-95 shadow-yellow-500/20 text-gray-900'
+                    }`}
+                  >
+                    {gameState.levelIndex >= gameLevels.length - 1 ? "MAX LEVEL REACHED" : "PUMP THE BULL"}
+                  </button>
+                </div>
               </div>
 
               {/* Controls */}
@@ -422,13 +1040,14 @@ export default function BullRunGame() {
 
             {/* Upgrades Panel */}
             <UpgradesPanel 
-              upgrades={upgrades}
-              marketCap={marketCap}
-              buyUpgrade={buyUpgrade}
-              clickPower={displayedClickPower}
-              passiveIncome={displayedPassiveIncome}
-              hasPremiumUpgrade={hasPremiumUpgrade}
+              upgrades={gameState.upgrades}
+              marketCap={gameState.marketCap}
+              buyUpgrade={handleUpgrade}
+              clickPower={gameState.clickPower}
+              passiveIncome={gameState.passiveIncome}
+              hasPremiumUpgrade={gameState.hasPremiumUpgrade}
               onSolanaUpgradeClick={() => setIsSolanaModalOpen(true)}
+              unlockSound={unlockSound}
             />
           </div>
         </div>
