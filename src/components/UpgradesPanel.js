@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { FaBolt, FaLock, FaTimes } from 'react-icons/fa';
+import { useMute } from './MuteContext';
 
 const RequirementsModal = ({ isOpen, onClose, upgrade, requiredUpgrade }) => {
     if (!isOpen || !upgrade || !requiredUpgrade) return null;
@@ -101,19 +102,20 @@ const UpgradesPanel = ({
     clickPower,
     passiveIncome,
     hasPremiumUpgrade,
-    unlockSound
+    unlockSound,
+    usesLeft,
+    getNextLevelUses
 }) => {
     const [selectedUpgrade, setSelectedUpgrade] = useState(null);
     const [insufficientFundsUpgrade, setInsufficientFundsUpgrade] = useState(null);
     const [activeTab, setActiveTab] = useState('click');
-    const [usesLeft, setUsesLeft] = useState({});
     const [forceUpdate, setForceUpdate] = useState(false);
     const lastReqLevelRef = useRef({});
+    const { muted: globalMuted } = useMute();
 
     // Reset usesLeft when marketCap is 0 (game reset)
     useEffect(() => {
         if (marketCap === 0) {
-            setUsesLeft({});
             setForceUpdate(prev => !prev);
         }
     }, [marketCap]);
@@ -124,23 +126,14 @@ const UpgradesPanel = ({
     const isUnlocked = u => {
         if (u.id === 1) return true; // Diamond Hands mindig feloldott
         const currentUses = usesLeft[u.id] ?? 0;
-        return currentUses > 0;
+        // Ellenőrizzük mind a használatokat, mind a feloldási állapotot
+        return currentUses > 0 && u.isUnlocked;
     };
 
     const priceMultiplier = (id) => {
         if (id === 1) return 1.02;         // Diamond Hands: 2% growth
         if (id === 5 || id === 6) return 1.15;
         return 1.10;
-    };
-
-    const getNextLevelUses = (upgradeId, upgrades) => {
-        if (upgradeId === 1) return Infinity; // Diamond Hands
-        if (upgradeId === 2) return Infinity; // Bull's Strength
-        if (upgradeId === 3) return Infinity; // Moon Shot
-        if (upgradeId === 4) return Infinity; // Shill Army
-        if (upgradeId === 5) return 100; // FOMO Generator
-        if (upgradeId === 6) return 20; // Whale Magnet
-        return 0;
     };
 
     useEffect(() => {
@@ -152,20 +145,9 @@ const UpgradesPanel = ({
             const lvl = req.level;
             const last = lastReqLevelRef.current[id];
             // Csak akkor unlockolunk, ha most lépte át a requirements.level-t
-            if (last !== undefined && last < upgrade.requirements.level && lvl >= upgrade.requirements.level) {
-                setUsesLeft(prev => ({
-                    ...prev,
-                    [id]: (prev[id] ?? 0) + getNextLevelUses(id, upgrades),
-                }));
-                // Hang lejátszása a használatok újratöltésekor
-                if (unlockSound) {
-                    unlockSound.currentTime = 0;
-                    unlockSound.play().catch(error => console.log('Audio playback failed:', error));
-                }
-            }
             lastReqLevelRef.current[id] = lvl;
         }
-    }, [upgrades, unlockSound]);
+    }, [upgrades]);
 
     const handleUpgradeClick = (u) => {
         // Diamond Hands esetén ne ellenőrizzük a használatokat
@@ -190,22 +172,8 @@ const UpgradesPanel = ({
         const cost = Math.floor(u.baseCost * priceMultiplier(u.id) ** u.level);
         if (marketCap >= cost) {
             buyUpgrade(u);
-            // Csökkentjük a használatot (kivéve Diamond Hands)
-            if (u.id !== 1) {
-                setUsesLeft(prev => {
-                    const newUses = {
-                        ...prev,
-                        [u.id]: (prev[u.id] ?? 0) - 1
-                    };
-                    // Ha elfogyott a használat, akkor lezárjuk az upgrade-et
-                    if (newUses[u.id] <= 0) {
-                        newUses[u.id] = 0;
-                    }
-                    return newUses;
-                });
-            }
         } else {
-            setInsufficientFundsUpgrade({ upgrade: u, cost, marketCap });
+            setInsufficientFundsUpgrade({ upgrade: u, cost });
         }
     };
 
@@ -274,7 +242,7 @@ const UpgradesPanel = ({
                                             </p>
                                             <p className="text-sm text-gray-400">
                                                 {u.description}
-                                                {u.type === 'click' ? ` (${u.power} MC/click)` : ` (${u.power} MC/sec)`}
+                                                {u.type === 'click' ? ` ($${u.power} MC/click)` : ` ($${u.power} MC/sec)`}
                                             </p>
                                             {!isUnlocked(u) && u.requirements && (() => {
                                                 const req = upgrades.find(x => x.id === u.requirements.upgradeId);
@@ -329,7 +297,7 @@ const UpgradesPanel = ({
                                             </p>
                                             <p className="text-sm text-gray-400">
                                                 {u.description}
-                                                {u.type === 'click' ? ` (${u.power} MC/click)` : ` (${u.power} MC/sec)`}
+                                                {u.type === 'click' ? ` ($${u.power} MC/click)` : ` ($${u.power} MC/sec)`}
                                             </p>
                                             {!isUnlocked(u) && u.requirements && (() => {
                                                 const req = upgrades.find(x => x.id === u.requirements.upgradeId);
@@ -360,7 +328,7 @@ const UpgradesPanel = ({
                 <div className="flex justify-around">
                     <div>
                         <p className="text-gray-400 text-sm">MC / Click</p>
-                        <p className="font-bold text-white text-lg">{fmt(clickPower)}</p>
+                        <p className="font-bold text-white text-lg">${fmt(clickPower)}</p>
                     </div>
                     <div>
                         <p className="text-gray-400 text-sm">MC / Second</p>
@@ -368,7 +336,7 @@ const UpgradesPanel = ({
                             hasPremiumUpgrade ? 'text-purple-400' : 'text-white'
                         }`}
                         >
-                            {fmt(displayedPassiveIncome)}
+                            ${fmt(displayedPassiveIncome)}
                         </p>
                     </div>
                 </div>

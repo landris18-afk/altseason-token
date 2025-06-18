@@ -1,12 +1,27 @@
 /* eslint-disable react/no-unescaped-entities */
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { FaSync, FaQuestionCircle, FaCheckCircle, FaTimes, FaVolumeUp, FaVolumeMute } from 'react-icons/fa';
 import { FaXTwitter } from 'react-icons/fa6';
 import UpgradesPanel from './UpgradesPanel';
 import SolanaPayModal from './SolanaPayModal';
 import { useMute } from './MuteContext';
+
+// --- Átfogó usesLeft javító függvény ---
+const fixUsesLeft = (usesLeftRaw) => {
+  const defaults = {1: Infinity, 2: Infinity, 3: Infinity, 4: Infinity, 5: 100, 6: 20};
+  const fixed = {};
+  for (let i = 1; i <= 6; i++) {
+    const val = usesLeftRaw && usesLeftRaw[i];
+    if (typeof val === 'number' && !isNaN(val)) {
+      fixed[i] = val;
+    } else {
+      fixed[i] = defaults[i];
+    }
+  }
+  return fixed;
+};
 
 // --- SZÍNEK SZINTENKÉNT ---
 const levelColors = [
@@ -223,6 +238,14 @@ const getInitialState = () => ({
   solanaBlessingLevel: 0,
   hasPremiumUpgrade: false,
   totalClicks: 0,
+  usesLeft: {
+    1: Infinity, // Diamond Hands: végtelen
+    2: Infinity, // Bull's Strength: végtelen
+    3: Infinity, // Moon Shot: végtelen
+    4: Infinity, // Shill Army: végtelen
+    5: 100, // FOMO Generator: 100 használat
+    6: 20 // Whale Magnet: 20 használat
+  },
   upgrades: [
     { 
       id: 1, 
@@ -298,28 +321,54 @@ const getInitialState = () => ({
         level: 15
       }
     }
-  ]
+  ],
+  minMarketCapThisLevel: 0
 });
 
 export default function BullRunGame() {
-  const [gameState, setGameState] = useState(getInitialState());
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [isLevelUpModalOpen, setIsLevelUpModalOpen] = useState(false);
+  const [gameState, setGameState] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const savedState = localStorage.getItem('bullRunGameState_v3');
+      if (savedState) {
+        try {
+          const parsed = JSON.parse(savedState);
+          const fixedUsesLeft = fixUsesLeft(parsed.usesLeft);
+          const mergedUpgrades = parsed.upgrades.map(upgrade => {
+            const savedUpgrade = parsed.upgrades && parsed.upgrades.find(u => u.id === upgrade.id);
+            const usesLeft = fixedUsesLeft[upgrade.id];
+            return {
+              ...upgrade,
+              ...savedUpgrade,
+              isUnlocked: upgrade.id === 1 || (typeof usesLeft === 'number' && usesLeft > 0)
+            };
+          });
+          return { ...parsed, usesLeft: fixedUsesLeft, upgrades: mergedUpgrades, minMarketCapThisLevel: parsed.minMarketCapThisLevel ?? parsed.marketCap ?? 0 };
+        } catch (e) {
+          console.error('Hiba a mentett állapot betöltésekor:', e);
+        }
+      }
+    }
+    return getInitialState();
+  });
+
   const [isResetModalOpen, setIsResetModalOpen] = useState(false);
-  const [isRulesModalOpen, setIsRulesModalOpen] = useState(false);
+  const [isLevelUpModalOpen, setIsLevelUpModalOpen] = useState(false);
   const [isSolanaModalOpen, setIsSolanaModalOpen] = useState(false);
   const [isTermsModalOpen, setIsTermsModalOpen] = useState(false);
   const [isTermsAccepted, setIsTermsAccepted] = useState(false);
   const [isCheckboxChecked, setIsCheckboxChecked] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [subThousandAccumulator, setSubThousandAccumulator] = useState(0);
+  const lastReqLevelRef = useRef({});
   const [pumpSound, setPumpSound] = useState(null);
   const [levelUpSound, setLevelUpSound] = useState(null);
   const [unlockSound, setUnlockSound] = useState(null);
   const [upgradeSound, setUpgradeSound] = useState(null);
   const [lastMarketCap, setLastMarketCap] = useState(0);
-  const [subThousandAccumulator, setSubThousandAccumulator] = useState(0);
-  const [isDesktop, setIsDesktop] = useState(false);
   const [forceUpdate, setForceUpdate] = useState(false);
   const { muted, setMuted } = useMute();
+  const [isRulesModalOpen, setIsRulesModalOpen] = useState(false);
 
   // Initialize audio
   useEffect(() => {
@@ -335,10 +384,17 @@ export default function BullRunGame() {
     if (saved) {
       const parsed = JSON.parse(saved);
       const initialState = getInitialState();
-      const mergedUpgrades = initialState.upgrades.map(init =>
-        (parsed.upgrades && parsed.upgrades.find(u => u.id === init.id)) || init
-      );
-      setGameState({ ...initialState, ...parsed, upgrades: mergedUpgrades });
+      const fixedUsesLeft = fixUsesLeft(parsed.usesLeft);
+      const mergedUpgrades = initialState.upgrades.map(init => {
+        const savedUpgrade = parsed.upgrades && parsed.upgrades.find(u => u.id === init.id);
+        const usesLeft = fixedUsesLeft[init.id];
+        return {
+          ...init,
+          ...savedUpgrade,
+          isUnlocked: init.id === 1 || (typeof usesLeft === 'number' && usesLeft > 0)
+        };
+      });
+      setGameState({ ...initialState, ...parsed, usesLeft: fixedUsesLeft, upgrades: mergedUpgrades, minMarketCapThisLevel: parsed.minMarketCapThisLevel ?? parsed.marketCap ?? 0 });
     }
     setIsLoaded(true);
   }, []);
@@ -349,10 +405,10 @@ export default function BullRunGame() {
 
   // MÓDOSÍTÁS: Scroll tiltása, ha BÁRMELYIK modal nyitva van
   useEffect(() => {
-    const anyModalOpen = isResetModalOpen || isRulesModalOpen || isLevelUpModalOpen || isSolanaModalOpen;
+    const anyModalOpen = isResetModalOpen || isLevelUpModalOpen || isSolanaModalOpen || isTermsModalOpen || isRulesModalOpen;
     document.body.style.overflow = anyModalOpen ? 'hidden' : 'unset';
     return () => { document.body.style.overflow = 'unset'; };
-  }, [isResetModalOpen, isRulesModalOpen, isLevelUpModalOpen, isSolanaModalOpen]);
+  }, [isResetModalOpen, isLevelUpModalOpen, isSolanaModalOpen, isTermsModalOpen, isRulesModalOpen]);
 
   // Level up check
   useEffect(() => {
@@ -374,29 +430,66 @@ export default function BullRunGame() {
           levelUpSound.play().catch(error => console.log('Audio playback failed:', error));
         }
         setIsLevelUpModalOpen(true);
-        setGameState(p => ({ ...p, levelIndex: p.levelIndex + 1 }));
-
-        // Új szinten frissítjük a használatokat
-        const newUses = {};
-        gameState.upgrades.forEach(upgrade => {
-          if (upgrade.id === 1) {
-            newUses[upgrade.id] = Infinity; // Diamond Hands: végtelen
-          } else if (upgrade.id === 2) {
-            newUses[upgrade.id] = Infinity; // Bull's Strength: végtelen
-          } else if (upgrade.id === 3) {
-            newUses[upgrade.id] = Infinity; // Moon Shot: végtelen
-          } else if (upgrade.id === 4) {
-            newUses[upgrade.id] = Infinity; // Shill Army: végtelen
-          } else if (upgrade.id === 5) {
-            newUses[upgrade.id] = 100; // FOMO Generator: 100 használat
-          } else if (upgrade.id === 6) {
-            newUses[upgrade.id] = 20; // Whale Magnet: 20 használat
-          }
-        });
-        setGameState(p => ({ ...p, usesLeft: newUses }));
+        setGameState(p => ({
+          ...p,
+          levelIndex: p.levelIndex + 1,
+          minMarketCapThisLevel: nextLevel.threshold // A következő szint thresholdjától indul
+        }));
       }
     }
-  }, [gameState.marketCap, gameState.levelIndex, isLoaded, gameState.upgrades, levelUpSound, muted]);
+  }, [gameState.marketCap, gameState.levelIndex, isLoaded, levelUpSound, muted]);
+
+  // Új: Képességek feloldásának kezelése
+  useEffect(() => {
+    if (isLoaded) {
+      // végigmegyünk azokon az upgrade-eken, amelyeknek van követelménye
+      for (let id = 2; id <= 6; id++) {
+        const req = gameState.upgrades.find(u => u.id === id - 1);
+        const upgrade = gameState.upgrades.find(u => u.id === id);
+        if (!req || !upgrade || !upgrade.requirements) continue;
+        
+        const lvl = req.level;
+        const last = lastReqLevelRef.current[id];
+        
+        // Csak akkor unlockolunk, ha most lépte át a requirements.level-t
+        if (last !== undefined && last < upgrade.requirements.level && lvl >= upgrade.requirements.level) {
+          setGameState(p => {
+            const newUses = fixUsesLeft(p.usesLeft);
+            if (id === 1) {
+              newUses[id] = Infinity; // Diamond Hands: végtelen
+            } else if (id === 2) {
+              newUses[id] = Infinity; // Bull's Strength: végtelen
+            } else if (id === 3) {
+              newUses[id] = Infinity; // Moon Shot: végtelen
+            } else if (id === 4) {
+              newUses[id] = Infinity; // Shill Army: végtelen
+            } else if (id === 5) {
+              newUses[id] = 100; // FOMO Generator: 100 használat
+            } else if (id === 6) {
+              newUses[id] = 20; // Whale Magnet: 20 használat
+            }
+            
+            return {
+              ...p,
+              usesLeft: newUses,
+              upgrades: p.upgrades.map(u => 
+                u.id === id 
+                  ? { ...u, isUnlocked: true }
+                  : u
+              )
+            };
+          });
+          
+          // Hang lejátszása a használatok újratöltésekor, de csak ha nincs némítva
+          if (unlockSound && !muted) {
+            unlockSound.currentTime = 0;
+            unlockSound.play().catch(error => console.log('Audio playback failed:', error));
+          }
+        }
+        lastReqLevelRef.current[id] = lvl;
+      }
+    }
+  }, [gameState.upgrades, isLoaded, unlockSound, muted]);
 
   // Disable scroll when modal is open
   useEffect(() => {
@@ -409,49 +502,6 @@ export default function BullRunGame() {
       document.body.style.overflow = 'unset';
     };
   }, [isTermsModalOpen]);
-
-  // Check for newly unlocked upgrades
-  useEffect(() => {
-    if (isLoaded) {
-      const shouldBeUnlocked = gameState.upgrades.filter(upgrade => {
-        if (!upgrade.requirements) return true;
-        const requiredUpgrade = gameState.upgrades.find(u => u.id === upgrade.requirements.upgradeId);
-        return requiredUpgrade && requiredUpgrade.level >= upgrade.requirements.level;
-      });
-
-      const newlyUnlocked = shouldBeUnlocked.filter(upgrade => !upgrade.isUnlocked);
-
-      if (newlyUnlocked.length > 0 && unlockSound && !muted) {
-        unlockSound.currentTime = 0;
-        unlockSound.play().catch(error => console.log('Audio playback failed:', error));
-      }
-
-      if (newlyUnlocked.length > 0) {
-        setGameState(p => ({
-          ...p,
-          upgrades: p.upgrades.map(upgrade => 
-            newlyUnlocked.some(u => u.id === upgrade.id)
-              ? { ...upgrade, isUnlocked: true }
-              : upgrade
-          )
-        }));
-      }
-    }
-  }, [gameState.upgrades, gameState.levelIndex, isLoaded, unlockSound, muted]);
-
-  // Reset upgrades unlock status when level changes
-  useEffect(() => {
-    if (isLoaded) {
-      setGameState(p => ({
-        ...p,
-        upgrades: p.upgrades.map(upgrade => ({
-          ...upgrade,
-          isUnlocked: !upgrade.requirements || 
-            (p.upgrades.find(u => u.id === upgrade.requirements.upgradeId)?.level >= upgrade.requirements.level)
-        }))
-      }));
-    }
-  }, [gameState.levelIndex, isLoaded]);
 
   const getUpgradeCost = (upgrade) => {
     const getPriceMultiplier = (id) => {
@@ -754,36 +804,28 @@ export default function BullRunGame() {
         upgradeSound.currentTime = 0;
         upgradeSound.play().catch(error => console.log('Audio playback failed:', error));
       }
-
-      // Ellenőrizzük, hogy ez egy új unlock-e
       const wasLocked = !upgrade.isUnlocked;
-      
       setGameState(p => {
-        // Csökkentjük a használatot
-        const newUses = { ...p.usesLeft };
-        if (upgrade.id !== 1) { // Diamond Hands kivételével minden upgrade-nek van használata
-          newUses[upgrade.id] = (newUses[upgrade.id] ?? 0) - 1;
-          // Ha elfogyott a használat, akkor lezárjuk az upgrade-et
-          if (newUses[upgrade.id] <= 0) {
-            newUses[upgrade.id] = 0;
-          }
+        const newUses = fixUsesLeft(p.usesLeft);
+        if (upgrade.id !== 1) {
+          newUses[upgrade.id] = (typeof newUses[upgrade.id] === 'number' ? newUses[upgrade.id] : Infinity) - 1;
+          if (newUses[upgrade.id] <= 0) newUses[upgrade.id] = 0;
         }
-
+        // Vásárlás után frissítjük a minMarketCapThisLevel-t a gameState-ben
         return {
           ...p,
           marketCap: p.marketCap - cost,
           clickPower: p.clickPower + (upgrade.type === 'click' ? upgrade.power : 0),
           passiveIncome: p.passiveIncome + (upgrade.type === 'passive' ? upgrade.power : 0),
           usesLeft: newUses,
-          upgrades: p.upgrades.map(u => 
-            u.id === upgrade.id 
+          upgrades: p.upgrades.map(u =>
+            u.id === upgrade.id
               ? { ...u, level: u.level + 1, isUnlocked: true }
               : u
-          )
+          ),
+          minMarketCapThisLevel: p.marketCap - cost
         };
       });
-
-      // Ha ez egy új unlock, játszuk le a hangot
       if (wasLocked && unlockSound && !muted) {
         unlockSound.currentTime = 0;
         unlockSound.play().catch(error => console.log('Audio playback failed:', error));
@@ -803,11 +845,24 @@ export default function BullRunGame() {
       passiveIncome: 0,
       solanaBlessingLevel: 0,
       hasPremiumUpgrade: false,
+      usesLeft: {
+        1: Infinity, // Diamond Hands: végtelen
+        2: 0, // Bull's Strength: lezárva
+        3: 0, // Moon Shot: lezárva
+        4: 0, // Shill Army: lezárva
+        5: 0, // FOMO Generator: lezárva
+        6: 0 // Whale Magnet: lezárva
+      },
       upgrades: initialState.upgrades.map(upgrade => ({
         ...upgrade,
         level: 0,
-        isUnlocked: false
-      }))
+        isUnlocked: upgrade.id === 1 // Csak a Diamond Hands legyen feloldva
+      })),
+      minMarketCapThisLevel: 0
+    });
+    // Reseteljük a lastReqLevelRef-et is
+    Object.keys(lastReqLevelRef.current).forEach(key => {
+      lastReqLevelRef.current[key] = undefined;
     });
     setIsResetModalOpen(false);
   };
@@ -847,45 +902,48 @@ export default function BullRunGame() {
   const fmt = n => Math.round(n).toLocaleString('en-US');
   const { marketCap, clickPower, passiveIncome, upgrades, levelIndex, solanaBlessingLevel, hasPremiumUpgrade } = gameState;
   const displayedClickPower = clickPower * (solanaBlessingLevel + 1);
-  const displayedPassiveIncome = passiveIncome * (solanaBlessingLevel + 1);
+  const displayedPassiveIncome = hasPremiumUpgrade ? passiveIncome * 10 : passiveIncome;
   const current = gameLevels[levelIndex];
   const next = gameLevels[levelIndex + 1];
   
-  // Progress bar számítása
-  useEffect(() => {
-    setIsDesktop(window.innerWidth >= 768);
-    const handleResize = () => {
-      setIsDesktop(window.innerWidth >= 768);
-    };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  // Progress bar számítása (mostantól a minMarketCapThisLevel-től indul)
+  const safeNumber = v => (typeof v === 'number' && !isNaN(v) ? v : 0);
+  const safeCurrent = current && typeof current.threshold === 'number' ? current : { threshold: 0 };
+  const safeNext = next && typeof next.threshold === 'number' ? next : null;
+  const safeMarketCap = safeNumber(marketCap);
+  const safeSubThousand = safeNumber(subThousandAccumulator);
+  const safeMinMarketCap = safeNumber(gameState.minMarketCapThisLevel);
 
-  const prog = isDesktop ? // md breakpoint
-    (marketCap < 1e6 ? 
-      Math.min(((marketCap - current.threshold) / (next ? next.threshold - current.threshold : 100)) * 100, 100) : // M alatt a fő számhoz
-      (marketCap >= 1e12 ? 
-        Math.min((subThousandAccumulator / 1e11) * 100, 100) : // 1T felett 100B-ig
-        marketCap >= 1e9 ?
-          Math.min((subThousandAccumulator / 1e8) * 100, 100) : // 1B és 1T között 100M-ig
-          marketCap >= 1e8 ? 
-            Math.min((subThousandAccumulator / 1e6) * 100, 100) : // 100M és 1B között 1M-ig
-        Math.min((subThousandAccumulator / 1e5) * 100, 100)  // 1M és 100M között 100K-ig
-      )
-    ) : // mobilnézet
-    (marketCap >= 1e4 ? 
-      (marketCap >= 1e12 ? 
-        Math.min((subThousandAccumulator / 1e11) * 100, 100) : // 1T felett 100B-ig
-        marketCap >= 1e9 ?
-          Math.min((subThousandAccumulator / 1e8) * 100, 100) : // 1B és 1T között 100M-ig
-          marketCap >= 1e8 ? 
-            Math.min((subThousandAccumulator / 1e6) * 100, 100) : // 100M és 1B között 1M-ig
-            marketCap >= 1e6 ?
-              Math.min((subThousandAccumulator / 1e5) * 100, 100) : // 1M és 100M között 100K-ig
-              Math.min((subThousandAccumulator / 1000) * 100, 100)  // 10K és 1M között 1000-ig
-      ) :
-      Math.min(((marketCap - current.threshold) / (next ? next.threshold - current.threshold : 100)) * 100, 100)  // 10K alatt a fő számhoz
-    );
+  let prog = 0;
+  if (isDesktop) {
+    if (safeNext && safeMarketCap < safeNext.threshold) {
+      const denom = safeNext.threshold - safeMinMarketCap;
+      prog = denom > 0 ? Math.min(((safeMarketCap - safeMinMarketCap) / denom) * 100, 100) : 0;
+    } else if (safeMarketCap >= 1e12) {
+      prog = Math.min((safeSubThousand / 1e11) * 100, 100);
+    } else if (safeMarketCap >= 1e9) {
+      prog = Math.min((safeSubThousand / 1e8) * 100, 100);
+    } else if (safeMarketCap >= 1e8) {
+      prog = Math.min((safeSubThousand / 1e6) * 100, 100);
+    } else {
+      prog = Math.min((safeSubThousand / 1e5) * 100, 100);
+    }
+  } else {
+    if (safeNext && safeMarketCap < safeNext.threshold) {
+      const denom = safeNext.threshold - safeMinMarketCap;
+      prog = denom > 0 ? Math.min(((safeMarketCap - safeMinMarketCap) / denom) * 100, 100) : 0;
+    } else if (safeMarketCap >= 1e12) {
+      prog = Math.min((safeSubThousand / 1e11) * 100, 100);
+    } else if (safeMarketCap >= 1e9) {
+      prog = Math.min((safeSubThousand / 1e8) * 100, 100);
+    } else if (safeMarketCap >= 1e8) {
+      prog = Math.min((safeSubThousand / 1e6) * 100, 100);
+    } else if (safeMarketCap >= 1e6) {
+      prog = Math.min((safeSubThousand / 1e5) * 100, 100);
+    } else {
+      prog = Math.min((safeSubThousand / 1000) * 100, 100);
+    }
+  }
   
   // Biztonságosabb színválasztás
   const colorIndex = Math.min(levelIndex, levelColors.length - 1);
@@ -1062,7 +1120,7 @@ export default function BullRunGame() {
         twitterUrl={`https://twitter.com/intent/tweet?text=I%20just%20reached%20the%20${encodeURIComponent(gameLevels[gameState.levelIndex]?.name || "Unknown Level")}%20level%20in%20Bull%20Run!%20Can%20you%20beat%20my%20rank?%20Play%20now:%20https://bullrun.altseason.io`}
         levelIndex={gameState.levelIndex}
       />
-      <CustomModal isOpen={isResetModalOpen} onClose={() => setIsResetModalOpen(false)} onConfirm={confirmReset} title="Reset Game" confirmText="Yes, Reset!" cancelText="Cancel">
+      <CustomModal isOpen={isResetModalOpen} onClose={() => setIsResetModalOpen(false)} onConfirm={confirmReset} title="Reset Game" confirmText="Yes, Reset" cancelText="No, Keep Progress">
         <p>Are you sure you want to reset? All your progress and upgrades will be permanently deleted!</p>
       </CustomModal>
       <CustomModal isOpen={isRulesModalOpen} onClose={() => setIsRulesModalOpen(false)} title="How to Play" cancelText="Got it!" showConfirmButton={false}>
@@ -1247,6 +1305,16 @@ export default function BullRunGame() {
               hasPremiumUpgrade={gameState.hasPremiumUpgrade}
               onSolanaUpgradeClick={() => setIsSolanaModalOpen(true)}
               unlockSound={unlockSound}
+              usesLeft={gameState.usesLeft}
+              getNextLevelUses={(upgradeId) => {
+                if (upgradeId === 1) return Infinity; // Diamond Hands
+                if (upgradeId === 2) return Infinity; // Bull's Strength
+                if (upgradeId === 3) return Infinity; // Moon Shot
+                if (upgradeId === 4) return Infinity; // Shill Army
+                if (upgradeId === 5) return 100; // FOMO Generator
+                if (upgradeId === 6) return 20; // Whale Magnet
+                return 0;
+              }}
             />
           </div>
         </div>
