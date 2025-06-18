@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import BullRunGame from './components/BullRunGame';
-import CookieConsent from './components/CookieConsent';
 import { MuteProvider } from './components/MuteContext';
 
 export default function App() {
@@ -31,8 +30,6 @@ export default function App() {
         <main>
           {activeTab === 'game' && <BullRunGame />}
         </main>
-
-        <CookieConsent />
       </div>
     </MuteProvider>
   );

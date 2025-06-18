@@ -1042,64 +1042,136 @@ export default function BullRunGame() {
 
         {/* Terms Modal */}
         {isTermsModalOpen && (
-          <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-[9999] p-4">
-            <div className="bg-gray-900 border-2 border-yellow-500/30 rounded-2xl shadow-lg shadow-yellow-500/20 w-full max-w-[95%] sm:max-w-2xl flex flex-col max-h-[90vh] animate-fade-in-up">
-              <div className="flex justify-between items-center p-4 sm:p-6 border-b border-gray-700">
-                <h3 className="text-xl sm:text-2xl font-bold text-yellow-400">Terms and Conditions</h3>
-                <button onClick={() => setIsTermsModalOpen(false)} className="text-gray-400 hover:text-white">
-                  <FaTimes />
+          <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[9999] p-4">
+            <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 border-2 border-yellow-500/30 rounded-3xl shadow-2xl shadow-yellow-500/20 w-full max-w-[95%] sm:max-w-2xl flex flex-col max-h-[90vh] animate-fade-in-up overflow-hidden">
+              {/* Header */}
+              <div className="flex justify-between items-center p-6 border-b border-gray-700 bg-gradient-to-r from-gray-800 to-gray-700">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-yellow-500 rounded-full flex items-center justify-center">
+                    <span className="text-black font-bold text-lg">🚀</span>
+                  </div>
+                  <div>
+                    <h3 className="text-xl sm:text-2xl font-bold text-white">Welcome to Bull Run!</h3>
+                    <p className="text-gray-400 text-sm">Let's get you started</p>
+                  </div>
+                </div>
+                <button 
+                  onClick={() => setIsTermsModalOpen(false)} 
+                  className="text-gray-400 hover:text-white transition-colors p-2 hover:bg-gray-700 rounded-full"
+                >
+                  <FaTimes className="text-xl" />
                 </button>
               </div>
-              <div className="flex-grow overflow-y-auto p-4 sm:p-6 space-y-4 bg-gray-900">
-                <div className="bg-gray-800/50 p-4 rounded-lg">
-                  <p className="text-gray-300 text-base sm:text-lg mb-4">
-                    Welcome to Bull Run Clicker! Before you start playing, please read and accept our terms:
+
+              {/* Content */}
+              <div className="flex-grow overflow-y-auto p-6 space-y-6">
+                {/* Welcome Message */}
+                <div className="text-center mb-6">
+                  <h4 className="text-2xl font-bold text-yellow-400 mb-2">Ready to Pump?</h4>
+                  <p className="text-gray-300 text-lg">
+                    Before you start your bull run, here's what you need to know:
                   </p>
-                  <div className="space-y-3 sm:space-y-4 text-gray-400 text-sm sm:text-base">
-                    <p>1. This is a virtual game for entertainment purposes only.</p>
-                    <p>2. The Market Cap and all in-game currencies are virtual and have no real-world value.</p>
-                    <p>3. No real money can be earned or withdrawn from this game.</p>
-                    <p>4. All progress and upgrades are stored locally in your browser.</p>
-                    <p>5. The game may be reset or modified at any time without notice.</p>
-                    <p>6. By accepting these terms, you acknowledge that this is purely a game and not a financial investment.</p>
+                </div>
+
+                {/* Game Info Cards */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                  <div className="bg-gray-800/50 p-4 rounded-xl border border-gray-700">
+                    <div className="flex items-center gap-3 mb-2">
+                      <span className="text-2xl">🎮</span>
+                      <h5 className="font-semibold text-white">Pure Entertainment</h5>
+                    </div>
+                    <p className="text-gray-400 text-sm">
+                      This is a fun clicker game for entertainment only
+                    </p>
+                  </div>
+
+                  <div className="bg-gray-800/50 p-4 rounded-xl border border-gray-700">
+                    <div className="flex items-center gap-3 mb-2">
+                      <span className="text-2xl">💰</span>
+                      <h5 className="font-semibold text-white">Virtual Currency</h5>
+                    </div>
+                    <p className="text-gray-400 text-sm">
+                      All in-game values are virtual and have no real value
+                    </p>
+                  </div>
+
+                  <div className="bg-gray-800/50 p-4 rounded-xl border border-gray-700">
+                    <div className="flex items-center gap-3 mb-2">
+                      <span className="text-2xl">💾</span>
+                      <h5 className="font-semibold text-white">Local Progress</h5>
+                    </div>
+                    <p className="text-gray-400 text-sm">
+                      Your progress is saved locally in your browser
+                    </p>
+                  </div>
+
+                  <div className="bg-gray-800/50 p-4 rounded-xl border border-gray-700">
+                    <div className="flex items-center gap-3 mb-2">
+                      <span className="text-2xl">🎯</span>
+                      <h5 className="font-semibold text-white">No Investment</h5>
+                    </div>
+                    <p className="text-gray-400 text-sm">
+                      This is not a financial investment or trading platform
+                    </p>
+                  </div>
+                </div>
+
+                {/* Important Notice */}
+                <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-4">
+                  <div className="flex items-start gap-3">
+                    <span className="text-yellow-400 text-xl">⚠️</span>
+                    <div>
+                      <h5 className="font-semibold text-yellow-400 mb-1">Important</h5>
+                      <p className="text-gray-300 text-sm">
+                        This is purely a game for fun. No real money can be earned, invested, or withdrawn. 
+                        Just enjoy the bull run!
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
-              <div className="flex flex-col space-y-4 p-4 sm:p-6 border-t border-gray-700 bg-gray-900">
-                <label className="flex items-center space-x-3 cursor-pointer group">
-                  <div className="relative">
-                    <input
-                      type="checkbox"
-                      checked={isCheckboxChecked}
-                      onChange={(e) => setIsCheckboxChecked(e.target.checked)}
-                      className="sr-only"
-                    />
-                    <div className={`w-6 h-6 border-2 rounded-md transition-all duration-200 flex items-center justify-center
-                      ${isCheckboxChecked 
-                        ? 'bg-yellow-500 border-yellow-500' 
-                        : 'border-yellow-500/50 group-hover:border-yellow-500'}`}
-                    >
-                      {isCheckboxChecked && (
-                        <svg className="w-4 h-4 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
-                        </svg>
-                      )}
+
+              {/* Footer */}
+              <div className="p-6 border-t border-gray-700 bg-gradient-to-r from-gray-800 to-gray-700">
+                <div className="space-y-4">
+                  {/* Checkbox */}
+                  <label className="flex items-center space-x-3 cursor-pointer group">
+                    <div className="relative">
+                      <input
+                        type="checkbox"
+                        checked={isCheckboxChecked}
+                        onChange={(e) => setIsCheckboxChecked(e.target.checked)}
+                        className="sr-only"
+                      />
+                      <div className={`w-6 h-6 border-2 rounded-md transition-all duration-200 flex items-center justify-center
+                        ${isCheckboxChecked 
+                          ? 'bg-yellow-500 border-yellow-500' 
+                          : 'border-yellow-500/50 group-hover:border-yellow-500'}`}
+                      >
+                        {isCheckboxChecked && (
+                          <svg className="w-4 h-4 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
+                          </svg>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                  <span className="text-gray-300 group-hover:text-white transition-colors">
-                    I have read and agree to the terms and conditions
-                  </span>
-                </label>
-                <button
-                  onClick={acceptTerms}
-                  disabled={!isCheckboxChecked}
-                  className={`bg-yellow-500 text-black font-bold py-2 px-6 sm:px-8 rounded-lg transition-all text-sm sm:text-base
-                    ${isCheckboxChecked 
-                      ? 'hover:bg-yellow-400' 
-                      : 'opacity-50 cursor-not-allowed'}`}
-                >
-                  I Accept
-                </button>
+                    <span className="text-gray-300 group-hover:text-white transition-colors text-sm">
+                      I understand this is a game for entertainment only
+                    </span>
+                  </label>
+
+                  {/* Action Button */}
+                  <button
+                    onClick={acceptTerms}
+                    disabled={!isCheckboxChecked}
+                    className={`w-full bg-gradient-to-r from-yellow-500 to-yellow-600 text-black font-bold py-4 px-8 rounded-xl transition-all text-lg shadow-lg
+                      ${isCheckboxChecked 
+                        ? 'hover:from-yellow-400 hover:to-yellow-500 hover:shadow-xl hover:scale-105 transform' 
+                        : 'opacity-50 cursor-not-allowed'}`}
+                  >
+                    Start Bull Run!
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -1108,8 +1180,17 @@ export default function BullRunGame() {
     );
   }
 
-  const shareText = `I have reached the rank of ${current.name} on the Bull Run Clicker!`;
-  const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent("https://your-website-url.com")}&hashtags=BullRun,ClickerGame`;
+  const shareText = `Just became a ${current.name} with $${fmt(marketCap)} MC! The bull run is real - join before you miss out: assbull.meme #BullRun #Altseason @assbull2025`;
+  
+  // Twitter share URL without duplicate website link
+  const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`;
+  
+  // Custom share function for video/gif (note: Twitter web intent doesn't support direct media upload)
+  const handleCustomShare = () => {
+    // For now, we'll use the standard Twitter share
+    // In the future, this could be enhanced with Twitter API for media upload
+    window.open(twitterUrl, '_blank');
+  };
 
   return (
     <>
@@ -1117,24 +1198,113 @@ export default function BullRunGame() {
         isOpen={isLevelUpModalOpen}
         onClose={() => setIsLevelUpModalOpen(false)}
         levelName={gameLevels[gameState.levelIndex]?.name || "Unknown Level"}
-        twitterUrl={`https://twitter.com/intent/tweet?text=I%20just%20reached%20the%20${encodeURIComponent(gameLevels[gameState.levelIndex]?.name || "Unknown Level")}%20level%20in%20Bull%20Run!%20Can%20you%20beat%20my%20rank?%20Play%20now:%20https://bullrun.altseason.io`}
+        twitterUrl={twitterUrl}
         levelIndex={gameState.levelIndex}
       />
       <CustomModal isOpen={isResetModalOpen} onClose={() => setIsResetModalOpen(false)} onConfirm={confirmReset} title="Reset Game" confirmText="Yes, Reset" cancelText="No, Keep Progress">
         <p>Are you sure you want to reset? All your progress and upgrades will be permanently deleted!</p>
       </CustomModal>
-      <CustomModal isOpen={isRulesModalOpen} onClose={() => setIsRulesModalOpen(false)} title="How to Play" cancelText="Got it!" showConfirmButton={false}>
-        <div className="text-gray-300 space-y-2">
-          <p className="font-bold text-white">The Goal:</p>
-          <p>Pump the Virtual Market Cap to reach new levels and become the ultimate bull!</p>
-          <p className="font-bold text-white">How to Play:</p>
-          <p>1. Smash "PUMP THE BULL" to increase the market cap.</p>
-          <p>2. Buy Upgrades to get more MC/click or passive income.</p>
-          <p>3. Hit the Next Level threshold to advance and change colors!</p>
-          <p className="font-bold text-white">Compete:</p>
-          <p>Share your rank on X to challenge friends!</p>
+      
+      {/* How to Play Modal - Modern Design */}
+      {isRulesModalOpen && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[9999] p-4">
+          <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 border-2 border-yellow-500/30 rounded-3xl shadow-2xl shadow-yellow-500/20 w-full max-w-[95%] sm:max-w-2xl flex flex-col max-h-[90vh] animate-fade-in-up overflow-hidden">
+            {/* Header */}
+            <div className="flex justify-between items-center p-6 border-b border-gray-700 bg-gradient-to-r from-gray-800 to-gray-700">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-yellow-500 rounded-full flex items-center justify-center">
+                  <span className="text-black font-bold text-lg">🎮</span>
+                </div>
+                <div>
+                  <h3 className="text-xl sm:text-2xl font-bold text-white">How to Play</h3>
+                  <p className="text-gray-400 text-sm">Master the Bull Run Clicker</p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setIsRulesModalOpen(false)} 
+                className="text-gray-400 hover:text-white transition-colors p-2 hover:bg-gray-700 rounded-full"
+              >
+                <FaTimes className="text-xl" />
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="flex-grow overflow-y-auto p-6 space-y-6">
+              {/* Goal Section */}
+              <div className="bg-gray-800/50 p-4 rounded-xl border border-gray-700">
+                <div className="flex items-center gap-3 mb-3">
+                  <span className="text-2xl">🎯</span>
+                  <h4 className="font-semibold text-white text-lg">The Goal</h4>
+                </div>
+                <p className="text-gray-300">
+                  Pump the Virtual Market Cap to reach new levels and become the ultimate bull! 
+                  The higher you go, the more legendary your rank becomes.
+                </p>
+              </div>
+
+              {/* How to Play Steps */}
+              <div className="bg-gray-800/50 p-4 rounded-xl border border-gray-700">
+                <div className="flex items-center gap-3 mb-3">
+                  <span className="text-2xl">🚀</span>
+                  <h4 className="font-semibold text-white text-lg">How to Play</h4>
+                </div>
+                <div className="space-y-3">
+                  <div className="flex items-start gap-3">
+                    <span className="bg-yellow-500 text-black font-bold rounded-full w-6 h-6 flex items-center justify-center text-sm flex-shrink-0 mt-0.5">1</span>
+                    <p className="text-gray-300">Smash <span className="text-yellow-400 font-semibold">"PUMP THE BULL"</span> to increase the market cap with each click.</p>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <span className="bg-yellow-500 text-black font-bold rounded-full w-6 h-6 flex items-center justify-center text-sm flex-shrink-0 mt-0.5">2</span>
+                    <p className="text-gray-300">Buy <span className="text-yellow-400 font-semibold">Upgrades</span> to get more MC per click or passive income per second.</p>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <span className="bg-yellow-500 text-black font-bold rounded-full w-6 h-6 flex items-center justify-center text-sm flex-shrink-0 mt-0.5">3</span>
+                    <p className="text-gray-300">Hit the <span className="text-yellow-400 font-semibold">Next Level threshold</span> to advance and change colors!</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Competition Section */}
+              <div className="bg-gray-800/50 p-4 rounded-xl border border-gray-700">
+                <div className="flex items-center gap-3 mb-3">
+                  <span className="text-2xl">🏆</span>
+                  <h4 className="font-semibold text-white text-lg">Compete & Share</h4>
+                </div>
+                <p className="text-gray-300">
+                  Share your rank on X to challenge friends! See who can become the ultimate bull and reach the highest levels.
+                </p>
+              </div>
+
+              {/* Tips Section */}
+              <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-4">
+                <div className="flex items-start gap-3">
+                  <span className="text-yellow-400 text-xl">💡</span>
+                  <div>
+                    <h5 className="font-semibold text-yellow-400 mb-1">Pro Tips</h5>
+                    <p className="text-gray-300 text-sm">
+                      • Focus on upgrades that give you the best return on investment<br/>
+                      • Passive income upgrades work even when you're not clicking<br/>
+                      • Higher levels unlock more powerful upgrades<br/>
+                      • Don't forget to share your achievements!
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="p-6 border-t border-gray-700 bg-gradient-to-r from-gray-800 to-gray-700">
+              <button
+                onClick={() => setIsRulesModalOpen(false)}
+                className="w-full bg-gradient-to-r from-yellow-500 to-yellow-600 text-black font-bold py-4 px-8 rounded-xl transition-all text-lg shadow-lg hover:from-yellow-400 hover:to-yellow-500 hover:shadow-xl hover:scale-105 transform"
+              >
+                Got it! Let's Pump!
+              </button>
+            </div>
+          </div>
         </div>
-      </CustomModal>
+      )}
+      
       <SolanaPayModal
         isOpen={isSolanaModalOpen}
         onClose={() => setIsSolanaModalOpen(false)}
@@ -1143,12 +1313,12 @@ export default function BullRunGame() {
       />
 
       <section id="game" className="py-20 bg-gray-900 text-white">
-        <div className="container mx-auto px-6 text-center">
+        <div className="container mx-auto px-6 text-center max-w-7xl">
           <h2 className="text-4xl md:text-5xl font-bold mb-4">Bull Run Clicker</h2>
           <p className="text-lg text-gray-400 mb-12">How high can you pump the market cap?</p>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
             {/* Main Panel */}
-            <div className="lg:col-span-2 bg-black/50 p-8 rounded-2xl border border-white/10 flex flex-col justify-between">
+            <div className="xl:col-span-2 bg-black/50 p-8 rounded-2xl border border-white/10 flex flex-col justify-between">
               {/* Progress Bar */}
               <div className="mb-4">
                 <div className="md:hidden">

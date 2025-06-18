@@ -5,7 +5,7 @@ import { pumpFunUrl } from '@/config';
 
 const HowToBuy = () => {
     return (
-        <section id="how-to-buy" className="py-20 bg-black text-white">
+        <section id="how-to-buy" className="py-20 bg-gray-900 text-white">
             <div className="container mx-auto px-6 lg:px-8 text-center">
                 <h2 className="text-4xl md:text-5xl font-bold mb-6">The Only Way To Buy</h2>
                 <p className="text-lg text-gray-400 max-w-3xl mx-auto mb-8">

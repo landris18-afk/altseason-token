@@ -98,16 +98,20 @@ const Header = () => {
   }, []);
 
   const menuItemClass = (sectionId) =>
-    `text-lg font-semibold px-6 py-2 transition-all duration-300 relative group cursor-pointer text-center whitespace-nowrap rounded-full ${
-      activeSection === sectionId ? 'bg-yellow-500 text-black' : 'text-white hover:bg-yellow-500 hover:text-black'
+    `text-lg font-semibold px-6 py-6 transition-all duration-300 relative group cursor-pointer text-center whitespace-nowrap ${
+      activeSection === sectionId ? 'bg-yellow-500 text-black -mt-1 -mb-1' : 'text-white hover:bg-yellow-500 hover:text-black'
     }`;
 
   const gameMenuItemClass = (sectionId) =>
-    `text-lg font-semibold px-6 py-2 transition-all duration-300 relative group cursor-pointer text-center whitespace-nowrap rounded-full ${
+    `text-lg font-semibold px-6 py-6 transition-all duration-300 relative group cursor-pointer text-center whitespace-nowrap ${
       activeSection === sectionId 
-        ? 'bg-yellow-500 text-black hover:bg-yellow-600' 
+        ? 'bg-yellow-500 text-black hover:bg-yellow-600 -mt-1 -mb-1' 
         : 'text-white hover:bg-yellow-500 hover:text-black'
     }`;
+
+  const handleMenuToggle = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
 
   if (isMobile && !isVisible) {
     return null;
@@ -115,12 +119,12 @@ const Header = () => {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-[100] bg-black/80 backdrop-blur-lg text-white border-b border-yellow-500/20 transition-all duration-500 h-20">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 h-full">
+      <div className="max-w-7xl mx-auto px-6 h-full">
         <div className="flex items-center justify-between h-full relative md:hidden">
           {/* Hamburger ikon + X logó mobilon */}
           <div className="flex items-center">
             <button
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              onClick={handleMenuToggle}
               className="p-2 focus:outline-none"
               aria-label="Toggle menu"
             >
@@ -151,7 +155,7 @@ const Header = () => {
         {/* Asztali: eredeti fejléc */}
         <div className="hidden md:flex items-center justify-between h-full relative">
           {/* Menü - desktop */}
-          <nav className="flex flex-row items-center">
+          <nav className="flex flex-row items-center space-x-0">
             <a
               href="#about"
               onClick={(e) => handleClick(e, 'about')}
@@ -159,7 +163,6 @@ const Header = () => {
             >
               $ASSBULL
             </a>
-            <div className="w-px h-6 bg-yellow-500/20 mx-2"></div>
             <a
               href="#tokenomics"
               onClick={(e) => handleClick(e, 'tokenomics')}
@@ -167,7 +170,6 @@ const Header = () => {
             >
               Launch Info
             </a>
-            <div className="w-px h-6 bg-yellow-500/20 mx-2"></div>
             <a
               href="#game"
               onClick={(e) => handleClick(e, 'game')}
@@ -175,7 +177,6 @@ const Header = () => {
             >
               Bull Run Clicker
             </a>
-            <div className="w-px h-6 bg-yellow-500/20 mx-2"></div>
             <a
               href="#roadmap"
               onClick={(e) => handleClick(e, 'roadmap')}
@@ -183,7 +184,6 @@ const Header = () => {
             >
               Roadmap
             </a>
-            <div className="w-px h-6 bg-yellow-500/20 mx-2"></div>
             <a
               href="#how-to-buy"
               onClick={(e) => handleClick(e, 'how-to-buy')}
@@ -192,6 +192,20 @@ const Header = () => {
               How To Buy
             </a>
           </nav>
+          
+          {/* Kövess minket X-en - desktop */}
+          <div className="flex items-center gap-4">
+            <a
+              href="https://twitter.com/assbull2025"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-white hover:text-yellow-400 font-medium py-2.5 px-4 rounded-xl transition-all duration-300 hover:scale-105 flex items-center gap-2.5 text-sm border border-transparent hover:border-yellow-500/30"
+            >
+              <span className="text-lg font-bold">X</span>
+              <span>Follow</span>
+            </a>
+          </div>
+          
           {/* Buy gomb - desktop */}
           <a
             href={pumpFunUrl}
@@ -212,72 +226,91 @@ const Header = () => {
           </a>
         </div>
       </div>
-      {/* Mobil lenyíló menü - a header alatt, áttetsző háttérrel, arany borderrel */}
+      {/* Mobil lenyíló menü - modern dizájn */}
       {isMenuOpen && (
-        <div className="absolute left-0 right-0 top-full z-50 bg-black/90 border-t-2 border-b-2 border-yellow-500">
-          <div className="container mx-auto px-4 py-4">
-            <nav className="flex flex-col items-center">
-              <div className={`w-2/3 mx-auto mb-1 ${activeSection === 'about' ? 'bg-yellow-500 text-black' : 'hover:bg-yellow-500 hover:text-black'} rounded-full transition-all duration-300`}> 
-                <a
-                  href="#about"
-                  onClick={(e) => handleClick(e, 'about')}
-                  className={menuItemClass('about') + ' block px-6 py-2 text-center'}
-                >
-                  $ASSBULL
-                </a>
-              </div>
-              <div className="h-px w-2/3 bg-yellow-500/30 my-1"></div>
-              <div className={`w-2/3 mx-auto mb-1 ${activeSection === 'tokenomics' ? 'bg-yellow-500 text-black' : 'hover:bg-yellow-500 hover:text-black'} rounded-full transition-all duration-300`}> 
-                <a
-                  href="#tokenomics"
-                  onClick={(e) => handleClick(e, 'tokenomics')}
-                  className={menuItemClass('tokenomics') + ' block px-6 py-2 text-center'}
-                >
-                  Launch Info
-                </a>
-              </div>
-              <div className="h-px w-2/3 bg-yellow-500/30 my-1"></div>
-              <div className={`w-2/3 mx-auto mb-1 ${activeSection === 'game' ? 'bg-yellow-500 text-black' : 'hover:bg-yellow-500 hover:text-black'} rounded-full transition-all duration-300`}> 
-                <a
-                  href="#game"
-                  onClick={(e) => handleClick(e, 'game')}
-                  className={gameMenuItemClass('game') + ' block px-6 py-2 text-center'}
-                >
-                  Bull Run Clicker
-                </a>
-              </div>
-              <div className="h-px w-2/3 bg-yellow-500/30 my-1"></div>
-              <div className={`w-2/3 mx-auto mb-1 ${activeSection === 'roadmap' ? 'bg-yellow-500 text-black' : 'hover:bg-yellow-500 hover:text-black'} rounded-full transition-all duration-300`}> 
-                <a
-                  href="#roadmap"
-                  onClick={(e) => handleClick(e, 'roadmap')}
-                  className={menuItemClass('roadmap') + ' block px-6 py-2 text-center'}
-                >
-                  Roadmap
-                </a>
-              </div>
-              <div className="h-px w-2/3 bg-yellow-500/30 my-1"></div>
-              <div className={`w-2/3 mx-auto mb-1 ${activeSection === 'how-to-buy' ? 'bg-yellow-500 text-black' : 'hover:bg-yellow-500 hover:text-black'} rounded-full transition-all duration-300`}> 
-                <a
-                  href="#how-to-buy"
-                  onClick={(e) => handleClick(e, 'how-to-buy')}
-                  className={menuItemClass('how-to-buy') + ' block px-6 py-2 text-center'}
-                >
-                  How To Buy
-                </a>
-              </div>
-              <div className="h-px w-2/3 bg-yellow-500/30 my-1"></div>
-              <div className={`w-2/3 mx-auto mb-1 ${activeSection === 'x' ? 'bg-yellow-500 text-black' : 'hover:bg-yellow-500 hover:text-black'} rounded-full transition-all duration-300`}> 
-                <a
-                  href="https://twitter.com/altseasontoken"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={menuItemClass('x') + ' flex items-center justify-center gap-2 block px-6 py-2 text-center'}
-                >
-                  <FaTwitter className="text-xl" />
-                  Follow us on X
-                </a>
-              </div>
+        <div className="absolute left-0 right-0 top-full z-50 bg-black/90 backdrop-blur-md border-t border-yellow-500/20">
+          <div className="max-w-7xl mx-auto px-4 py-4">
+            <nav className="space-y-2">
+              {/* $ASSBULL */}
+              <a
+                href="#about"
+                onClick={(e) => handleClick(e, 'about')}
+                className={`block px-4 py-3 rounded-lg transition-all duration-200 ${
+                  activeSection === 'about' 
+                    ? 'bg-yellow-500 text-black font-bold' 
+                    : 'text-white hover:bg-white/10'
+                }`}
+              >
+                <span className="text-lg">$ASSBULL</span>
+              </a>
+
+              {/* Launch Info */}
+              <a
+                href="#tokenomics"
+                onClick={(e) => handleClick(e, 'tokenomics')}
+                className={`block px-4 py-3 rounded-lg transition-all duration-200 ${
+                  activeSection === 'tokenomics' 
+                    ? 'bg-yellow-500 text-black font-bold' 
+                    : 'text-white hover:bg-white/10'
+                }`}
+              >
+                <span className="text-lg">Launch Info</span>
+              </a>
+
+              {/* Bull Run Clicker */}
+              <a
+                href="#game"
+                onClick={(e) => handleClick(e, 'game')}
+                className={`block px-4 py-3 rounded-lg transition-all duration-200 ${
+                  activeSection === 'game' 
+                    ? 'bg-yellow-500 text-black font-bold' 
+                    : 'text-white hover:bg-white/10'
+                }`}
+              >
+                <span className="text-lg">Bull Run Clicker</span>
+              </a>
+
+              {/* Roadmap */}
+              <a
+                href="#roadmap"
+                onClick={(e) => handleClick(e, 'roadmap')}
+                className={`block px-4 py-3 rounded-lg transition-all duration-200 ${
+                  activeSection === 'roadmap' 
+                    ? 'bg-yellow-500 text-black font-bold' 
+                    : 'text-white hover:bg-white/10'
+                }`}
+              >
+                <span className="text-lg">Roadmap</span>
+              </a>
+
+              {/* How To Buy */}
+              <a
+                href="#how-to-buy"
+                onClick={(e) => handleClick(e, 'how-to-buy')}
+                className={`block px-4 py-3 rounded-lg transition-all duration-200 ${
+                  activeSection === 'how-to-buy' 
+                    ? 'bg-yellow-500 text-black font-bold' 
+                    : 'text-white hover:bg-white/10'
+                }`}
+              >
+                <span className="text-lg">How To Buy</span>
+              </a>
+
+              {/* Divider */}
+              <div className="h-px bg-yellow-500/30 my-3"></div>
+
+              {/* Follow us on X */}
+              <a
+                href="https://twitter.com/assbull2025"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block px-4 py-3 rounded-lg transition-all duration-200 text-white hover:bg-white/10"
+              >
+                <div className="flex items-center gap-2">
+                  <span className="text-lg font-bold">X</span>
+                  <span className="text-lg">Follow us</span>
+                </div>
+              </a>
             </nav>
           </div>
         </div>
