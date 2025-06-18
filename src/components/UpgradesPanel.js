@@ -6,7 +6,7 @@ const RequirementsModal = ({ isOpen, onClose, upgrade, requiredUpgrade }) => {
 
     const currentUses = usesLeft[upgrade.id] ?? 0;
     const tiers = Math.floor(requiredUpgrade.level / 5);
-    const maxUses = tiers * getNextLevelUses(upgrade.id);
+    const maxUses = tiers * getNextLevelUses(upgrade.id, upgrades);
     const isLocked = currentUses <= 0;
 
     return (
@@ -107,7 +107,16 @@ const UpgradesPanel = ({
     const [insufficientFundsUpgrade, setInsufficientFundsUpgrade] = useState(null);
     const [activeTab, setActiveTab] = useState('click');
     const [usesLeft, setUsesLeft] = useState({});
+    const [forceUpdate, setForceUpdate] = useState(false);
     const lastReqLevelRef = useRef({});
+
+    // Reset usesLeft when marketCap is 0 (game reset)
+    useEffect(() => {
+        if (marketCap === 0) {
+            setUsesLeft({});
+            setForceUpdate(prev => !prev);
+        }
+    }, [marketCap]);
 
     const fmt = n => Math.round(n).toLocaleString('en-US');
     const displayedPassiveIncome = hasPremiumUpgrade ? passiveIncome * 10 : passiveIncome;
@@ -124,28 +133,30 @@ const UpgradesPanel = ({
         return 1.10;
     };
 
-    const getNextLevelUses = (upgradeId) => {
-        if (upgradeId === 1) return Infinity; // Diamond Hands mindig végtelen
-        if (upgradeId === 2) return 5; // Bull's Strength: mindig 5
-        if (upgradeId === 3) return 4; // Moon Shot: mindig 4
-        if (upgradeId === 4) return 3; // Shill Army: mindig 3
-        if (upgradeId === 5) return 2; // FOMO Generator: mindig 2
-        return 1; // Whale Magnet: mindig 1
+    const getNextLevelUses = (upgradeId, upgrades) => {
+        if (upgradeId === 1) return Infinity; // Diamond Hands
+        if (upgradeId === 2) return Infinity; // Bull's Strength
+        if (upgradeId === 3) return Infinity; // Moon Shot
+        if (upgradeId === 4) return Infinity; // Shill Army
+        if (upgradeId === 5) return 100; // FOMO Generator
+        if (upgradeId === 6) return 20; // Whale Magnet
+        return 0;
     };
 
     useEffect(() => {
         // végigmegyünk azokon az upgrade-eken, amelyeknek van követelménye
         for (let id = 2; id <= 6; id++) {
             const req = upgrades.find(u => u.id === id - 1);
-            if (!req) continue;
+            const upgrade = upgrades.find(u => u.id === id);
+            if (!req || !upgrade || !upgrade.requirements) continue;
             const lvl = req.level;
-            // csak akkor reset-eljük, ha új 5-ös többszörösre léptünk
-            if (lvl >= 5 && lvl % 5 === 0) {
+            // csak akkor reset-eljük, ha elérte a requirements.level-t
+            if (lvl >= upgrade.requirements.level) {
                 const last = lastReqLevelRef.current[id];
                 if (last !== lvl) {
                     setUsesLeft(prev => ({
                         ...prev,
-                        [id]: (prev[id] ?? 0) + getNextLevelUses(id),
+                        [id]: (prev[id] ?? 0) + getNextLevelUses(id, upgrades),
                     }));
                     lastReqLevelRef.current[id] = lvl;
                     // Hang lejátszása a használatok újratöltésekor
@@ -226,7 +237,7 @@ const UpgradesPanel = ({
     const solMult = lvl => lvl + 1;
 
     return (
-        <div className="bg-gray-800/50 rounded-2xl p-6 flex flex-col h-full">
+        <div className="bg-gray-800/50 rounded-2xl p-6 flex flex-col h-full" key={forceUpdate}>
             <h3 className="text-2xl font-bold mb-4">Upgrades</h3>
 
             {/* Tabs */}
@@ -250,87 +261,118 @@ const UpgradesPanel = ({
             </div>
 
             {/* Upgrade list */}
-            <div className="space-y-3 flex-grow overflow-y-auto">
-                {(activeTab === 'click' ? clickUpgrades : passiveUpgrades).map(u => {
-                    const cost = Math.floor(u.baseCost * priceMultiplier(u.id) ** u.level);
-                    const locked = !isUnlocked(u);
-                    const canBuy = isUnlocked(u) && marketCap >= cost;
-                    const req = upgrades.find(r => r.id === u.requirements?.upgradeId);
-                    const currentUses = usesLeft[u.id] ?? 0;
-                    let maxUses = Infinity;
-                    if (u.id !== 1 && req) {
-                        // hány teljes 5-ös küszöb van meg?
-                        const tiers = Math.floor(req.level / 5);
-                        // összesen ennyi használatot kaptatok eddig
-                        maxUses = tiers * getNextLevelUses(u.id);
-                    }
-                    // Requirement szintek kiszámítása
-                    let reqDisplay = '';
-                    if (u.id !== 1 && req) {
-                        const currentReqLevel = req.level;
-                        // A következő szint mindig az aktuális szint + 5, ha az aktuális szint 5-tel osztható
-                        const nextUnlockLevel = currentReqLevel % 5 === 0 ? currentReqLevel + 5 : Math.ceil(currentReqLevel / 5) * 5;
-                        reqDisplay = `Requires: ${req.name} (level ${currentReqLevel}/${nextUnlockLevel})`;
-                    }
-
-                    return (
-                        <button
-                            key={u.id}
-                            onClick={() => handleUpgradeClick(u)}
-                            disabled={!canBuy}
-                            className={`w-full group transition-all duration-300 ${
-                                locked ? 'opacity-50 cursor-not-allowed' : 
-                                canBuy ? 'hover:scale-105' : 'opacity-70'
-                            }`}
-                        >
-                            <div className={`bg-gray-800/50 rounded-xl p-4 border-2 ${
-                                locked ? 'border-gray-700' : 
-                                canBuy ? 'border-yellow-500/50 group-hover:border-yellow-500' : 'border-gray-600'
-                            } transition-all duration-300`}>
-                                <div className="flex items-center justify-between">
-                                    <div className="space-y-1">
-                                        <p className="flex items-center text-lg font-bold">
-                                            {locked ? (
-                                                <>
-                                                    <FaLock className="mr-2 text-gray-400" />
-                                                    <span className="text-gray-400">{u.name}</span>
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <FaBolt className="mr-2 text-yellow-300 transition-transform duration-300 group-hover:scale-125" />
-                                                    <span className="text-white">{u.name}</span>
-                                                </>
-                                            )}
-                                        </p>
-                                        <p className="text-sm text-gray-400">
-                                            {u.description}
-                                            {u.type === 'click' ? ` (${u.power} MC/click)` : ` (${u.power} MC/sec)`}
-                                        </p>
-                                        {u.id !== 1 && (
-                                            <p className="text-xs text-red-400">
-                                                {locked ? reqDisplay : ''}
+            <div className="space-y-4 pb-2">
+                {activeTab === 'click' ? (
+                    clickUpgrades.map((u, index) => (
+                        <div key={u.id} className={`flex justify-between items-center ${index === clickUpgrades.length - 1 ? 'mb-6' : ''}`}>
+                            <button
+                                onClick={() => handleUpgradeClick(u)}
+                                disabled={!isUnlocked(u) || marketCap < Math.floor(u.baseCost * priceMultiplier(u.id) ** u.level)}
+                                className={`w-full group transition-all duration-300 ${
+                                    !isUnlocked(u) ? 'opacity-50 cursor-not-allowed' : 
+                                    marketCap >= Math.floor(u.baseCost * priceMultiplier(u.id) ** u.level) ? 'hover:scale-105' : 'opacity-70'
+                                }`}
+                            >
+                                <div className={`bg-gray-800/50 rounded-xl p-4 border-2 ${
+                                    !isUnlocked(u) ? 'border-gray-700' : 
+                                    marketCap >= Math.floor(u.baseCost * priceMultiplier(u.id) ** u.level) ? 'border-yellow-500/50 group-hover:border-yellow-500' : 'border-gray-600'
+                                } transition-all duration-300`}>
+                                    <div className="flex items-center justify-between">
+                                        <div className="space-y-1">
+                                            <p className="flex items-center text-lg font-bold">
+                                                {!isUnlocked(u) ? (
+                                                    <>
+                                                        <FaLock className="mr-2 text-gray-400" />
+                                                        <span className="text-gray-400">{u.name}</span>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <FaBolt className="mr-2 text-yellow-300 transition-transform duration-300 group-hover:scale-125" />
+                                                        <span className="text-white">{u.name}</span>
+                                                    </>
+                                                )}
                                             </p>
-                                        )}
-                                    </div>
-                                    <div className="text-right">
-                                        <p className={`font-bold text-xl ${
-                                            locked ? 'text-gray-400' : 
-                                            canBuy ? 'text-yellow-400' : 'text-gray-500'
-                                        }`}>
-                                            ${fmt(cost)}
-                                        </p>
-                                        <p className="text-sm text-gray-400">
-                                            Level {u.level}
-                                        </p>
-                                        <p className="text-xs text-gray-500">
-                                            {u.id === 1 ? 'Unlimited uses' : `Uses: ${currentUses}/${maxUses}`}
-                                        </p>
+                                            <p className="text-sm text-gray-400">
+                                                {u.description}
+                                                {u.type === 'click' ? ` (${u.power} MC/click)` : ` (${u.power} MC/sec)`}
+                                            </p>
+                                            {!isUnlocked(u) && u.requirements && (() => {
+                                                const req = upgrades.find(x => x.id === u.requirements.upgradeId);
+                                                return (
+                                                    <p className="text-xs text-red-500 mt-1 text-left">
+                                                        * {req?.name || 'Unknown'} (lvl {req?.level ?? 0}/{u.requirements.level})
+                                                    </p>
+                                                );
+                                            })()}
+                                        </div>
+                                        <div className="flex flex-col items-end min-w-[90px]">
+                                            <span className="text-lg font-bold text-gray-100">${fmt(Math.floor(u.baseCost * priceMultiplier(u.id) ** u.level))}</span>
+                                            <div className="flex flex-row gap-2 mt-1">
+                                                <span className="text-xs text-gray-400">Lvl {u.level}</span>
+                                                <span className="text-xs text-gray-500">{[1,2,3,4].includes(u.id) ? 'infinite' : `${usesLeft[u.id] ?? 0}/${getNextLevelUses(u.id, upgrades)}`}</span>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </button>
-                    );
-                })}
+                            </button>
+                        </div>
+                    ))
+                ) : (
+                    passiveUpgrades.map((u, index) => (
+                        <div key={u.id} className={`flex justify-between items-center ${index === passiveUpgrades.length - 1 ? 'mb-6' : ''}`}>
+                            <button
+                                onClick={() => handleUpgradeClick(u)}
+                                disabled={!isUnlocked(u) || marketCap < Math.floor(u.baseCost * priceMultiplier(u.id) ** u.level)}
+                                className={`w-full group transition-all duration-300 ${
+                                    !isUnlocked(u) ? 'opacity-50 cursor-not-allowed' : 
+                                    marketCap >= Math.floor(u.baseCost * priceMultiplier(u.id) ** u.level) ? 'hover:scale-105' : 'opacity-70'
+                                }`}
+                            >
+                                <div className={`bg-gray-800/50 rounded-xl p-4 border-2 ${
+                                    !isUnlocked(u) ? 'border-gray-700' : 
+                                    marketCap >= Math.floor(u.baseCost * priceMultiplier(u.id) ** u.level) ? 'border-yellow-500/50 group-hover:border-yellow-500' : 'border-gray-600'
+                                } transition-all duration-300`}>
+                                    <div className="flex items-center justify-between">
+                                        <div className="space-y-1">
+                                            <p className="flex items-center text-lg font-bold">
+                                                {!isUnlocked(u) ? (
+                                                    <>
+                                                        <FaLock className="mr-2 text-gray-400" />
+                                                        <span className="text-gray-400">{u.name}</span>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <FaBolt className="mr-2 text-yellow-300 transition-transform duration-300 group-hover:scale-125" />
+                                                        <span className="text-white">{u.name}</span>
+                                                    </>
+                                                )}
+                                            </p>
+                                            <p className="text-sm text-gray-400">
+                                                {u.description}
+                                                {u.type === 'click' ? ` (${u.power} MC/click)` : ` (${u.power} MC/sec)`}
+                                            </p>
+                                            {!isUnlocked(u) && u.requirements && (() => {
+                                                const req = upgrades.find(x => x.id === u.requirements.upgradeId);
+                                                return (
+                                                    <p className="text-xs text-red-500 mt-1 text-left">
+                                                        * {req?.name || 'Unknown'} (lvl {req?.level ?? 0}/{u.requirements.level})
+                                                    </p>
+                                                );
+                                            })()}
+                                        </div>
+                                        <div className="flex flex-col items-end min-w-[90px]">
+                                            <span className="text-lg font-bold text-gray-100">${fmt(Math.floor(u.baseCost * priceMultiplier(u.id) ** u.level))}</span>
+                                            <div className="flex flex-row gap-2 mt-1">
+                                                <span className="text-xs text-gray-400">Lvl {u.level}</span>
+                                                <span className="text-xs text-gray-500">{[1,2,3,4].includes(u.id) ? 'infinite' : `${usesLeft[u.id] ?? 0}/${getNextLevelUses(u.id, upgrades)}`}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                    ))
+                )}
             </div>
 
             {/* Footer */}

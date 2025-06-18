@@ -223,7 +223,6 @@ const getInitialState = () => ({
   hasPremiumUpgrade: false,
   totalClicks: 0,
   upgrades: [
-    // Click Power fejlesztések
     { 
       id: 1, 
       name: "Diamond Hands", 
@@ -243,7 +242,7 @@ const getInitialState = () => ({
       type: 'click',
       requirements: {
         upgradeId: 1,
-        level: 5
+        level: 10
       }
     },
     { 
@@ -256,11 +255,9 @@ const getInitialState = () => ({
       type: 'click',
       requirements: {
         upgradeId: 2,
-        level: 5
+        level: 10
       }
     },
-
-    // Passzív jövedelem fejlesztések
     { 
       id: 4, 
       name: "Shill Army", 
@@ -271,7 +268,7 @@ const getInitialState = () => ({
       type: 'passive',
       requirements: {
         upgradeId: 3,
-        level: 3
+        level: 10
       }
     },
     { 
@@ -284,7 +281,7 @@ const getInitialState = () => ({
       type: 'passive',
       requirements: {
         upgradeId: 4,
-        level: 5
+        level: 10
       }
     },
     { 
@@ -297,7 +294,7 @@ const getInitialState = () => ({
       type: 'passive',
       requirements: {
         upgradeId: 5,
-        level: 5
+        level: 15
       }
     }
   ]
@@ -320,6 +317,7 @@ export default function BullRunGame() {
   const [lastMarketCap, setLastMarketCap] = useState(0);
   const [subThousandAccumulator, setSubThousandAccumulator] = useState(0);
   const [isDesktop, setIsDesktop] = useState(false);
+  const [forceUpdate, setForceUpdate] = useState(false);
 
   // Initialize audio
   useEffect(() => {
@@ -382,15 +380,15 @@ export default function BullRunGame() {
           if (upgrade.id === 1) {
             newUses[upgrade.id] = Infinity; // Diamond Hands: végtelen
           } else if (upgrade.id === 2) {
-            newUses[upgrade.id] = 5; // Bull's Strength: 5 használat
+            newUses[upgrade.id] = Infinity; // Bull's Strength: végtelen
           } else if (upgrade.id === 3) {
-            newUses[upgrade.id] = 4; // Moon Shot: 4 használat
+            newUses[upgrade.id] = Infinity; // Moon Shot: végtelen
           } else if (upgrade.id === 4) {
-            newUses[upgrade.id] = 3; // Shill Army: 3 használat
+            newUses[upgrade.id] = Infinity; // Shill Army: végtelen
           } else if (upgrade.id === 5) {
-            newUses[upgrade.id] = 2; // FOMO Generator: 2 használat
+            newUses[upgrade.id] = 100; // FOMO Generator: 100 használat
           } else if (upgrade.id === 6) {
-            newUses[upgrade.id] = 1; // Whale Magnet: 1 használat
+            newUses[upgrade.id] = 20; // Whale Magnet: 20 használat
           }
         });
         setGameState(p => ({ ...p, usesLeft: newUses }));
@@ -463,8 +461,95 @@ export default function BullRunGame() {
     return Math.round(cost); // Kerekítés a legközelebbi egész számra
   };
 
-  // Akciók
+  // MÓDOSÍTÁS: Passzív jövedelem és Click Power kezelése a szorzóval
+  useEffect(() => {
+    if (gameState.passiveIncome > 0 || gameState.clickPower > 1) {
+      const incomeInterval = setInterval(() => {
+        setGameState(p => {
+          const multiplier = p.solanaBlessingLevel + 1;
+          const incomeToAdd = p.passiveIncome * multiplier;
+
+          // --- ÚJ LOGIKA: mindig a legfrissebb subThousandAccumulator-t használd ---
+          return (prevState => {
+            let newMarketCap = p.marketCap;
+            let newSubAccumulator = prevState;
+
+            if (typeof window !== 'undefined' && window.innerWidth >= 768) {
+              if (p.marketCap < 1e6) {
+                newMarketCap = Math.min(p.marketCap + incomeToAdd, 5e12);
+              } else {
+                newSubAccumulator += incomeToAdd;
+                if (p.marketCap >= 1e12) {
+                  if (newSubAccumulator >= 1e9) {
+                    const billionsToAdd = Math.floor(newSubAccumulator / 1e9);
+                    newSubAccumulator = newSubAccumulator % 1e9;
+                    newMarketCap = Math.min(p.marketCap + (billionsToAdd * 1e9), 5e12);
+                  }
+                } else if (p.marketCap >= 1e8) {
+                  if (newSubAccumulator >= 1e6) {
+                    const millionsToAdd = Math.floor(newSubAccumulator / 1e6);
+                    newSubAccumulator = newSubAccumulator % 1e6;
+                    newMarketCap = Math.min(p.marketCap + (millionsToAdd * 1e6), 5e12);
+                  }
+                } else {
+                  if (newSubAccumulator >= 1e5) {
+                    const hundredsToAdd = Math.floor(newSubAccumulator / 1e5);
+                    newSubAccumulator = newSubAccumulator % 1e5;
+                    newMarketCap = Math.min(p.marketCap + (hundredsToAdd * 1e5), 5e12);
+                  }
+                }
+              }
+            } else {
+              if (p.marketCap < 1e4) {
+                newMarketCap = Math.min(p.marketCap + incomeToAdd, 5e12);
+              } else {
+                newSubAccumulator += incomeToAdd;
+                if (p.marketCap >= 1e12) {
+                  if (newSubAccumulator >= 1e11) {
+                    const hundredsOfBillionsToAdd = Math.floor(newSubAccumulator / 1e11);
+                    newSubAccumulator = newSubAccumulator % 1e11;
+                    newMarketCap = Math.min(p.marketCap + (hundredsOfBillionsToAdd * 1e11), 5e12);
+                  }
+                } else if (p.marketCap >= 1e9) {
+                  if (newSubAccumulator >= 1e8) {
+                    const hundredsOfMillionsToAdd = Math.floor(newSubAccumulator / 1e8);
+                    newSubAccumulator = newSubAccumulator % 1e8;
+                    newMarketCap = Math.min(p.marketCap + (hundredsOfMillionsToAdd * 1e8), 5e12);
+                  }
+                } else if (p.marketCap >= 1e8) {
+                  if (newSubAccumulator >= 1e6) {
+                    const millionsToAdd = Math.floor(newSubAccumulator / 1e6);
+                    newSubAccumulator = newSubAccumulator % 1e6;
+                    newMarketCap = Math.min(p.marketCap + (millionsToAdd * 1e6), 5e12);
+                  }
+                } else if (p.marketCap >= 1e6) {
+                  if (newSubAccumulator >= 1e5) {
+                    const hundredsToAdd = Math.floor(newSubAccumulator / 1e5);
+                    newSubAccumulator = newSubAccumulator % 1e5;
+                    newMarketCap = Math.min(p.marketCap + (hundredsToAdd * 1e5), 5e12);
+                  }
+                } else {
+                  if (newSubAccumulator >= 1000) {
+                    const thousandsToAdd = Math.floor(newSubAccumulator / 1000);
+                    newSubAccumulator = newSubAccumulator % 1000;
+                    newMarketCap = Math.min(p.marketCap + (thousandsToAdd * 1000), 5e12);
+                  }
+                }
+              }
+            }
+            setSubThousandAccumulator(newSubAccumulator);
+            return { ...p, marketCap: newMarketCap };
+          })(subThousandAccumulator);
+        });
+      }, 1000);
+      return () => clearInterval(incomeInterval);
+    }
+  }, [gameState.passiveIncome, gameState.solanaBlessingLevel, gameState.clickPower, subThousandAccumulator]);
+
   const handlePump = () => {
+    // Maximum 5T
+    if (gameState.marketCap >= 5e12) return;
+    
     if (gameState.levelIndex >= gameLevels.length - 1) return;
     
     if (pumpSound) {
@@ -479,15 +564,35 @@ export default function BullRunGame() {
       if (gameState.marketCap < 1e6) {
         setGameState(p => ({
           ...p,
-          marketCap: p.marketCap + newIncrement,
+          marketCap: Math.min(p.marketCap + newIncrement, 5e12),
           totalClicks: (p.totalClicks || 0) + 1
         }));
       } else {
         // M felett a második számláló növekszik
         const newAccumulator = subThousandAccumulator + newIncrement;
         
-        // 100M felett 1M-ig gyűjtünk
-        if (gameState.marketCap >= 1e8) {
+        // 1T felett 1B-ig gyűjtünk
+        if (gameState.marketCap >= 1e12) {
+          if (newAccumulator >= 1e9) {
+            const billionsToAdd = Math.floor(newAccumulator / 1e9);
+            const remainder = newAccumulator % 1e9;
+            
+            setSubThousandAccumulator(remainder);
+            setGameState(p => ({
+              ...p,
+              marketCap: Math.min(p.marketCap + (billionsToAdd * 1e9), 5e12),
+              totalClicks: (p.totalClicks || 0) + 1
+            }));
+          } else {
+            setSubThousandAccumulator(newAccumulator);
+            setGameState(p => ({
+              ...p,
+              totalClicks: (p.totalClicks || 0) + 1
+            }));
+          }
+        }
+        // 100M és 1T között 1M-ig gyűjtünk
+        else if (gameState.marketCap >= 1e8) {
           if (newAccumulator >= 1e6) {
             const millionsToAdd = Math.floor(newAccumulator / 1e6);
             const remainder = newAccumulator % 1e6;
@@ -495,7 +600,7 @@ export default function BullRunGame() {
             setSubThousandAccumulator(remainder);
             setGameState(p => ({
               ...p,
-              marketCap: p.marketCap + (millionsToAdd * 1e6),
+              marketCap: Math.min(p.marketCap + (millionsToAdd * 1e6), 5e12),
               totalClicks: (p.totalClicks || 0) + 1
             }));
           } else {
@@ -515,7 +620,7 @@ export default function BullRunGame() {
             setSubThousandAccumulator(remainder);
             setGameState(p => ({
               ...p,
-              marketCap: p.marketCap + (hundredsToAdd * 1e5),
+              marketCap: Math.min(p.marketCap + (hundredsToAdd * 1e5), 5e12),
               totalClicks: (p.totalClicks || 0) + 1
             }));
           } else {
@@ -527,13 +632,60 @@ export default function BullRunGame() {
           }
         }
       }
-    } else {
-      // Mobilnézet: ugyanaz a logika
-      if (gameState.marketCap >= 1000) {
+    }
+    // Mobilnézet: ugyanaz a logika
+    else {
+      if (gameState.marketCap < 1e4) {
+        setGameState(p => ({
+          ...p,
+          marketCap: Math.min(p.marketCap + newIncrement, 5e12),
+          totalClicks: (p.totalClicks || 0) + 1
+        }));
+      } else {
         const newAccumulator = subThousandAccumulator + newIncrement;
         
-        // 100M felett 1M-ig gyűjtünk
-        if (gameState.marketCap >= 1e8) {
+        // 1T felett 100B-ig gyűjtünk
+        if (gameState.marketCap >= 1e12) {
+          if (newAccumulator >= 1e11) {
+            const hundredsOfBillionsToAdd = Math.floor(newAccumulator / 1e11);
+            const remainder = newAccumulator % 1e11;
+            
+            setSubThousandAccumulator(remainder);
+            setGameState(p => ({
+              ...p,
+              marketCap: Math.min(p.marketCap + (hundredsOfBillionsToAdd * 1e11), 5e12),
+              totalClicks: (p.totalClicks || 0) + 1
+            }));
+          } else {
+            setSubThousandAccumulator(newAccumulator);
+            setGameState(p => ({
+              ...p,
+              totalClicks: (p.totalClicks || 0) + 1
+            }));
+          }
+        }
+        // 1B és 1T között 100M-ig gyűjtünk
+        else if (gameState.marketCap >= 1e9) {
+          if (newAccumulator >= 1e8) {
+            const hundredsOfMillionsToAdd = Math.floor(newAccumulator / 1e8);
+            const remainder = newAccumulator % 1e8;
+            
+            setSubThousandAccumulator(remainder);
+            setGameState(p => ({
+              ...p,
+              marketCap: Math.min(p.marketCap + (hundredsOfMillionsToAdd * 1e8), 5e12),
+              totalClicks: (p.totalClicks || 0) + 1
+            }));
+          } else {
+            setSubThousandAccumulator(newAccumulator);
+            setGameState(p => ({
+              ...p,
+              totalClicks: (p.totalClicks || 0) + 1
+            }));
+          }
+        }
+        // 100M és 1B között 1M-ig gyűjtünk
+        else if (gameState.marketCap >= 1e8) {
           if (newAccumulator >= 1e6) {
             const millionsToAdd = Math.floor(newAccumulator / 1e6);
             const remainder = newAccumulator % 1e6;
@@ -541,7 +693,7 @@ export default function BullRunGame() {
             setSubThousandAccumulator(remainder);
             setGameState(p => ({
               ...p,
-              marketCap: p.marketCap + (millionsToAdd * 1e6),
+              marketCap: Math.min(p.marketCap + (millionsToAdd * 1e6), 5e12),
               totalClicks: (p.totalClicks || 0) + 1
             }));
           } else {
@@ -553,15 +705,15 @@ export default function BullRunGame() {
           }
         }
         // 1M és 100M között 100K-ig gyűjtünk
-        else {
+        else if (gameState.marketCap >= 1e6) {
           if (newAccumulator >= 1e5) {
             const hundredsToAdd = Math.floor(newAccumulator / 1e5);
             const remainder = newAccumulator % 1e5;
             
-            setSubThousandAccumulator(newAccumulator);
+            setSubThousandAccumulator(remainder);
             setGameState(p => ({
               ...p,
-              marketCap: p.marketCap + (hundredsToAdd * 1e5),
+              marketCap: Math.min(p.marketCap + (hundredsToAdd * 1e5), 5e12),
               totalClicks: (p.totalClicks || 0) + 1
             }));
           } else {
@@ -572,12 +724,26 @@ export default function BullRunGame() {
             }));
           }
         }
-      } else {
-        setGameState(p => ({
-          ...p,
-          marketCap: p.marketCap + newIncrement,
-          totalClicks: (p.totalClicks || 0) + 1
-        }));
+        // 10K és 1M között 1000-ig gyűjtünk
+        else {
+          if (newAccumulator >= 1000) {
+            const thousandsToAdd = Math.floor(newAccumulator / 1000);
+            const remainder = newAccumulator % 1000;
+            
+            setSubThousandAccumulator(remainder);
+            setGameState(p => ({
+              ...p,
+              marketCap: Math.min(p.marketCap + (thousandsToAdd * 1000), 5e12),
+              totalClicks: (p.totalClicks || 0) + 1
+            }));
+          } else {
+            setSubThousandAccumulator(newAccumulator);
+            setGameState(p => ({
+              ...p,
+              totalClicks: (p.totalClicks || 0) + 1
+            }));
+          }
+        }
       }
     }
   };
@@ -625,20 +791,6 @@ export default function BullRunGame() {
       }
     }
   };
-
-  // MÓDOSÍTÁS: Passzív jövedelem és Click Power kezelése a szorzóval
-  useEffect(() => {
-    if (gameState.passiveIncome > 0 || gameState.clickPower > 1) {
-      const incomeInterval = setInterval(() => {
-        setGameState(p => {
-          const multiplier = p.solanaBlessingLevel + 1; // 0 = nincs, 1 = 2x, 2 = 3x, stb.
-          const incomeToAdd = p.passiveIncome * multiplier;
-          return { ...p, marketCap: p.marketCap + incomeToAdd };
-        });
-      }, 1000);
-      return () => clearInterval(incomeInterval);
-    }
-  }, [gameState.passiveIncome, gameState.solanaBlessingLevel, gameState.clickPower]);
 
   const confirmReset = () => {
     localStorage.removeItem('bullRunGameState_v3');
@@ -713,17 +865,27 @@ export default function BullRunGame() {
   const prog = isDesktop ? // md breakpoint
     (marketCap < 1e6 ? 
       Math.min(((marketCap - current.threshold) / (next ? next.threshold - current.threshold : 100)) * 100, 100) : // M alatt a fő számhoz
-      (marketCap >= 1e8 ? 
-        Math.min((subThousandAccumulator / 1e6) * 100, 100) : // 100M felett 1M-ig
-        Math.min((subThousandAccumulator / 1e5) * 100, 100)  // 1M és 100M között 100K-ig
+      (marketCap >= 1e12 ? 
+        Math.min((subThousandAccumulator / 1e11) * 100, 100) : // 1T felett 100B-ig
+        marketCap >= 1e9 ?
+          Math.min((subThousandAccumulator / 1e8) * 100, 100) : // 1B és 1T között 100M-ig
+          marketCap >= 1e8 ? 
+            Math.min((subThousandAccumulator / 1e6) * 100, 100) : // 100M és 1B között 1M-ig
+            Math.min((subThousandAccumulator / 1e5) * 100, 100)  // 1M és 100M között 100K-ig
       )
     ) : // mobilnézet
-    (marketCap >= 1000 ? 
-      (marketCap >= 1e8 ? 
-        Math.min((subThousandAccumulator / 1e6) * 100, 100) : // 100M felett 1M-ig
-        Math.min((subThousandAccumulator / 1e5) * 100, 100)  // 1M és 100M között 100K-ig
+    (marketCap >= 1e4 ? 
+      (marketCap >= 1e12 ? 
+        Math.min((subThousandAccumulator / 1e11) * 100, 100) : // 1T felett 100B-ig
+        marketCap >= 1e9 ?
+          Math.min((subThousandAccumulator / 1e8) * 100, 100) : // 1B és 1T között 100M-ig
+          marketCap >= 1e8 ? 
+            Math.min((subThousandAccumulator / 1e6) * 100, 100) : // 100M és 1B között 1M-ig
+            marketCap >= 1e6 ?
+              Math.min((subThousandAccumulator / 1e5) * 100, 100) : // 1M és 100M között 100K-ig
+              Math.min((subThousandAccumulator / 1000) * 100, 100)  // 10K és 1M között 1000-ig
       ) :
-      Math.min(((marketCap - current.threshold) / (next ? next.threshold - current.threshold : 100)) * 100, 100)  // K alatt a fő számhoz
+      Math.min(((marketCap - current.threshold) / (next ? next.threshold - current.threshold : 100)) * 100, 100)  // 10K alatt a fő számhoz
     );
   
   // Biztonságosabb színválasztás
@@ -934,7 +1096,6 @@ export default function BullRunGame() {
                     <span className="text-gray-400 font-normal">Current Rank: </span>
                     <span className={currentTextColor}>{current.name}</span>
                   </p>
-                  <p className="text-sm text-gray-400">{ next ? `Next: $${fmt(marketCap)}/${fmt(next.threshold)}` : "MAX LEVEL" }</p>
                 </div>
                 <div className="w-full bg-gray-700 rounded-full h-4 mt-1">
                   <div
@@ -942,8 +1103,8 @@ export default function BullRunGame() {
                     style={{ width: `${prog}%` }}
                   />
                 </div>
-                <div className="md:hidden text-right mt-1">
-                  <p className="text-sm text-gray-400">{ next ? `Next: $${fmt(marketCap)}/${fmt(next.threshold)}` : "MAX" }</p>
+                <div className="w-full text-right mt-1">
+                  <p className="text-sm text-gray-400">{ next ? `Next: $${fmt(marketCap)}/${fmt(next.threshold)}` : (window.innerWidth >= 768 ? "MAX LEVEL" : "MAX") }</p>
                 </div>
               </div>
 
@@ -951,6 +1112,42 @@ export default function BullRunGame() {
               <div className="flex flex-col items-center mb-6">
                 <h3 className="text-2xl md:text-3xl font-bold text-yellow-400">Virtual Market Cap</h3>
                 
+                {/* Mobilnézet */}
+                <div className="md:hidden flex flex-col items-center">
+                  <p className="text-6xl font-mono font-bold my-2 text-white drop-shadow-lg">
+                    ${marketCap >= 1e12 ? 
+                      `${(marketCap / 1e12).toFixed(1)}T` :
+                      marketCap >= 1e9 ? 
+                        `${(marketCap / 1e9).toFixed(1)}B` :
+                        marketCap >= 1e6 ? 
+                          `${(marketCap / 1e6).toFixed(1)}M` :
+                          marketCap >= 1e4 ? 
+                            `${Math.floor(marketCap / 1e3)}K` :
+                            fmt(marketCap)
+                    }
+                  </p>
+                  {marketCap >= 1e4 && marketCap < 1e6 && (
+                    <p className="text-3xl font-mono font-bold text-white">
+                      +${fmt(subThousandAccumulator)}
+                    </p>
+                  )}
+                  {marketCap >= 1e6 && marketCap < 1e9 && (
+                    <p className="text-3xl font-mono font-bold text-white">
+                      +${fmt(subThousandAccumulator)}
+                    </p>
+                  )}
+                  {marketCap >= 1e9 && marketCap < 1e12 && (
+                    <p className="text-3xl font-mono font-bold text-white">
+                      +${fmt(subThousandAccumulator)}
+                    </p>
+                  )}
+                  {marketCap >= 1e12 && (
+                    <p className="text-3xl font-mono font-bold text-white">
+                      +${fmt(Math.min(subThousandAccumulator, 99999999))}
+                    </p>
+                  )}
+                </div>
+
                 {/* Asztali nézet */}
                 <div className="hidden md:flex flex-col items-center">
                   <p className={`${
@@ -965,7 +1162,12 @@ export default function BullRunGame() {
                           fmt(marketCap)
                     }
                   </p>
-                  {marketCap >= 1e6 && marketCap < 1e12 && (
+                  {marketCap >= 1e6 && marketCap < 1e9 && (
+                    <p className="text-4xl font-mono font-bold text-white">
+                      +${fmt(subThousandAccumulator)}
+                    </p>
+                  )}
+                  {marketCap >= 1e9 && marketCap < 1e12 && (
                     <p className="text-4xl font-mono font-bold text-white">
                       +${fmt(subThousandAccumulator)}
                     </p>
@@ -977,34 +1179,19 @@ export default function BullRunGame() {
                   )}
                 </div>
 
-                {/* Mobilnézet */}
-                <div className="md:hidden flex flex-col items-center">
-                  <p className="text-6xl font-mono font-bold my-2 text-white drop-shadow-lg">
-                    ${marketCap >= 1e6 ? 
-                      `${(marketCap / 1e6).toFixed(1)}M` :
-                      marketCap >= 1e3 ? 
-                        `${(marketCap / 1e3).toFixed(1)}K` :
-                        fmt(marketCap)
-                    }
-                  </p>
-                  {marketCap >= 1e3 && (
-                    <p className="text-3xl font-mono font-bold text-white">
-                      +${fmt(subThousandAccumulator)}
-                    </p>
-                  )}
-                </div>
-
                 <div className="mt-4">
                   <button
                     onClick={handlePump}
-                    disabled={gameState.levelIndex >= gameLevels.length - 1}
+                    disabled={gameState.levelIndex >= gameLevels.length - 1 || gameState.marketCap >= 5e12}
                     className={`relative py-6 px-12 rounded-full font-bold text-2xl transition-all duration-300 ${
-                      gameState.levelIndex >= gameLevels.length - 1
+                      gameState.levelIndex >= gameLevels.length - 1 || gameState.marketCap >= 5e12
                         ? 'cursor-not-allowed bg-gray-800 border-2 border-gray-700'
                         : 'bg-yellow-500 hover:opacity-90 active:scale-95 shadow-yellow-500/20 text-gray-900'
                     }`}
                   >
-                    {gameState.levelIndex >= gameLevels.length - 1 ? "MAX LEVEL REACHED" : "PUMP THE BULL"}
+                    {gameState.marketCap >= 5e12 ? "MAXIMUM REACHED" : 
+                     gameState.levelIndex >= gameLevels.length - 1 ? "MAX LEVEL REACHED" : 
+                     "PUMP THE BULL"}
                   </button>
                 </div>
               </div>
