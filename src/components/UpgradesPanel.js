@@ -150,38 +150,22 @@ const UpgradesPanel = ({
             const upgrade = upgrades.find(u => u.id === id);
             if (!req || !upgrade || !upgrade.requirements) continue;
             const lvl = req.level;
-            // csak akkor reset-eljük, ha elérte a requirements.level-t
-            if (lvl >= upgrade.requirements.level) {
-                const last = lastReqLevelRef.current[id];
-                if (last !== lvl) {
-                    setUsesLeft(prev => ({
-                        ...prev,
-                        [id]: (prev[id] ?? 0) + getNextLevelUses(id, upgrades),
-                    }));
-                    lastReqLevelRef.current[id] = lvl;
-                    // Hang lejátszása a használatok újratöltésekor
-                    if (unlockSound) {
-                        unlockSound.currentTime = 0;
-                        unlockSound.play().catch(error => console.log('Audio playback failed:', error));
-                    }
-                }
-            }
-        }
-    }, [upgrades, unlockSound]);
-
-    // Új useEffect a használati számláló változásának figyelésére
-    useEffect(() => {
-        // Ha egy upgrade használatai 0-ról nagyobb értékre ugranak, játszuk le a hangot
-        Object.entries(usesLeft).forEach(([id, uses]) => {
-            if (uses > 0 && lastReqLevelRef.current[id] === null) {
+            const last = lastReqLevelRef.current[id];
+            // Csak akkor unlockolunk, ha most lépte át a requirements.level-t
+            if (last !== undefined && last < upgrade.requirements.level && lvl >= upgrade.requirements.level) {
+                setUsesLeft(prev => ({
+                    ...prev,
+                    [id]: (prev[id] ?? 0) + getNextLevelUses(id, upgrades),
+                }));
+                // Hang lejátszása a használatok újratöltésekor
                 if (unlockSound) {
                     unlockSound.currentTime = 0;
                     unlockSound.play().catch(error => console.log('Audio playback failed:', error));
                 }
-                lastReqLevelRef.current[id] = upgrades.find(u => u.id === parseInt(id))?.level || 0;
             }
-        });
-    }, [usesLeft, unlockSound, upgrades]);
+            lastReqLevelRef.current[id] = lvl;
+        }
+    }, [upgrades, unlockSound]);
 
     const handleUpgradeClick = (u) => {
         // Diamond Hands esetén ne ellenőrizzük a használatokat
@@ -192,8 +176,6 @@ const UpgradesPanel = ({
             if (currentUses <= 0) {
                 const req = upgrades.find(x => x.id === u.requirements?.upgradeId);
                 setSelectedUpgrade({ upgrade: u, requiredUpgrade: req });
-                // Töröljük a lastReqLevelRef-et, hogy újra lejátszódjon a hang
-                lastReqLevelRef.current[u.id] = null;
                 return;
             }
 
@@ -201,8 +183,6 @@ const UpgradesPanel = ({
             if (!isUnlocked(u)) {
                 const req = upgrades.find(x => x.id === u.requirements?.upgradeId);
                 setSelectedUpgrade({ upgrade: u, requiredUpgrade: req });
-                // Töröljük a lastReqLevelRef-et, hogy újra lejátszódjon a hang
-                lastReqLevelRef.current[u.id] = null;
                 return;
             }
         }

@@ -2,10 +2,11 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { FaSync, FaQuestionCircle, FaCheckCircle, FaTimes } from 'react-icons/fa';
+import { FaSync, FaQuestionCircle, FaCheckCircle, FaTimes, FaVolumeUp, FaVolumeMute } from 'react-icons/fa';
 import { FaXTwitter } from 'react-icons/fa6';
 import UpgradesPanel from './UpgradesPanel';
 import SolanaPayModal from './SolanaPayModal';
+import { useMute } from './MuteContext';
 
 // --- SZÍNEK SZINTENKÉNT ---
 const levelColors = [
@@ -178,7 +179,7 @@ const LevelUpModal = ({ isOpen, onClose, levelName, twitterUrl, levelIndex }) =>
             className="bg-sky-500 text-white font-bold py-3 px-6 rounded-full flex items-center justify-center space-x-2 hover:bg-sky-400 transition-all shadow-lg"
           >
             <FaXTwitter />
-            <span>Share Rank</span>
+            <span>Share Score</span>
           </a>
         </div>
         <button
@@ -318,6 +319,7 @@ export default function BullRunGame() {
   const [subThousandAccumulator, setSubThousandAccumulator] = useState(0);
   const [isDesktop, setIsDesktop] = useState(false);
   const [forceUpdate, setForceUpdate] = useState(false);
+  const { muted, setMuted } = useMute();
 
   // Initialize audio
   useEffect(() => {
@@ -367,7 +369,7 @@ export default function BullRunGame() {
       
       // Csak akkor nézzük a következő szintet, ha van még következő szint
       if (nextLevel && gameState.marketCap >= nextLevel.threshold) {
-        if (levelUpSound) {
+        if (levelUpSound && !muted) {
           levelUpSound.currentTime = 0;
           levelUpSound.play().catch(error => console.log('Audio playback failed:', error));
         }
@@ -394,7 +396,7 @@ export default function BullRunGame() {
         setGameState(p => ({ ...p, usesLeft: newUses }));
       }
     }
-  }, [gameState.marketCap, gameState.levelIndex, isLoaded, gameState.upgrades, levelUpSound]);
+  }, [gameState.marketCap, gameState.levelIndex, isLoaded, gameState.upgrades, levelUpSound, muted]);
 
   // Disable scroll when modal is open
   useEffect(() => {
@@ -419,7 +421,7 @@ export default function BullRunGame() {
 
       const newlyUnlocked = shouldBeUnlocked.filter(upgrade => !upgrade.isUnlocked);
 
-      if (newlyUnlocked.length > 0 && unlockSound) {
+      if (newlyUnlocked.length > 0 && unlockSound && !muted) {
         unlockSound.currentTime = 0;
         unlockSound.play().catch(error => console.log('Audio playback failed:', error));
       }
@@ -435,7 +437,7 @@ export default function BullRunGame() {
         }));
       }
     }
-  }, [gameState.upgrades, gameState.levelIndex, isLoaded, unlockSound]);
+  }, [gameState.upgrades, gameState.levelIndex, isLoaded, unlockSound, muted]);
 
   // Reset upgrades unlock status when level changes
   useEffect(() => {
@@ -469,82 +471,79 @@ export default function BullRunGame() {
           const multiplier = p.solanaBlessingLevel + 1;
           const incomeToAdd = p.passiveIncome * multiplier;
 
-          // --- ÚJ LOGIKA: mindig a legfrissebb subThousandAccumulator-t használd ---
-          return (prevState => {
-            let newMarketCap = p.marketCap;
-            let newSubAccumulator = prevState;
+          let newMarketCap = p.marketCap;
+          let newSubAccumulator = subThousandAccumulator;
 
-            if (typeof window !== 'undefined' && window.innerWidth >= 768) {
-              if (p.marketCap < 1e6) {
-                newMarketCap = Math.min(p.marketCap + incomeToAdd, 5e12);
-              } else {
-                newSubAccumulator += incomeToAdd;
-                if (p.marketCap >= 1e12) {
-                  if (newSubAccumulator >= 1e9) {
-                    const billionsToAdd = Math.floor(newSubAccumulator / 1e9);
-                    newSubAccumulator = newSubAccumulator % 1e9;
-                    newMarketCap = Math.min(p.marketCap + (billionsToAdd * 1e9), 5e12);
-                  }
-                } else if (p.marketCap >= 1e8) {
-                  if (newSubAccumulator >= 1e6) {
-                    const millionsToAdd = Math.floor(newSubAccumulator / 1e6);
-                    newSubAccumulator = newSubAccumulator % 1e6;
-                    newMarketCap = Math.min(p.marketCap + (millionsToAdd * 1e6), 5e12);
-                  }
-                } else {
-                  if (newSubAccumulator >= 1e5) {
-                    const hundredsToAdd = Math.floor(newSubAccumulator / 1e5);
-                    newSubAccumulator = newSubAccumulator % 1e5;
-                    newMarketCap = Math.min(p.marketCap + (hundredsToAdd * 1e5), 5e12);
-                  }
-                }
-              }
+          if (typeof window !== 'undefined' && window.innerWidth >= 768) {
+            if (p.marketCap < 1e6) {
+              newMarketCap = Math.min(p.marketCap + incomeToAdd, 5e12);
             } else {
-              if (p.marketCap < 1e4) {
-                newMarketCap = Math.min(p.marketCap + incomeToAdd, 5e12);
+              newSubAccumulator += incomeToAdd;
+              if (p.marketCap >= 1e12) {
+                if (newSubAccumulator >= 1e9) {
+                  const billionsToAdd = Math.floor(newSubAccumulator / 1e9);
+                  newSubAccumulator = newSubAccumulator % 1e9;
+                  newMarketCap = Math.min(p.marketCap + (billionsToAdd * 1e9), 5e12);
+                }
+              } else if (p.marketCap >= 1e8) {
+                if (newSubAccumulator >= 1e6) {
+                  const millionsToAdd = Math.floor(newSubAccumulator / 1e6);
+                  newSubAccumulator = newSubAccumulator % 1e6;
+                  newMarketCap = Math.min(p.marketCap + (millionsToAdd * 1e6), 5e12);
+                }
               } else {
-                newSubAccumulator += incomeToAdd;
-                if (p.marketCap >= 1e12) {
-                  if (newSubAccumulator >= 1e11) {
-                    const hundredsOfBillionsToAdd = Math.floor(newSubAccumulator / 1e11);
-                    newSubAccumulator = newSubAccumulator % 1e11;
-                    newMarketCap = Math.min(p.marketCap + (hundredsOfBillionsToAdd * 1e11), 5e12);
-                  }
-                } else if (p.marketCap >= 1e9) {
-                  if (newSubAccumulator >= 1e8) {
-                    const hundredsOfMillionsToAdd = Math.floor(newSubAccumulator / 1e8);
-                    newSubAccumulator = newSubAccumulator % 1e8;
-                    newMarketCap = Math.min(p.marketCap + (hundredsOfMillionsToAdd * 1e8), 5e12);
-                  }
-                } else if (p.marketCap >= 1e8) {
-                  if (newSubAccumulator >= 1e6) {
-                    const millionsToAdd = Math.floor(newSubAccumulator / 1e6);
-                    newSubAccumulator = newSubAccumulator % 1e6;
-                    newMarketCap = Math.min(p.marketCap + (millionsToAdd * 1e6), 5e12);
-                  }
-                } else if (p.marketCap >= 1e6) {
-                  if (newSubAccumulator >= 1e5) {
-                    const hundredsToAdd = Math.floor(newSubAccumulator / 1e5);
-                    newSubAccumulator = newSubAccumulator % 1e5;
-                    newMarketCap = Math.min(p.marketCap + (hundredsToAdd * 1e5), 5e12);
-                  }
-                } else {
-                  if (newSubAccumulator >= 1000) {
-                    const thousandsToAdd = Math.floor(newSubAccumulator / 1000);
-                    newSubAccumulator = newSubAccumulator % 1000;
-                    newMarketCap = Math.min(p.marketCap + (thousandsToAdd * 1000), 5e12);
-                  }
+                if (newSubAccumulator >= 1e5) {
+                  const hundredsToAdd = Math.floor(newSubAccumulator / 1e5);
+                  newSubAccumulator = newSubAccumulator % 1e5;
+                  newMarketCap = Math.min(p.marketCap + (hundredsToAdd * 1e5), 5e12);
                 }
               }
             }
-            setSubThousandAccumulator(newSubAccumulator);
-            return { ...p, marketCap: newMarketCap };
-          })(subThousandAccumulator);
+          } else {
+            if (p.marketCap < 1e4) {
+              newMarketCap = Math.min(p.marketCap + incomeToAdd, 5e12);
+            } else {
+              newSubAccumulator += incomeToAdd;
+              if (p.marketCap >= 1e12) {
+                if (newSubAccumulator >= 1e11) {
+                  const hundredsOfBillionsToAdd = Math.floor(newSubAccumulator / 1e11);
+                  newSubAccumulator = newSubAccumulator % 1e11;
+                  newMarketCap = Math.min(p.marketCap + (hundredsOfBillionsToAdd * 1e11), 5e12);
+                }
+              } else if (p.marketCap >= 1e9) {
+                if (newSubAccumulator >= 1e8) {
+                  const hundredsOfMillionsToAdd = Math.floor(newSubAccumulator / 1e8);
+                  newSubAccumulator = newSubAccumulator % 1e8;
+                  newMarketCap = Math.min(p.marketCap + (hundredsOfMillionsToAdd * 1e8), 5e12);
+                }
+              } else if (p.marketCap >= 1e8) {
+                if (newSubAccumulator >= 1e6) {
+                  const millionsToAdd = Math.floor(newSubAccumulator / 1e6);
+                  newSubAccumulator = newSubAccumulator % 1e6;
+                  newMarketCap = Math.min(p.marketCap + (millionsToAdd * 1e6), 5e12);
+                }
+              } else if (p.marketCap >= 1e6) {
+                if (newSubAccumulator >= 1e5) {
+                  const hundredsToAdd = Math.floor(newSubAccumulator / 1e5);
+                  newSubAccumulator = newSubAccumulator % 1e5;
+                  newMarketCap = Math.min(p.marketCap + (hundredsToAdd * 1e5), 5e12);
+                }
+              } else {
+                if (newSubAccumulator >= 1000) {
+                  const thousandsToAdd = Math.floor(newSubAccumulator / 1000);
+                  newSubAccumulator = newSubAccumulator % 1000;
+                  newMarketCap = Math.min(p.marketCap + (thousandsToAdd * 1000), 5e12);
+                }
+              }
+            }
+          }
+          setSubThousandAccumulator(newSubAccumulator);
+          return { ...p, marketCap: newMarketCap };
         });
       }, 1000);
       return () => clearInterval(incomeInterval);
     }
-  }, [gameState.passiveIncome, gameState.solanaBlessingLevel, gameState.clickPower, subThousandAccumulator]);
+  }, [gameState.passiveIncome, gameState.solanaBlessingLevel, gameState.clickPower, subThousandAccumulator, muted]);
 
   const handlePump = () => {
     // Maximum 5T
@@ -552,7 +551,7 @@ export default function BullRunGame() {
     
     if (gameState.levelIndex >= gameLevels.length - 1) return;
     
-    if (pumpSound) {
+    if (pumpSound && !muted) {
       pumpSound.currentTime = 0;
       pumpSound.play().catch(error => console.log('Audio playback failed:', error));
     }
@@ -633,7 +632,7 @@ export default function BullRunGame() {
         }
       }
     }
-    // Mobilnézet: ugyanaz a logika
+      // Mobilnézet: ugyanaz a logika
     else {
       if (gameState.marketCap < 1e4) {
         setGameState(p => ({
@@ -736,12 +735,12 @@ export default function BullRunGame() {
               marketCap: Math.min(p.marketCap + (thousandsToAdd * 1000), 5e12),
               totalClicks: (p.totalClicks || 0) + 1
             }));
-          } else {
+      } else {
             setSubThousandAccumulator(newAccumulator);
-            setGameState(p => ({
-              ...p,
-              totalClicks: (p.totalClicks || 0) + 1
-            }));
+        setGameState(p => ({
+          ...p,
+          totalClicks: (p.totalClicks || 0) + 1
+        }));
           }
         }
       }
@@ -751,7 +750,7 @@ export default function BullRunGame() {
   const handleUpgrade = (upgrade) => {
     const cost = getUpgradeCost(upgrade);
     if (gameState.marketCap >= cost) {
-      if (upgradeSound) {
+      if (upgradeSound && !muted) {
         upgradeSound.currentTime = 0;
         upgradeSound.play().catch(error => console.log('Audio playback failed:', error));
       }
@@ -785,7 +784,7 @@ export default function BullRunGame() {
       });
 
       // Ha ez egy új unlock, játszuk le a hangot
-      if (wasLocked && unlockSound) {
+      if (wasLocked && unlockSound && !muted) {
         unlockSound.currentTime = 0;
         unlockSound.play().catch(error => console.log('Audio playback failed:', error));
       }
@@ -871,7 +870,7 @@ export default function BullRunGame() {
           Math.min((subThousandAccumulator / 1e8) * 100, 100) : // 1B és 1T között 100M-ig
           marketCap >= 1e8 ? 
             Math.min((subThousandAccumulator / 1e6) * 100, 100) : // 100M és 1B között 1M-ig
-            Math.min((subThousandAccumulator / 1e5) * 100, 100)  // 1M és 100M között 100K-ig
+        Math.min((subThousandAccumulator / 1e5) * 100, 100)  // 1M és 100M között 100K-ig
       )
     ) : // mobilnézet
     (marketCap >= 1e4 ? 
@@ -931,6 +930,13 @@ export default function BullRunGame() {
                   <h1 className="text-4xl font-bold mb-2">Bull Run Clicker</h1>
                   <p className="text-gray-400">Pump the market to the moon!</p>
                 </div>
+                <button
+                  onClick={() => setMuted(m => !m)}
+                  className="ml-4 text-2xl text-gray-400 hover:text-yellow-400 focus:outline-none"
+                  aria-label={muted ? 'Unmute sounds' : 'Mute sounds'}
+                >
+                  {muted ? <FaVolumeMute /> : <FaVolumeUp />}
+                </button>
               </div>
               <div className="bg-gray-800/50 rounded-2xl p-8 mb-8 text-center">
                 <div className="text-6xl font-bold mb-4">$0</div>
@@ -1123,7 +1129,7 @@ export default function BullRunGame() {
                           `${(marketCap / 1e6).toFixed(1)}M` :
                           marketCap >= 1e4 ? 
                             `${Math.floor(marketCap / 1e3)}K` :
-                            fmt(marketCap)
+                          fmt(marketCap)
                     }
                   </p>
                   {marketCap >= 1e4 && marketCap < 1e6 && (
@@ -1158,8 +1164,8 @@ export default function BullRunGame() {
                       marketCap >= 1e9 ? 
                         `${(marketCap / 1e9).toFixed(1)}B` :
                         marketCap >= 1e6 ? 
-                          `${(marketCap / 1e6).toFixed(1)}M` :
-                          fmt(marketCap)
+                      `${(marketCap / 1e6).toFixed(1)}M` :
+                        fmt(marketCap)
                     }
                   </p>
                   {marketCap >= 1e6 && marketCap < 1e9 && (
@@ -1201,18 +1207,21 @@ export default function BullRunGame() {
                 <button onClick={() => setIsRulesModalOpen(true)} className="bg-blue-900/70 text-white py-3 px-6 rounded-full flex items-center space-x-2 hover:bg-blue-700 transition-all">
                   <FaQuestionCircle className="text-xl"/> <span>How to Play</span>
                 </button>
-                <a href={twitterUrl} target="_blank" rel="noopener noreferrer" className="bg-gray-800 text-white py-3 px-6 rounded-full flex items-center space-x-2 hover:bg-white hover:text-black transition-all shadow-lg">
-                  <FaXTwitter/> <span>Share Rank</span>
+                <a href={twitterUrl} target="_blank" rel="noopener noreferrer" className={`bg-gray-800 text-white py-3 px-6 rounded-full inline-flex items-center space-x-2 transition-all shadow-lg ${window.innerWidth < 768 ? 'h-16 text-lg hover:bg-gray-800' : 'hover:bg-white hover:text-black'}`}> 
+                  <FaXTwitter/><span>Share Score</span>
                 </a>
                 <button onClick={() => setIsResetModalOpen(true)} className="bg-red-900/70 text-white py-3 px-6 rounded-full flex items-center space-x-2 hover:bg-red-700 transition-all">
                   <FaSync className="text-xl"/> <span>Reset</span>
                 </button>
+                <button onClick={() => setMuted(m => !m)} className="p-3 bg-yellow-600 rounded-full hover:bg-yellow-700 transition-all" aria-label={muted ? 'Unmute sounds' : 'Mute sounds'}>
+                  {muted ? <FaVolumeMute className="text-2xl text-white" /> : <FaVolumeUp className="text-2xl text-white" />}
+                </button>
               </div>
 
               {/* Mobile Controls */}
-              <div className="md:hidden flex flex-col items-center gap-3 mt-8">
-                <a href={twitterUrl} target="_blank" rel="noopener noreferrer" className="bg-gray-800 text-white py-3 px-6 rounded-full inline-flex items-center space-x-2 hover:bg-white hover:text-black transition-all shadow-lg">
-                  <FaXTwitter/><span>Share Rank</span>
+              <div className="md:hidden flex flex-col items-center gap-6 mt-8">
+                <a href={twitterUrl} target="_blank" rel="noopener noreferrer" className={`bg-gray-800 text-white py-3 px-6 rounded-full inline-flex items-center space-x-2 transition-all shadow-lg ${window.innerWidth < 768 ? 'h-16 text-lg hover:bg-gray-800' : 'hover:bg-white hover:text-black'}`}> 
+                  <FaXTwitter/><span>Share Score</span>
                 </a>
                 <div className="flex space-x-6">
                   <button onClick={() => setIsRulesModalOpen(true)} className="p-3 bg-blue-900/70 rounded-full hover:bg-blue-700 transition-all">
@@ -1220,6 +1229,9 @@ export default function BullRunGame() {
                   </button>
                   <button onClick={() => setIsResetModalOpen(true)} className="p-3 bg-red-900/70 rounded-full hover:bg-red-700 transition-all">
                     <FaSync className="text-2xl text-white"/>
+                  </button>
+                  <button onClick={() => setMuted(m => !m)} className="p-3 bg-yellow-600 rounded-full hover:bg-yellow-700 transition-all" aria-label={muted ? 'Unmute sounds' : 'Mute sounds'}>
+                    {muted ? <FaVolumeMute className="text-2xl text-white" /> : <FaVolumeUp className="text-2xl text-white" />}
                   </button>
                 </div>
               </div>
