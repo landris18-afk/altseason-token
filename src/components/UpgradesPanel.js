@@ -192,7 +192,7 @@ const UpgradesPanel = ({
             <div className="flex space-x-2 mb-4">
                 <button
                     onClick={() => setActiveTab('click')}
-                    className={`flex-1 py-2 px-4 rounded-lg font-bold transition-all ${
+                    className={`flex-1 py-2 px-2 sm:px-4 rounded-lg font-bold transition-all text-sm sm:text-base ${
                         activeTab === 'click' ? 'bg-yellow-500 text-black' : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
                     }`}
                 >
@@ -200,7 +200,7 @@ const UpgradesPanel = ({
                 </button>
                 <button
                     onClick={() => setActiveTab('passive')}
-                    className={`flex-1 py-2 px-4 rounded-lg font-bold transition-all ${
+                    className={`flex-1 py-2 px-2 sm:px-4 rounded-lg font-bold transition-all text-sm sm:text-base ${
                         activeTab === 'passive' ? 'bg-yellow-500 text-black' : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
                     }`}
                 >
@@ -225,24 +225,23 @@ const UpgradesPanel = ({
                                     !isUnlocked(u) ? 'border-gray-700' : 
                                     marketCap >= Math.floor(u.baseCost * priceMultiplier(u.id) ** u.level) ? 'border-yellow-500/50 group-hover:border-yellow-500' : 'border-gray-600'
                                 } transition-all duration-300`}>
-                                    <div className="flex items-center justify-between">
-                                        <div className="space-y-1">
-                                            <p className="flex items-center text-lg font-bold">
+                                    <div className="flex items-start justify-between gap-3">
+                                        <div className="flex-1 min-w-0 space-y-1">
+                                            <p className="flex items-center text-lg font-bold text-left">
                                                 {!isUnlocked(u) ? (
                                                     <>
-                                                        <FaLock className="mr-2 text-gray-400" />
-                                                        <span className="text-gray-400">{u.name}</span>
+                                                        <FaLock className="mr-2 text-gray-400 flex-shrink-0" />
+                                                        <span className="text-gray-400 truncate">{u.name}</span>
                                                     </>
                                                 ) : (
                                                     <>
-                                                        <FaBolt className="mr-2 text-yellow-300 transition-transform duration-300 group-hover:scale-125" />
-                                                        <span className="text-white">{u.name}</span>
+                                                        <FaBolt className="mr-2 text-yellow-300 transition-transform duration-300 group-hover:scale-125 flex-shrink-0" />
+                                                        <span className="text-white truncate">{u.name}</span>
                                                     </>
                                                 )}
                                             </p>
-                                            <p className="text-sm text-gray-400">
-                                                {u.description}
-                                                {u.type === 'click' ? ` ($${u.power} MC/click)` : ` ($${u.power} MC/sec)`}
+                                            <p className="text-sm text-gray-400 leading-tight text-left pl-4">
+                                                {u.description.replace(/(\d+)/g, '$$$1')}
                                             </p>
                                             {!isUnlocked(u) && u.requirements && (() => {
                                                 const req = upgrades.find(x => x.id === u.requirements.upgradeId);
@@ -253,7 +252,7 @@ const UpgradesPanel = ({
                                                 );
                                             })()}
                                         </div>
-                                        <div className="flex flex-col items-end min-w-[90px]">
+                                        <div className="flex flex-col items-end min-w-[80px] flex-shrink-0">
                                             <span className="text-lg font-bold text-gray-100">${fmt(Math.floor(u.baseCost * priceMultiplier(u.id) ** u.level))}</span>
                                             <div className="flex flex-row gap-2 mt-1">
                                                 <span className="text-xs text-gray-400">Lvl {u.level}</span>
@@ -280,24 +279,23 @@ const UpgradesPanel = ({
                                     !isUnlocked(u) ? 'border-gray-700' : 
                                     marketCap >= Math.floor(u.baseCost * priceMultiplier(u.id) ** u.level) ? 'border-yellow-500/50 group-hover:border-yellow-500' : 'border-gray-600'
                                 } transition-all duration-300`}>
-                                    <div className="flex items-center justify-between">
-                                        <div className="space-y-1">
-                                            <p className="flex items-center text-lg font-bold">
+                                    <div className="flex items-start justify-between gap-3">
+                                        <div className="flex-1 min-w-0 space-y-1">
+                                            <p className="flex items-center text-lg font-bold text-left">
                                                 {!isUnlocked(u) ? (
                                                     <>
-                                                        <FaLock className="mr-2 text-gray-400" />
-                                                        <span className="text-gray-400">{u.name}</span>
+                                                        <FaLock className="mr-2 text-gray-400 flex-shrink-0" />
+                                                        <span className="text-gray-400 truncate">{u.name}</span>
                                                     </>
                                                 ) : (
                                                     <>
-                                                        <FaBolt className="mr-2 text-yellow-300 transition-transform duration-300 group-hover:scale-125" />
-                                                        <span className="text-white">{u.name}</span>
+                                                        <FaBolt className="mr-2 text-yellow-300 transition-transform duration-300 group-hover:scale-125 flex-shrink-0" />
+                                                        <span className="text-white truncate">{u.name}</span>
                                                     </>
                                                 )}
                                             </p>
-                                            <p className="text-sm text-gray-400">
-                                                {u.description}
-                                                {u.type === 'click' ? ` ($${u.power} MC/click)` : ` ($${u.power} MC/sec)`}
+                                            <p className="text-sm text-gray-400 leading-tight text-left pl-4">
+                                                {u.description.replace(/(\d+)/g, '$$$1')}
                                             </p>
                                             {!isUnlocked(u) && u.requirements && (() => {
                                                 const req = upgrades.find(x => x.id === u.requirements.upgradeId);
@@ -308,7 +306,7 @@ const UpgradesPanel = ({
                                                 );
                                             })()}
                                         </div>
-                                        <div className="flex flex-col items-end min-w-[90px]">
+                                        <div className="flex flex-col items-end min-w-[80px] flex-shrink-0">
                                             <span className="text-lg font-bold text-gray-100">${fmt(Math.floor(u.baseCost * priceMultiplier(u.id) ** u.level))}</span>
                                             <div className="flex flex-row gap-2 mt-1">
                                                 <span className="text-xs text-gray-400">Lvl {u.level}</span>
@@ -325,14 +323,14 @@ const UpgradesPanel = ({
 
             {/* Footer */}
             <div className="mt-auto pt-4 border-t-2 border-white/10 text-center">
-                <div className="flex justify-around">
-                    <div>
-                        <p className="text-gray-400 text-sm">MC / Click</p>
-                        <p className="font-bold text-white text-lg">${fmt(clickPower)}</p>
+                <div className="flex justify-around gap-2">
+                    <div className="flex-1">
+                        <p className="text-gray-400 text-xs sm:text-sm">MC / Click</p>
+                        <p className="font-bold text-white text-base sm:text-lg">${fmt(clickPower)}</p>
                     </div>
-                    <div>
-                        <p className="text-gray-400 text-sm">MC / Second</p>
-                        <p className={`font-bold text-lg transition-colors ${
+                    <div className="flex-1">
+                        <p className="text-gray-400 text-xs sm:text-sm">MC / Second</p>
+                        <p className={`font-bold text-base sm:text-lg transition-colors ${
                             hasPremiumUpgrade ? 'text-purple-400' : 'text-white'
                         }`}
                         >
