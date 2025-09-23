@@ -30,7 +30,6 @@ import { getNextLevelUses } from '../../utils/gameUtils';
  * @param {Object} props.usesLeft - Maradék használatok
  * @param {Object} props.panelState - Panel állapot
  * @param {Function} props.onUpgradeClick - Upgrade kattintás kezelő
- * @param {Function} props.onCloseRequirements - Requirements modal bezárása
  * @param {Function} props.onCloseInsufficientFunds - Insufficient funds modal bezárása
  * @returns {JSX.Element} Container komponens
  */
@@ -44,11 +43,9 @@ const UpgradeContainer = ({
   usesLeft,
   panelState,
   onUpgradeClick,
-  onCloseRequirements,
   onCloseInsufficientFunds
 }) => {
   const {
-    selectedUpgrade,
     insufficientFundsUpgrade,
     activeTab,
     forceUpdate,
@@ -88,11 +85,8 @@ const UpgradeContainer = ({
 
       {/* Modals */}
       <UpgradeModals
-        selectedUpgrade={selectedUpgrade}
         insufficientFundsUpgrade={insufficientFundsUpgrade}
-        usesLeft={usesLeft}
         marketCap={marketCap}
-        onCloseRequirements={onCloseRequirements}
         onCloseInsufficientFunds={onCloseInsufficientFunds}
       />
     </div>

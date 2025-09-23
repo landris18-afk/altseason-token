@@ -24,8 +24,8 @@ export const fmt = (n) => Math.round(n).toLocaleString('en-US');
  */
 export const priceMultiplier = (id) => {
   if (id === 1) return 1.02;         // Diamond Hands: 2% growth
-  if (id === 5 || id === 6) return 1.15;
-  return 1.10;
+  if (id === 5 || id === 6) return 1.05;  // FOMO Generator & Whale Magnet: 5% growth
+  return 1.05;                       // Bull's Strength, Moon Shot, Shill Army: 5% growth
 };
 
 /**
@@ -35,7 +35,7 @@ export const priceMultiplier = (id) => {
  * @returns {number} Számított költség
  */
 export const calculateUpgradeCost = (upgrade) => {
-  return Math.floor(upgrade.baseCost * priceMultiplier(upgrade.id) ** upgrade.level);
+  return Math.round(upgrade.baseCost * priceMultiplier(upgrade.id) ** upgrade.level);
 };
 
 /**
@@ -43,10 +43,20 @@ export const calculateUpgradeCost = (upgrade) => {
  * 
  * @param {Object} upgrade - Upgrade objektum
  * @param {Object} usesLeft - Maradék használatok
+ * @param {Array} allUpgrades - Összes upgrade (requirements ellenőrzéshez)
  * @returns {boolean} Feloldott-e az upgrade
  */
-export const isUpgradeUnlocked = (upgrade, usesLeft) => {
+export const isUpgradeUnlocked = (upgrade, usesLeft, allUpgrades = []) => {
   if (upgrade.id === 1) return true; // Diamond Hands mindig feloldott
+  
+  // Ellenőrizzük a requirements-eket
+  if (upgrade.requirements) {
+    const requiredUpgrade = allUpgrades.find(u => u.id === upgrade.requirements.upgradeId);
+    if (!requiredUpgrade || requiredUpgrade.level < upgrade.requirements.level) {
+      return false; // Nincs meg a követelmény
+    }
+  }
+  
   const currentUses = usesLeft[upgrade.id] ?? 0;
   return currentUses > 0 && upgrade.isUnlocked;
 };
@@ -92,10 +102,11 @@ export const formatUpgradeDescription = (description) => {
  * @param {Object} upgrade - Upgrade objektum
  * @param {Object} usesLeft - Maradék használatok
  * @param {number} marketCap - Jelenlegi Market Cap
+ * @param {Array} allUpgrades - Összes upgrade (requirements ellenőrzéshez)
  * @returns {Object} Státusz információk
  */
-export const getUpgradeStatus = (upgrade, usesLeft, marketCap) => {
-  const isUnlocked = isUpgradeUnlocked(upgrade, usesLeft);
+export const getUpgradeStatus = (upgrade, usesLeft, marketCap, allUpgrades = []) => {
+  const isUnlocked = isUpgradeUnlocked(upgrade, usesLeft, allUpgrades);
   const canAfford = canAffordUpgrade(upgrade, marketCap);
   const cost = calculateUpgradeCost(upgrade);
   

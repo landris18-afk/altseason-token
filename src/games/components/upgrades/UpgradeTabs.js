@@ -25,11 +25,11 @@ import { getUpgradeCategories, isUpgradeUnlocked, canAffordUpgrade } from '../..
 const UpgradeTabs = ({ activeTab, setActiveTab, upgrades, usesLeft, marketCap }) => {
   // Elérhető upgrade-ek számának kiszámítása
   const availableClickUpgrades = upgrades ? getUpgradeCategories(upgrades).click.filter(upgrade => 
-    isUpgradeUnlocked(upgrade, usesLeft) && canAffordUpgrade(upgrade, marketCap)
+    isUpgradeUnlocked(upgrade, usesLeft, upgrades) && canAffordUpgrade(upgrade, marketCap)
   ).length : 0;
   
   const availablePassiveUpgrades = upgrades ? getUpgradeCategories(upgrades).passive.filter(upgrade => 
-    isUpgradeUnlocked(upgrade, usesLeft) && canAffordUpgrade(upgrade, marketCap)
+    isUpgradeUnlocked(upgrade, usesLeft, upgrades) && canAffordUpgrade(upgrade, marketCap)
   ).length : 0;
   return (
     <div className="flex space-x-2 mb-4">

@@ -110,7 +110,7 @@ const MarketCapDisplay = ({
 
   return (
     <div className="flex flex-col items-center">
-      <h3 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold">
+      <h3 className="text-3xl sm:text-4xl md:text-4xl lg:text-5xl font-bold">
         <span className="bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 bg-clip-text text-transparent">
           $ASS
         </span>

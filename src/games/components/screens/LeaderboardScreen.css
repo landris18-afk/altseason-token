@@ -417,6 +417,33 @@
   background: rgba(234, 179, 8, 0.9);
 }
 
+/* Mobile scrollbar adjustments */
+@media (max-width: 767px) {
+  .mobile-leaderboard-container .table-body {
+    scrollbar-width: auto;
+    scrollbar-color: rgba(234, 179, 8, 0.9) rgba(31, 41, 55, 0.7);
+  }
+  
+  .mobile-leaderboard-container .table-body::-webkit-scrollbar {
+    width: 12px;
+  }
+  
+  .mobile-leaderboard-container .table-body::-webkit-scrollbar-track {
+    background: rgba(31, 41, 55, 0.7);
+    border-radius: 6px;
+  }
+  
+  .mobile-leaderboard-container .table-body::-webkit-scrollbar-thumb {
+    background: rgba(234, 179, 8, 0.9);
+    border-radius: 6px;
+    border: 2px solid rgba(31, 41, 55, 0.7);
+  }
+  
+  .mobile-leaderboard-container .table-body::-webkit-scrollbar-thumb:hover {
+    background: rgba(234, 179, 8, 1);
+  }
+}
+
 .table-row {
   display: grid;
   grid-template-columns: 60px 1fr 120px 80px;
@@ -688,26 +715,29 @@
   }
   
   .mobile-leaderboard-container .close-btn {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: rgba(255, 255, 255, 0.7);
-    border-radius: 8px;
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 50%, #b91c1c 100%);
+    border: 2px solid #dc2626;
+    color: white;
+    border-radius: 12px;
     cursor: pointer;
-    font-weight: 500;
-    font-size: 0.75rem;
-    transition: all 0.2s ease;
-    min-width: 32px;
-    height: 32px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    min-width: 40px;
+    height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 0;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
   }
   
   .mobile-leaderboard-container .close-btn:hover {
-    background: rgba(255, 255, 255, 0.15);
-    color: rgba(255, 255, 255, 0.9);
-    border-color: rgba(255, 255, 255, 0.3);
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 50%, #991b1b 100%);
+    color: white;
+    border-color: #b91c1c;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(239, 68, 68, 0.6);
   }
   
   .mobile-leaderboard-container .toggle-btn {

@@ -27,7 +27,6 @@ import {
  */
 export const useUpgradePanel = (upgrades, marketCap, buyUpgrade, usesLeft) => {
   // Állapot változók
-  const [selectedUpgrade, setSelectedUpgrade] = useState(null);
   const [insufficientFundsUpgrade, setInsufficientFundsUpgrade] = useState(null);
   const [activeTab, setActiveTab] = useState('click');
   const [forceUpdate, setForceUpdate] = useState(false);
@@ -57,42 +56,25 @@ export const useUpgradePanel = (upgrades, marketCap, buyUpgrade, usesLeft) => {
 
   // Upgrade kattintás kezelése
   const handleUpgradeClick = (upgrade) => {
-    // Diamond Hands esetén ne ellenőrizzük a használatokat
-    if (upgrade.id !== 1) {
-      const currentUses = usesLeft[upgrade.id] ?? 0;
-      
-      // Ha nincs több használat, akkor lezárjuk
-      if (currentUses <= 0) {
-        const req = upgrades.find(x => x.id === upgrade.requirements?.upgradeId);
-        setSelectedUpgrade({ upgrade, requiredUpgrade: req });
-        return;
-      }
-
-      // Ha nincs feloldva, akkor lezárjuk
-      if (!isUpgradeUnlocked(upgrade, usesLeft)) {
-        const req = upgrades.find(x => x.id === upgrade.requirements?.upgradeId);
-        setSelectedUpgrade({ upgrade, requiredUpgrade: req });
-        return;
-      }
+    // Ellenőrizzük, hogy feloldott-e és megfizethető-e
+    const isUnlocked = isUpgradeUnlocked(upgrade, usesLeft, upgrades);
+    const canAfford = canAffordUpgrade(upgrade, marketCap);
+    
+    if (!isUnlocked || !canAfford) {
+      // Ha nincs feloldva vagy nincs elég pénz, ne csináljunk semmit
+      // A felhasználó látja a kis boxban a feltételeket
+      return;
     }
 
     const cost = calculateUpgradeCost(upgrade);
-    if (canAffordUpgrade(upgrade, marketCap)) {
-      buyUpgrade(upgrade);
-    } else {
-      setInsufficientFundsUpgrade({ upgrade, cost });
-    }
+    buyUpgrade(upgrade);
   };
-
-  // Requirements modal bezárása
-  const handleCloseRequirementsModal = () => setSelectedUpgrade(null);
 
   // Insufficient funds modal bezárása
   const handleCloseInsufficientFundsModal = () => setInsufficientFundsUpgrade(null);
 
   return {
     // Állapot
-    selectedUpgrade,
     insufficientFundsUpgrade,
     activeTab,
     forceUpdate,
@@ -101,7 +83,6 @@ export const useUpgradePanel = (upgrades, marketCap, buyUpgrade, usesLeft) => {
     // Funkciók
     setActiveTab,
     handleUpgradeClick,
-    handleCloseRequirementsModal,
     handleCloseInsufficientFundsModal
   };
 };

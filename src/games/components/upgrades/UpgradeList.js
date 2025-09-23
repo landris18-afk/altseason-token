@@ -45,6 +45,7 @@ const UpgradeList = ({
           onClick={onUpgradeClick}
           getNextLevelUses={getNextLevelUses}
           isLast={index === currentUpgrades.length - 1}
+          allUpgrades={upgrades}
         />
       ))}
     </div>

@@ -112,11 +112,11 @@ const GameModal = ({ isOpen, onClose, gameSectionProps, modalManagerProps }) => 
     const categories = getUpgradeCategories(upgrades);
     
     const availableClickUpgrades = categories.click.filter(upgrade => 
-      isUpgradeUnlocked(upgrade, usesLeft) && canAffordUpgrade(upgrade, marketCap)
+      isUpgradeUnlocked(upgrade, usesLeft, upgrades) && canAffordUpgrade(upgrade, marketCap)
     ).length;
     
     const availablePassiveUpgrades = categories.passive.filter(upgrade => 
-      isUpgradeUnlocked(upgrade, usesLeft) && canAffordUpgrade(upgrade, marketCap)
+      isUpgradeUnlocked(upgrade, usesLeft, upgrades) && canAffordUpgrade(upgrade, marketCap)
     ).length;
     
     return availableClickUpgrades + availablePassiveUpgrades;
