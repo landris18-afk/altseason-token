@@ -49,11 +49,15 @@ const GameModal = ({ isOpen, onClose, gameSectionProps, modalManagerProps }) => 
       // Tiltja a body scrolling-ot
       document.body.style.overflow = 'hidden';
       document.body.style.height = '100%';
+      document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
       document.documentElement.style.overflow = 'hidden';
     } else {
       // Visszaállítja a scrolling-ot
       document.body.style.overflow = 'unset';
       document.body.style.height = 'unset';
+      document.body.style.position = 'unset';
+      document.body.style.width = 'unset';
       document.documentElement.style.overflow = 'unset';
     }
 
@@ -61,6 +65,8 @@ const GameModal = ({ isOpen, onClose, gameSectionProps, modalManagerProps }) => 
     return () => {
       document.body.style.overflow = 'unset';
       document.body.style.height = 'unset';
+      document.body.style.position = 'unset';
+      document.body.style.width = 'unset';
       document.documentElement.style.overflow = 'unset';
     };
   }, [isOpen]);
@@ -90,8 +96,10 @@ const GameModal = ({ isOpen, onClose, gameSectionProps, modalManagerProps }) => 
   // Reset befejezés kezelése
   const handleResetComplete = () => {
     setGameFlowState('leaderboard');
-    setPlayerName('');
+    setPlayerName(''); // Név törlése a state-ből
     setShowUpgradesPage(false);
+    // localStorage-ból is töröljük a nevet, hogy a következő betöltéskor ne jelenjen meg
+    localStorage.removeItem('bullRunPlayerName');
   };
 
   // Elérhető upgrade-ek számának kiszámítása
@@ -130,14 +138,6 @@ const GameModal = ({ isOpen, onClose, gameSectionProps, modalManagerProps }) => 
             <FaTimes className="text-lg" />
           </button>
           
-          {/* Mobile close button */}
-          <button 
-            onClick={onClose} 
-            className="md:hidden absolute top-4 right-4 z-[10003] bg-gray-800/80 hover:bg-gray-700/90 text-white/80 hover:text-white transition-all duration-200 rounded-full p-2 backdrop-blur-sm border border-gray-600/50 hover:border-gray-500/70"
-            title="Close"
-          >
-            <FaTimes className="text-lg" />
-          </button>
         </>
       )}
 
@@ -157,11 +157,16 @@ const GameModal = ({ isOpen, onClose, gameSectionProps, modalManagerProps }) => 
       {/* Mobile navigation buttons - only show on game page (not on upgrades page) */}
       {gameFlowState === 'game' && !showUpgradesPage && (
         <>
-          <div className="md:hidden absolute top-4 left-4 right-4 flex justify-between items-center z-[10003]">
+          <div className="md:hidden absolute top-8 left-4 right-4 flex justify-between items-center z-[10003]">
             {/* Upgrades button - left */}
             <button
               onClick={() => setShowUpgradesPage(true)}
-              className="relative bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 text-black py-2 px-4 rounded-lg font-bold text-sm transition-all hover:from-yellow-500 hover:via-yellow-600 hover:to-yellow-700 hover:shadow-lg hover:shadow-yellow-500/25 backdrop-blur-sm"
+              className="relative bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 text-black py-2 px-4 rounded-lg font-bold text-sm transition-all hover:from-yellow-500 hover:via-yellow-600 hover:to-yellow-700 hover:shadow-lg hover:shadow-yellow-500/25 backdrop-blur-sm border border-yellow-600/50 hover:border-yellow-500/70 uppercase tracking-wide"
+              style={{
+                background: 'linear-gradient(135deg, #ffd700 0%, #ffed4e 25%, #f1c40f 50%, #f39c12 75%, #e67e22 100%)',
+                border: '1px solid #f39c12',
+                boxShadow: '0 2px 8px rgba(241, 196, 15, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1)'
+              }}
             >
               <span className="flex items-center space-x-2">
                 <span>Upgrades</span>
@@ -184,23 +189,36 @@ const GameModal = ({ isOpen, onClose, gameSectionProps, modalManagerProps }) => 
             </button>
           </div>
           
-          {/* Elválasztó vonal a fenti gombok alatt */}
-          <div className="md:hidden absolute top-20 left-4 right-4 h-0.5 bg-gradient-to-r from-transparent via-yellow-400/60 to-transparent z-[10002]"></div>
+          {/* Elválasztó vonal a fenti gombok alatt - csak ha van név */}
+          {playerName && (
+            <div className="md:hidden absolute top-24 left-4 right-4 h-0.5 bg-gradient-to-r from-transparent via-yellow-400/60 to-transparent z-[10002]"></div>
+          )}
         </>
       )}
 
       {/* Back to game button - only show on upgrades page */}
       {gameFlowState === 'game' && showUpgradesPage && (
-        <div className="md:hidden absolute top-4 right-4 z-[10003]">
-          <button
-            onClick={() => setShowUpgradesPage(false)}
-            className="bg-gray-800/80 hover:bg-gray-700/90 text-white/80 hover:text-white transition-all duration-200 rounded-full p-2 backdrop-blur-sm border border-gray-600/50 hover:border-gray-500/70"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
-          </button>
-        </div>
+        <>
+          {/* Upgrades header - only on upgrades page */}
+          <div className="md:hidden absolute top-6 left-4 z-[10004]">
+            <h3 className="text-3xl font-bold text-gray-300">Upgrades</h3>
+          </div>
+          
+          {/* Elválasztó vonal az egész header alatt */}
+          <div className="md:hidden absolute top-22 left-4 right-4 h-0.5 bg-gradient-to-r from-transparent via-yellow-400/60 to-transparent z-[10004]"></div>
+          
+          {/* Back button */}
+          <div className="md:hidden absolute top-6 right-4 z-[10003]">
+            <button
+              onClick={() => setShowUpgradesPage(false)}
+              className="bg-gray-800/80 hover:bg-gray-700/90 text-white/80 hover:text-white transition-all duration-200 rounded-full p-2 backdrop-blur-sm border border-gray-600/50 hover:border-gray-500/70"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              </svg>
+            </button>
+          </div>
+        </>
       )}
 
       {/* Content based on game flow state */}
@@ -215,6 +233,7 @@ const GameModal = ({ isOpen, onClose, gameSectionProps, modalManagerProps }) => 
                   marketCap: gameSectionProps.marketCap,
                   levelIndex: gameSectionProps.gameState?.levelIndex || 0
                 } : null}
+                onClose={onClose}
               />
             ) : gameFlowState === 'game' ? (
               <>

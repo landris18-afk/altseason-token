@@ -16,8 +16,13 @@ import React from 'react';
 const UpgradeHeader = () => {
   return (
     <div className="mb-4">
-      <h3 className="text-xl font-bold text-gray-300 mb-1">Upgrades</h3>
-      <div className="h-px bg-gradient-to-r from-transparent via-yellow-400/30 to-transparent"></div>
+      {/* Desktop: normál header */}
+      <div className="hidden md:block">
+        <h3 className="text-3xl font-bold text-gray-300 mb-4">Upgrades</h3>
+        <div className="h-px bg-gradient-to-r from-transparent via-yellow-400/30 to-transparent"></div>
+      </div>
+      
+      {/* Mobile: nincs header, mert az a GameModal-ban van kezelve */}
     </div>
   );
 };

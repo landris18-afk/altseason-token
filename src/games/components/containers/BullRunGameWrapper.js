@@ -75,7 +75,7 @@ export default function BullRunGameWrapper({
   
   // Wrapped startGame that includes acceptTerms
   const startGame = () => {
-    originalStartGame(acceptTerms);
+    originalStartGame(acceptTerms, setIsTermsModalOpen);
   };
 
   // Wrapped closeGameModal that resets terms acceptance

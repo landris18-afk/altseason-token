@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { mockLeaderboardData, formatScore, getRankSuffix } from '../../data/leaderboardData';
+import { mockLeaderboardData, formatScore } from '../../data/leaderboardData';
 import './LeaderboardScreen.css';
 
-const LeaderboardScreen = ({ onStartGame, playerName, playerStats }) => {
+const LeaderboardScreen = ({ onStartGame, playerName, playerStats, onClose }) => {
   const [showTopTen, setShowTopTen] = useState(true);
 
   const toggleView = () => {
@@ -37,7 +37,7 @@ const LeaderboardScreen = ({ onStartGame, playerName, playerStats }) => {
                   </div>
                 )}
                 <button className="start-game-btn" onClick={onStartGame}>
-                  {playerName ? 'PLAY AGAIN' : 'START GAME'}
+                  START GAME
                 </button>
               </div>
             </div>
@@ -68,7 +68,7 @@ const LeaderboardScreen = ({ onStartGame, playerName, playerStats }) => {
                                 {rank === 3 && '🥉'}
                               </span>
                             ) : (
-                              `${rank}${getRankSuffix(rank)}`
+                              `${rank}.`
                             )}
                           </span>
                         </div>
@@ -79,7 +79,7 @@ const LeaderboardScreen = ({ onStartGame, playerName, playerStats }) => {
                           <span className="score-value">{formatScore(player.score)}</span>
                         </div>
                         <div className="cell-level">
-                          <span className="level-badge">Lv. {player.level}</span>
+                          <span className="level-badge">lvl {player.level}</span>
                         </div>
                       </div>
                     );
@@ -114,7 +114,7 @@ const LeaderboardScreen = ({ onStartGame, playerName, playerStats }) => {
               <div className="leaderboard-header">
                 <div className="header-left">
                   <button className="start-game-btn" onClick={onStartGame}>
-                    {playerName ? 'PLAY AGAIN' : 'START GAME'}
+                    START GAME
                   </button>
                 </div>
                 <div className="header-right">
@@ -122,9 +122,9 @@ const LeaderboardScreen = ({ onStartGame, playerName, playerStats }) => {
                     <div className="player-info">
                       <div className="player-name-display">{playerName}</div>
                       <div className="player-stats">
-                        <span className="stat">Market Cap: ${playerStats.marketCap.toLocaleString()}</span>
+                        <span className="stat">MC: ${playerStats.marketCap.toLocaleString()}</span>
                         <span className="stat">Rank: #{playerRank}</span>
-                        <span className="stat">Level: {playerStats.levelIndex + 1}</span>
+                        <span className="stat">lvl: {playerStats.levelIndex + 1}</span>
                       </div>
                     </div>
                   )}
@@ -163,7 +163,7 @@ const LeaderboardScreen = ({ onStartGame, playerName, playerStats }) => {
                               {rank === 3 && '🥉'}
                             </span>
                           ) : (
-                            `${rank}${getRankSuffix(rank)}`
+                            `${rank}.`
                           )}
                         </span>
                       </div>
@@ -174,7 +174,7 @@ const LeaderboardScreen = ({ onStartGame, playerName, playerStats }) => {
                         <span className="score-value">{formatScore(player.score)}</span>
                       </div>
                       <div className="cell-level">
-                        <span className="level-badge">Lv. {player.level}</span>
+                        <span className="level-badge">lvl {player.level}</span>
                       </div>
                     </div>
                   );
@@ -194,6 +194,17 @@ const LeaderboardScreen = ({ onStartGame, playerName, playerStats }) => {
                     onClick={toggleView}
                   >
                     All Players
+                  </button>
+                </div>
+                <div className="footer-right">
+                  <button 
+                    onClick={onClose}
+                    className="close-btn"
+                    title="Close"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
                   </button>
                 </div>
               </div>

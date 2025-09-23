@@ -42,17 +42,17 @@ const CustomModal = ({
         <div className="flex-grow overflow-y-auto p-6 space-y-4">{children}</div>
         
         {/* Footer */}
-        <div className="flex justify-end space-x-4 p-6 border-t border-gray-700">
+        <div className="flex flex-col md:flex-row justify-center md:justify-end md:space-x-4 p-6 border-t border-gray-700">
           <button 
             onClick={onClose} 
-            className="bg-gray-600 py-2 px-5 rounded-lg hover:bg-gray-500 transition-all"
+            className="bg-gray-600 py-1 px-4 md:py-2 md:px-5 rounded-lg hover:bg-gray-500 transition-all order-2 md:order-1 mb-16 md:mb-0"
           >
             {cancelText || "Cancel"}
           </button>
           {showConfirmButton && (
             <button 
               onClick={onConfirm} 
-              className="bg-red-700 py-2 px-5 rounded-lg hover:bg-red-600 transition-all"
+              className="bg-red-700 py-1 px-4 md:py-2 md:px-5 rounded-lg hover:bg-red-600 transition-all order-1 md:order-2"
             >
               {confirmText || "Confirm"}
             </button>

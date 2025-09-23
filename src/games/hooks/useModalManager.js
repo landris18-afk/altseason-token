@@ -47,7 +47,8 @@ export const useModalManager = () => {
   const acceptTerms = () => {
     if (!isCheckboxChecked) return;
     setIsTermsAccepted(true);
-    setIsTermsModalOpen(false);
+    // Ne zárjuk be azonnal a TermsModal-t, hagyjuk a startGame-nek
+    // setIsTermsModalOpen(false);
   };
 
   return {

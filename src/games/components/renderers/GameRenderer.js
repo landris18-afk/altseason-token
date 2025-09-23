@@ -23,7 +23,7 @@ export default function GameRenderer({
     return <LoadingScreen />;
   }
 
-  if (!isTermsAccepted) {
+  if (!isTermsAccepted || !isGameModalOpen) {
     return (
       <>
         <TermsOverlay
@@ -48,7 +48,7 @@ export default function GameRenderer({
     );
   }
 
-  // Ha a terms elfogadva van, akkor a játék az oldalon jelenjen meg
+  // Ha a terms elfogadva van ÉS a játék modal nyitva van, akkor a játék az oldalon jelenjen meg
   return (
     <>
       {/* Játék az oldalon */}

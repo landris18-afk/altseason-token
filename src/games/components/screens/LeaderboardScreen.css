@@ -105,12 +105,13 @@
     gap: 0.5rem;
     align-items: flex-end;
     margin-right: 0;
-    margin-top: 2rem;
+    margin-top: 0;
   }
   
   .mobile-leaderboard-container .player-info {
     align-items: flex-end;
     gap: 0.25rem;
+    margin-top: 0;
   }
   
   .mobile-leaderboard-container .player-stats {
@@ -306,6 +307,43 @@
   gap: 8px;
 }
 
+.footer-right {
+  grid-column: 3 / 5;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.close-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.7);
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.75rem;
+  transition: all 0.2s ease;
+  min-width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.close-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.9);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Desktop: hide close button in footer */
+@media (min-width: 768px) {
+  .footer-right {
+    display: none;
+  }
+}
+
 .table-header {
   display: grid;
   grid-template-columns: 60px 1fr 120px 80px;
@@ -494,6 +532,13 @@
   font-size: 1.1rem;
 }
 
+/* Mobile rank number adjustments */
+@media (max-width: 767px) {
+  .mobile-leaderboard-container .rank-number {
+    font-size: 0.9rem;
+  }
+}
+
 .medal {
   font-size: 1.5rem;
 }
@@ -627,13 +672,42 @@
   .mobile-leaderboard-container .table-header,
   .mobile-leaderboard-container .table-row,
   .mobile-leaderboard-container .table-footer {
-    grid-template-columns: 45px 1fr 100px 60px;
+    grid-template-columns: 35px 1fr 100px 60px;
     padding: 10px 12px;
-    font-size: 0.85rem;
   }
   
   .mobile-leaderboard-container .footer-left {
     grid-column: 1 / 3;
+  }
+  
+  .mobile-leaderboard-container .footer-right {
+    grid-column: 3 / 5;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+  }
+  
+  .mobile-leaderboard-container .close-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.7);
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 0.75rem;
+    transition: all 0.2s ease;
+    min-width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+  }
+  
+  .mobile-leaderboard-container .close-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: rgba(255, 255, 255, 0.9);
+    border-color: rgba(255, 255, 255, 0.3);
   }
   
   .mobile-leaderboard-container .toggle-btn {
@@ -657,9 +731,8 @@
   .mobile-leaderboard-container .table-header,
   .mobile-leaderboard-container .table-row,
   .mobile-leaderboard-container .table-footer {
-    grid-template-columns: 40px 1fr 90px 50px;
+    grid-template-columns: 30px 1fr 90px 50px;
     padding: 8px 10px;
-    font-size: 0.8rem;
   }
   
   .mobile-leaderboard-container .leaderboard-title {

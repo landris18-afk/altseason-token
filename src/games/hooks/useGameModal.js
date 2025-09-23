@@ -32,14 +32,18 @@ export const useGameModal = () => {
   };
 
   // Játék indítás (terms elfogadás + játék modal megnyitás)
-  const startGame = (acceptTerms) => {
+  const startGame = (acceptTerms, setIsTermsModalOpen) => {
     if (acceptTerms) {
       acceptTerms(); // Elfogadja a feltételeket
+    }
+    // Bezárjuk a TermsModal-t
+    if (setIsTermsModalOpen) {
+      setIsTermsModalOpen(false);
     }
     // Automatikusan megnyitja a játék modal-t
     setTimeout(() => {
       openGameModal();
-    }, 100); // Kis késleltetés, hogy a terms elfogadás lefusson
+    }, 200); // Késleltetés a TermsModal bezárásához
   };
 
   return {
