@@ -26,7 +26,7 @@ const LevelUpModal = ({ isOpen, onClose, levelName, twitterUrl, levelIndex }) =>
   const currentLevelColor = levelColors[levelIndex] || levelColors[0];
   
   return (
-    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-[9999] p-4">
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-[10005] p-4">
       <div className="bg-gray-900 border-2 border-white border-opacity-50 rounded-2xl shadow-lg p-8 max-w-md w-full text-center text-white animate-fade-in-up">
         {/* Success Icon */}
         <FaCheckCircle className="text-6xl text-yellow-400 mx-auto mb-4" />
@@ -44,9 +44,9 @@ const LevelUpModal = ({ isOpen, onClose, levelName, twitterUrl, levelIndex }) =>
             href={twitterUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="bg-sky-500 text-white font-bold py-3 px-6 rounded-full flex items-center justify-center space-x-2 hover:bg-sky-400 transition-all shadow-lg"
+            className="bg-gradient-to-r from-sky-500 via-blue-500 to-sky-600 text-white font-bold py-3 px-6 rounded-xl flex items-center justify-center space-x-2 hover:from-sky-600 hover:via-blue-600 hover:to-sky-700 transition-all duration-300 shadow-lg hover:shadow-xl hover:shadow-sky-500/25 transform hover:scale-105 border border-sky-400/30"
           >
-            <FaXTwitter />
+            <FaXTwitter className="text-lg" />
             <span>Share Score</span>
           </a>
         </div>
@@ -54,7 +54,7 @@ const LevelUpModal = ({ isOpen, onClose, levelName, twitterUrl, levelIndex }) =>
         {/* Continue Button */}
         <button
           onClick={onClose}
-          className="mt-6 bg-yellow-500 font-semibold py-2 px-8 rounded-lg hover:opacity-90 transition-all w-full text-gray-900"
+          className="mt-6 bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 font-bold py-3 px-8 rounded-xl hover:from-yellow-500 hover:via-yellow-600 hover:to-yellow-700 transition-all duration-300 w-full text-gray-900 shadow-lg hover:shadow-xl hover:shadow-yellow-500/25 transform hover:scale-105 border border-yellow-400/30"
         >
           Continue Pumping
         </button>

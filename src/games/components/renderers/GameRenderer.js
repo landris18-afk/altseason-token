@@ -23,9 +23,10 @@ export default function GameRenderer({
     return <LoadingScreen />;
   }
 
-  if (!isTermsAccepted || !isGameModalOpen) {
-    return (
-      <>
+  return (
+    <>
+      {/* Terms Overlay - csak akkor jelenik meg, ha nincs elfogadva */}
+      {!isTermsAccepted && (
         <TermsOverlay
           setMuted={setMuted}
           muted={muted}
@@ -36,23 +37,10 @@ export default function GameRenderer({
           acceptTerms={acceptTerms}
           onStartGame={startGame}
         />
-        
-        {/* Játék Modal - csak akkor nyílik meg, ha startGame hívódik */}
-        <GameModal
-          isOpen={isGameModalOpen}
-          onClose={closeGameModal}
-          gameSectionProps={gameSectionProps}
-          modalManagerProps={modalManagerProps}
-        />
-      </>
-    );
-  }
-
-  // Ha a terms elfogadva van ÉS a játék modal nyitva van, akkor a játék az oldalon jelenjen meg
-  return (
-    <>
-      {/* Játék az oldalon */}
-      {children}
+      )}
+      
+      {/* Játék az oldalon - csak akkor jelenik meg, ha a modal nyitva van */}
+      {isGameModalOpen && children}
       
       {/* Játék Modal - csak akkor nyílik meg, ha startGame hívódik */}
       <GameModal

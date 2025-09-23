@@ -7,7 +7,7 @@ const HowToPlayModal = ({ isOpen, onClose }) => {
   return (
     <>
       {/* Mobile: Full screen */}
-      <div className="md:hidden fixed inset-0 bg-gray-900 z-[10000]">
+      <div className="md:hidden fixed inset-0 bg-gray-900 z-[10005]">
         <div className="w-full h-full bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex flex-col animate-fade-in-up overflow-hidden">
         {/* Header */}
         <div className="flex justify-between items-center p-6 border-b border-gray-700 bg-gradient-to-r from-gray-800 to-gray-700">
@@ -106,7 +106,7 @@ const HowToPlayModal = ({ isOpen, onClose }) => {
       </div>
 
       {/* Desktop: Popup modal */}
-      <div className="hidden md:flex fixed inset-0 bg-black/80 backdrop-blur-sm items-center justify-center z-[10000] p-4">
+      <div className="hidden md:flex fixed inset-0 bg-black/80 backdrop-blur-sm items-center justify-center z-[10005] p-4">
         <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 border-2 border-yellow-500/30 rounded-3xl shadow-2xl shadow-yellow-500/20 w-full max-w-2xl flex flex-col max-h-[90vh] animate-fade-in-up overflow-hidden">
         {/* Header */}
         <div className="flex justify-between items-center p-6 border-b border-gray-700 bg-gradient-to-r from-gray-800 to-gray-700">

@@ -129,8 +129,10 @@ const LeaderboardScreen = ({ onStartGame, playerName, playerStats, onClose }) =>
                     </div>
                   )}
                 </div>
-                {/* Elválasztó vonal a fejléc alatt */}
-                <div className="md:hidden absolute top-16 left-4 right-4 h-0.5 bg-gradient-to-r from-transparent via-yellow-400/60 to-transparent z-[10002]"></div>
+                {/* Elválasztó vonal a fejléc alatt - csak ha van játékos név */}
+                {playerName && (
+                  <div className="md:hidden absolute top-16 left-4 right-4 h-0.5 bg-gradient-to-r from-transparent via-yellow-400/60 to-transparent z-[10002]"></div>
+                )}
               </div>
 
               <div className="leaderboard-content">

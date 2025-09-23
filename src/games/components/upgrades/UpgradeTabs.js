@@ -32,7 +32,7 @@ const UpgradeTabs = ({ activeTab, setActiveTab, upgrades, usesLeft, marketCap })
     isUpgradeUnlocked(upgrade, usesLeft, upgrades) && canAffordUpgrade(upgrade, marketCap)
   ).length : 0;
   return (
-    <div className="flex space-x-2 mb-4">
+    <div className="flex space-x-2 mb-4 py-2">
       <button
         onClick={() => setActiveTab('click')}
         className={`relative flex-1 py-2 px-2 sm:px-4 rounded-lg font-bold transition-all text-sm sm:text-base ${

@@ -10,7 +10,12 @@ import BullRunGame from '@/games/BullRunGame'
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-black text-white">
+    <main className="min-h-screen text-white" style={{
+      background: 'url(/images/rockat_pump_bacground.jpg)',
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundRepeat: 'no-repeat'
+    }}>
       <Header />
       <div className="pt-20">
         <About />

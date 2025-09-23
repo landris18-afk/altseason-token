@@ -18,7 +18,7 @@ const UpgradeHeader = () => {
     <div className="mb-4">
       {/* Desktop: normál header */}
       <div className="hidden md:block">
-        <h3 className="text-3xl font-bold text-gray-300 mb-4">Upgrades</h3>
+        <h3 className="text-4xl font-bold text-gray-300 mb-3">Upgrades</h3>
         <div className="h-px bg-gradient-to-r from-transparent via-yellow-400/30 to-transparent"></div>
       </div>
       

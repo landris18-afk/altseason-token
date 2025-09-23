@@ -73,12 +73,12 @@ export default function BullRunGameWrapper({
   // Játék modal hook használata
   const { isGameModalOpen, closeGameModal: originalCloseGameModal, startGame: originalStartGame } = useGameModal();
   
-  // Wrapped startGame that includes acceptTerms
+  // Játék indítás terms elfogadással
   const startGame = () => {
     originalStartGame(acceptTerms, setIsTermsModalOpen);
   };
 
-  // Wrapped closeGameModal that resets terms acceptance
+  // Modal bezárás terms visszaállítással
   const closeGameModal = () => {
     const resetTerms = () => {
       setIsTermsAccepted(false);
@@ -87,7 +87,7 @@ export default function BullRunGameWrapper({
     originalCloseGameModal(resetTerms);
   };
 
-  // Props csoportosítása
+  // Props csoportosítása a komponenseknek
   const gameRendererProps = {
     isLoaded,
     isTermsAccepted,
@@ -136,6 +136,7 @@ export default function BullRunGameWrapper({
       isResetModalOpen,
       setIsResetModalOpen,
       confirmReset,
+      onResetComplete: closeGameModal,
       isRulesModalOpen,
       setIsRulesModalOpen,
       isSolanaModalOpen,

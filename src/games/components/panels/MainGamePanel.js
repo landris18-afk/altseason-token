@@ -56,7 +56,7 @@ export default function MainGamePanel({
   onBackToLeaderboard
 }) {
   return (
-    <div className="w-full h-full p-4 flex flex-col justify-start md:pt-4 pt-24">
+    <div className="w-full h-full p-4 flex flex-col justify-start md:pt-4 pt-24 bg-gray-800/50 md:bg-transparent">
         {/* Progress Bar */}
         <ProgressBar 
           current={current}

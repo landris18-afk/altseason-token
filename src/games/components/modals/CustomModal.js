@@ -33,7 +33,7 @@ const CustomModal = ({
   if (!isOpen) return null;
   
   return (
-    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-[10000] p-4">
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-[10005] p-4">
       <div className="bg-gray-900 border-2 border-yellow-500/30 rounded-2xl shadow-lg shadow-yellow-500/20 w-full max-w-lg flex flex-col max-h-[90vh] animate-fade-in-up">
         {/* Header */}
         <h3 className="text-2xl font-bold p-6 border-b border-gray-700">{title}</h3>
@@ -42,21 +42,40 @@ const CustomModal = ({
         <div className="flex-grow overflow-y-auto p-6 space-y-4">{children}</div>
         
         {/* Footer */}
-        <div className="flex flex-col md:flex-row justify-center md:justify-end md:space-x-4 p-6 border-t border-gray-700">
-          <button 
-            onClick={onClose} 
-            className="bg-gray-600 py-1 px-4 md:py-2 md:px-5 rounded-lg hover:bg-gray-500 transition-all order-2 md:order-1 mb-16 md:mb-0"
-          >
-            {cancelText || "Cancel"}
-          </button>
-          {showConfirmButton && (
+        <div className="p-6 border-t border-gray-700">
+          {/* Mobile: vertical layout with spacing */}
+          <div className="flex flex-col space-y-6 md:hidden">
             <button 
               onClick={onConfirm} 
-              className="bg-red-700 py-1 px-4 md:py-2 md:px-5 rounded-lg hover:bg-red-600 transition-all order-1 md:order-2"
+              className="bg-red-700 py-3 px-8 rounded-lg hover:bg-red-600 transition-all w-48 mx-auto whitespace-nowrap"
             >
               {confirmText || "Confirm"}
             </button>
-          )}
+            <button 
+              onClick={onClose} 
+              className="bg-gray-600 py-3 px-8 rounded-lg hover:bg-gray-500 transition-all w-48 mx-auto whitespace-nowrap"
+            >
+              {cancelText || "Cancel"}
+            </button>
+          </div>
+          
+          {/* Desktop: horizontal layout */}
+          <div className="hidden md:flex justify-end space-x-4">
+            <button 
+              onClick={onClose} 
+              className="bg-gray-600 py-3 px-8 rounded-lg hover:bg-gray-500 transition-all w-48 whitespace-nowrap"
+            >
+              {cancelText || "Cancel"}
+            </button>
+            {showConfirmButton && (
+              <button 
+                onClick={onConfirm} 
+                className="bg-red-700 py-3 px-8 rounded-lg hover:bg-red-600 transition-all w-48 whitespace-nowrap"
+              >
+                {confirmText || "Confirm"}
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </div>

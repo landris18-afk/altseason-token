@@ -1,23 +1,8 @@
 /**
- * GameModal.js - Játék modal komponens
- * 
- * Ez a komponens a játékot egy felugró ablakban jeleníti meg:
- * - Teljes képernyős modal
- * - Sötét háttér
- * - Bezárás gomb
- * - Játék tartalom
- */
-
-import React, { useEffect, useState, useMemo } from 'react';
-import { FaTimes } from 'react-icons/fa';
-import GameContent from '../sections/GameContent';
-import ModalManager from '../managers/ModalManager';
-import LeaderboardScreen from '../screens/LeaderboardScreen';
-import NameInputModal from '../modals/NameInputModal';
-import { getUpgradeCategories, isUpgradeUnlocked, canAffordUpgrade } from '../../utils/upgradeUtils';
-
-/**
  * GameModal - Játék modal komponens
+ * 
+ * Teljes képernyős modal a játék megjelenítéséhez.
+ * Kezeli a játék flow-t: leaderboard -> name input -> game
  * 
  * @param {Object} props - Props objektum
  * @param {boolean} props.isOpen - Modal nyitott állapot
@@ -26,14 +11,27 @@ import { getUpgradeCategories, isUpgradeUnlocked, canAffordUpgrade } from '../..
  * @param {Object} props.modalManagerProps - ModalManager props
  * @returns {JSX.Element|null} Modal komponens vagy null
  */
+
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
+import { FaTimes } from 'react-icons/fa';
+import GameContent from '../sections/GameContent';
+import ModalManager from '../managers/ModalManager';
+import LeaderboardScreen from '../screens/LeaderboardScreen';
+import NameInputModal from '../modals/NameInputModal';
+import { getUpgradeCategories, isUpgradeUnlocked, canAffordUpgrade } from '../../utils/upgradeUtils';
 const GameModal = ({ isOpen, onClose, gameSectionProps, modalManagerProps }) => {
-  // Game flow state within the modal
+  // Játék flow állapotok
   const [gameFlowState, setGameFlowState] = useState('leaderboard');
-  const [showUpgradesPage, setShowUpgradesPage] = useState(false); // 'leaderboard', 'nameInput', 'game'
-  const [playerName, setPlayerName] = useState('');
+  const [showUpgradesPage, setShowUpgradesPage] = useState(false);
+  const [playerName, setPlayerName] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('bullRunPlayerName') || '';
+    }
+    return '';
+  });
   const [isNameModalOpen, setIsNameModalOpen] = useState(false);
 
-  // Reset game flow when modal opens and load saved name
+  // Modal megnyitáskor játék állapot visszaállítása és mentett név betöltése
   useEffect(() => {
     if (isOpen) {
       setGameFlowState('leaderboard');
@@ -43,17 +41,25 @@ const GameModal = ({ isOpen, onClose, gameSectionProps, modalManagerProps }) => 
     }
   }, [isOpen]);
 
-  // Scroll tiltás amikor a játék modal nyitva van
+
+  // Player név szinkronizálása localStorage-szal
+  useEffect(() => {
+    if (playerName) {
+      localStorage.setItem('bullRunPlayerName', playerName);
+    } else {
+      localStorage.removeItem('bullRunPlayerName');
+    }
+  }, [playerName]);
+
+  // Scroll tiltás modal megnyitáskor
   useEffect(() => {
     if (isOpen) {
-      // Tiltja a body scrolling-ot
       document.body.style.overflow = 'hidden';
       document.body.style.height = '100%';
       document.body.style.position = 'fixed';
       document.body.style.width = '100%';
       document.documentElement.style.overflow = 'hidden';
     } else {
-      // Visszaállítja a scrolling-ot
       document.body.style.overflow = 'unset';
       document.body.style.height = 'unset';
       document.body.style.position = 'unset';
@@ -61,7 +67,6 @@ const GameModal = ({ isOpen, onClose, gameSectionProps, modalManagerProps }) => 
       document.documentElement.style.overflow = 'unset';
     }
 
-    // Cleanup - visszaállítja a scrolling-ot amikor a komponens unmount-ol
     return () => {
       document.body.style.overflow = 'unset';
       document.body.style.height = 'unset';
@@ -71,13 +76,11 @@ const GameModal = ({ isOpen, onClose, gameSectionProps, modalManagerProps }) => 
     };
   }, [isOpen]);
 
-  // Game flow handlers
+  // Játék flow kezelők
   const handleStartGame = () => {
     if (playerName) {
-      // If player already has a name, go directly to game
       setGameFlowState('game');
     } else {
-      // If no name, show name input modal
       setIsNameModalOpen(true);
     }
   };
@@ -91,15 +94,6 @@ const GameModal = ({ isOpen, onClose, gameSectionProps, modalManagerProps }) => 
 
   const handleNameModalClose = () => {
     setIsNameModalOpen(false);
-  };
-
-  // Reset befejezés kezelése
-  const handleResetComplete = () => {
-    setGameFlowState('leaderboard');
-    setPlayerName(''); // Név törlése a state-ből
-    setShowUpgradesPage(false);
-    // localStorage-ból is töröljük a nevet, hogy a következő betöltéskor ne jelenjen meg
-    localStorage.removeItem('bullRunPlayerName');
   };
 
   // Elérhető upgrade-ek számának kiszámítása
@@ -125,23 +119,26 @@ const GameModal = ({ isOpen, onClose, gameSectionProps, modalManagerProps }) => 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-gray-900 z-[9999] game-modal-open">
-      {/* Close Button - Csak ranglista oldalon */}
+    <div className="fixed inset-0 z-[9999] game-modal-open" style={{
+      background: 'url(/images/rockat_pump_bacground.jpg)',
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundRepeat: 'no-repeat'
+    }}>
+      {/* Finom sötétítés csak mobilnézetben */}
+      <div className="md:hidden absolute inset-0 bg-black/20 pointer-events-none"></div>
+      {/* Desktop bezárás gomb - csak ranglista oldalon */}
       {!isNameModalOpen && gameFlowState === 'leaderboard' && (
-        <>
-          {/* Desktop close button */}
-          <button 
-            onClick={onClose} 
-            className="hidden md:block absolute top-8 right-8 z-[10001] bg-gray-800/80 hover:bg-gray-700/90 text-white/80 hover:text-white transition-all duration-200 rounded-full p-2 backdrop-blur-sm border border-gray-600/50 hover:border-gray-500/70"
-            title="Close"
-          >
-            <FaTimes className="text-lg" />
-          </button>
-          
-        </>
+        <button 
+          onClick={onClose} 
+          className="hidden md:block absolute top-8 right-8 z-[10001] bg-gray-800/80 hover:bg-gray-700/90 text-white/80 hover:text-white transition-all duration-200 rounded-full p-2 backdrop-blur-sm border border-gray-600/50 hover:border-gray-500/70"
+          title="Close"
+        >
+          <FaTimes className="text-lg" />
+        </button>
       )}
 
-      {/* Back to Leaderboard Button - Csak játék oldalon, csak desktop nézetben */}
+      {/* Desktop vissza gomb - csak játék oldalon */}
       {!isNameModalOpen && gameFlowState === 'game' && (
         <button 
           onClick={() => setGameFlowState('leaderboard')} 
@@ -154,11 +151,10 @@ const GameModal = ({ isOpen, onClose, gameSectionProps, modalManagerProps }) => 
         </button>
       )}
 
-      {/* Mobile navigation buttons - only show on game page (not on upgrades page) */}
+      {/* Mobil navigációs gombok - csak játék oldalon */}
       {gameFlowState === 'game' && !showUpgradesPage && (
         <>
           <div className="md:hidden absolute top-8 left-4 right-4 flex justify-between items-center z-[10003]">
-            {/* Upgrades button - left */}
             <button
               onClick={() => setShowUpgradesPage(true)}
               className="relative bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 text-black py-2 px-4 rounded-lg font-bold text-sm transition-all hover:from-yellow-500 hover:via-yellow-600 hover:to-yellow-700 hover:shadow-lg hover:shadow-yellow-500/25 backdrop-blur-sm border border-yellow-600/50 hover:border-yellow-500/70 uppercase tracking-wide"
@@ -178,7 +174,6 @@ const GameModal = ({ isOpen, onClose, gameSectionProps, modalManagerProps }) => 
               </span>
             </button>
 
-            {/* Back to leaderboard button - right */}
             <button
               onClick={() => setGameFlowState('leaderboard')}
               className="bg-gray-800/80 hover:bg-gray-700/90 text-white/80 hover:text-white transition-all duration-200 rounded-full p-2 backdrop-blur-sm border border-gray-600/50 hover:border-gray-500/70"
@@ -189,25 +184,21 @@ const GameModal = ({ isOpen, onClose, gameSectionProps, modalManagerProps }) => 
             </button>
           </div>
           
-          {/* Elválasztó vonal a fenti gombok alatt - csak ha van név */}
           {playerName && (
             <div className="md:hidden absolute top-24 left-4 right-4 h-0.5 bg-gradient-to-r from-transparent via-yellow-400/60 to-transparent z-[10002]"></div>
           )}
         </>
       )}
 
-      {/* Back to game button - only show on upgrades page */}
+      {/* Upgrades oldal header - csak upgrades oldalon */}
       {gameFlowState === 'game' && showUpgradesPage && (
         <>
-          {/* Upgrades header - only on upgrades page */}
           <div className="md:hidden absolute top-6 left-4 z-[10004]">
             <h3 className="text-3xl font-bold text-gray-300">Upgrades</h3>
           </div>
           
-          {/* Elválasztó vonal az egész header alatt */}
           <div className="md:hidden absolute top-22 left-4 right-4 h-0.5 bg-gradient-to-r from-transparent via-yellow-400/60 to-transparent z-[10004]"></div>
           
-          {/* Back button */}
           <div className="md:hidden absolute top-6 right-4 z-[10003]">
             <button
               onClick={() => setShowUpgradesPage(false)}
@@ -221,12 +212,13 @@ const GameModal = ({ isOpen, onClose, gameSectionProps, modalManagerProps }) => 
         </>
       )}
 
-      {/* Content based on game flow state */}
-      <div className="w-full h-full">
-        <div className="w-full h-full animate-fade-in-up">
-          <div className="w-full h-full relative z-[9998] overflow-hidden">
+          {/* Tartalom a játék flow állapot alapján */}
+          <div className="w-full h-full">
+            <div className="w-full h-full animate-fade-in-up">
+              <div className="w-full h-full relative z-[9998] overflow-hidden">
             {gameFlowState === 'leaderboard' ? (
               <LeaderboardScreen 
+                key={`leaderboard-${playerName}-${gameSectionProps?.marketCap || 0}`}
                 onStartGame={handleStartGame} 
                 playerName={playerName} 
                 playerStats={gameSectionProps ? {
@@ -244,14 +236,14 @@ const GameModal = ({ isOpen, onClose, gameSectionProps, modalManagerProps }) => 
                   showUpgradesPage={showUpgradesPage}
                   setShowUpgradesPage={setShowUpgradesPage}
                 />
-                <ModalManager {...modalManagerProps} onResetComplete={handleResetComplete} />
+                <ModalManager {...modalManagerProps} />
               </>
             ) : null}
           </div>
         </div>
       </div>
 
-      {/* Name Input Modal */}
+      {/* Név bevitel modal */}
       <NameInputModal 
         isOpen={isNameModalOpen}
         onClose={handleNameModalClose}

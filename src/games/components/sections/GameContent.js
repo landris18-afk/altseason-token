@@ -83,7 +83,14 @@ const GameContent = ({
   setShowUpgradesPage
 }) => {
   return (
-    <div className="w-full h-full bg-gray-900 text-white">
+    <div className="w-full h-full text-white" style={{
+      background: 'url(/images/rockat_pump_bacground.jpg)',
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundRepeat: 'no-repeat'
+    }}>
+      {/* Finom sötétítés mindkét nézetben */}
+      <div className="absolute inset-0 bg-black/20 pointer-events-none"></div>
       <div className="w-full h-full">
         <div className="relative h-full">
           {/* Desktop: Single container with MainGamePanel and extending UpgradesPanel */}

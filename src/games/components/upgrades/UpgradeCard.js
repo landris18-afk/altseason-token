@@ -8,7 +8,7 @@
  * - Kattintás kezelés
  */
 
-import React, { useState } from 'react';
+import React from 'react';
 import { FaBolt, FaLock } from 'react-icons/fa';
 import { 
   isUpgradeUnlocked, 
@@ -38,24 +38,15 @@ const UpgradeCard = ({
   isLast = false,
   allUpgrades = []
 }) => {
-  const [isAnimating, setIsAnimating] = useState(false);
   const isUnlocked = isUpgradeUnlocked(upgrade, usesLeft, allUpgrades);
   const canAfford = canAffordUpgrade(upgrade, marketCap);
   const cost = calculateUpgradeCost(upgrade);
   const isDisabled = !isUnlocked || !canAfford;
 
-  const handleClick = () => {
-    if (canAfford && isUnlocked) {
-      setIsAnimating(true);
-      setTimeout(() => setIsAnimating(false), 600);
-    }
-    onClick(upgrade);
-  };
-
   return (
     <div className={`flex justify-between items-center ${isLast ? 'mb-6' : ''}`}>
       <button
-        onClick={handleClick}
+        onClick={() => onClick(upgrade)}
         disabled={isDisabled}
         className={`w-full group transition-all duration-300 ${
           !isUnlocked ? 'opacity-50 cursor-not-allowed' : 
@@ -65,9 +56,7 @@ const UpgradeCard = ({
         <div className={`bg-gray-800/50 rounded-xl p-4 border-2 ${
           !isUnlocked ? 'border-gray-700' : 
           canAfford ? 'border-yellow-500/50 group-hover:border-yellow-500' : 'border-gray-600'
-        } transition-all duration-300 group-hover:shadow-lg group-hover:shadow-yellow-500/25 ${
-          isAnimating ? 'animate-upgrade-purchase' : ''
-        }`}>
+        } transition-all duration-300 group-hover:shadow-lg group-hover:shadow-yellow-500/25`}>
           <div className="flex items-start justify-between gap-3">
             {/* Bal oldal - Upgrade információk */}
             <div className="flex-1 min-w-0 space-y-1">

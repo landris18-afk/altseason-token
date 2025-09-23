@@ -23,7 +23,8 @@ const UpgradeFooter = ({ clickPower, passiveIncome, hasPremiumUpgrade }) => {
   const displayedPassiveIncome = hasPremiumUpgrade ? passiveIncome * 10 : passiveIncome;
 
   return (
-    <div className="mt-auto pt-4 border-t-2 border-white/10 text-center">
+    <div className="mt-auto pt-4 text-center">
+      <div className="h-px bg-gradient-to-r from-transparent via-yellow-400/30 to-transparent mb-4"></div>
       <div className="flex justify-around gap-2">
         <div className="flex-1">
           <p className="text-gray-400 text-xs sm:text-sm">MC / Click</p>
