@@ -52,3 +52,4 @@ const UpgradesModal = ({ isOpen, onClose, upgradesProps }) => {
 
 export default UpgradesModal;
 
+

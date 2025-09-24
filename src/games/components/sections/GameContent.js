@@ -90,7 +90,7 @@ const GameContent = ({
       backgroundRepeat: 'no-repeat'
     }}>
       {/* Finom sötétítés mindkét nézetben */}
-      <div className="absolute inset-0 bg-black/20 pointer-events-none"></div>
+      <div className="absolute inset-0 bg-black/20 pointer-events-none z-[9997]"></div>
       <div className="w-full h-full">
         <div className="relative h-full">
           {/* Desktop: Single container with MainGamePanel and extending UpgradesPanel */}

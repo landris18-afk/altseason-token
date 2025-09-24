@@ -126,7 +126,7 @@ const GameModal = ({ isOpen, onClose, gameSectionProps, modalManagerProps }) => 
       backgroundRepeat: 'no-repeat'
     }}>
       {/* Finom sötétítés csak mobilnézetben */}
-      <div className="md:hidden absolute inset-0 bg-black/20 pointer-events-none"></div>
+      <div className="md:hidden fixed inset-0 bg-black/20 pointer-events-none z-[9998]"></div>
       {/* Desktop bezárás gomb - csak ranglista oldalon */}
       {!isNameModalOpen && gameFlowState === 'leaderboard' && (
         <button 
@@ -193,13 +193,13 @@ const GameModal = ({ isOpen, onClose, gameSectionProps, modalManagerProps }) => 
       {/* Upgrades oldal header - csak upgrades oldalon */}
       {gameFlowState === 'game' && showUpgradesPage && (
         <>
-          <div className="md:hidden absolute top-6 left-4 z-[10004]">
+          <div className="md:hidden absolute top-8 left-1/2 transform -translate-x-1/2 z-[10004]">
             <h3 className="text-3xl font-bold text-gray-300">Upgrades</h3>
           </div>
           
           <div className="md:hidden absolute top-22 left-4 right-4 h-0.5 bg-gradient-to-r from-transparent via-yellow-400/60 to-transparent z-[10004]"></div>
           
-          <div className="md:hidden absolute top-6 right-4 z-[10003]">
+          <div className="md:hidden absolute top-8 right-4 z-[10003]">
             <button
               onClick={() => setShowUpgradesPage(false)}
               className="bg-gray-800/80 hover:bg-gray-700/90 text-white/80 hover:text-white transition-all duration-200 rounded-full p-2 backdrop-blur-sm border border-gray-600/50 hover:border-gray-500/70"

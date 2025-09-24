@@ -3,16 +3,55 @@ import { mockLeaderboardData, formatScore } from '../../data/leaderboardData';
 import './LeaderboardScreen.css';
 
 const LeaderboardScreen = ({ onStartGame, playerName, playerStats, onClose }) => {
-  const [showTopTen, setShowTopTen] = useState(true);
+  const [viewMode, setViewMode] = useState('top10'); // 'top10', 'top50', 'top100', 'all'
 
-  const toggleView = () => {
-    setShowTopTen(!showTopTen);
+  const toggleView = (mode) => {
+    setViewMode(mode);
   };
 
-  const displayedData = showTopTen ? mockLeaderboardData.slice(0, 10) : mockLeaderboardData;
+  const getBaseData = () => {
+    switch (viewMode) {
+      case 'top10':
+        return mockLeaderboardData.slice(0, 10);
+      case 'top50':
+        return mockLeaderboardData.slice(0, 50);
+      case 'top100':
+        return mockLeaderboardData.slice(0, 100);
+      case 'all':
+      default:
+        return mockLeaderboardData;
+    }
+  };
+
+  const baseData = getBaseData();
   
-  // Játékos rank számítása - mindig az utolsó a ranglistán
-  const playerRank = mockLeaderboardData.length + 1;
+  // Játékos rank számítása - ahol a játékos valóban elhelyezkedne a ranglistán
+  const calculateUserRank = () => {
+    if (!playerStats) return null;
+    let rank = 1;
+    for (const player of mockLeaderboardData) {
+      if (playerStats.marketCap > player.score) {
+        break;
+      }
+      rank++;
+    }
+    return rank;
+  };
+  
+  const playerRank = calculateUserRank();
+  
+  // Játékos adatainak létrehozása
+  const userEntry = playerName && playerStats ? {
+    id: 'current-user',
+    name: playerName,
+    score: playerStats.marketCap,
+    level: playerStats.levelIndex + 1,
+    isCurrentUser: true,
+    actualRank: playerRank
+  } : null;
+  
+  // Játékos adatai most a fejléc felett jelennek meg, nem a ranglistában
+  const displayedData = baseData;
 
   return (
     <div className="leaderboard-screen">
@@ -26,16 +65,6 @@ const LeaderboardScreen = ({ onStartGame, playerName, playerStats, onClose }) =>
                 <p className="leaderboard-subtitle">Top Pumpers of All Time</p>
               </div>
               <div className="header-right">
-                {playerName && playerStats && (
-                  <div className="player-info">
-                    <div className="player-name-display">{playerName}</div>
-                    <div className="player-stats">
-                      <span className="stat">Market Cap: ${playerStats.marketCap.toLocaleString()}</span>
-                      <span className="stat">Rank: #{playerRank}</span>
-                      <span className="stat">Level: {playerStats.levelIndex + 1}</span>
-                    </div>
-                  </div>
-                )}
                 <button className="start-game-btn" onClick={onStartGame}>
                   START GAME
                 </button>
@@ -44,6 +73,41 @@ const LeaderboardScreen = ({ onStartGame, playerName, playerStats, onClose }) =>
 
             <div className="leaderboard-content">
               <div className="leaderboard-table">
+                {/* Current User Row Above Header */}
+                {userEntry && (
+                  <div className="table-row current-user-above-header">
+                    <div className="cell-rank">
+                      <span className="rank-number">
+                        {playerRank <= 3 ? (
+                          <span className="medal">
+                            {playerRank === 1 && '🥇'}
+                            {playerRank === 2 && '🥈'}
+                            {playerRank === 3 && '🥉'}
+                          </span>
+                        ) : (
+                          `${playerRank}.`
+                        )}
+                      </span>
+                    </div>
+                    <div className="cell-name">
+                      <span className="player-name current-user-name">
+                        {playerName}
+                        <span className="current-user-badge"> (YOU)</span>
+                      </span>
+                    </div>
+                    <div className="cell-score">
+                      <span className="score-value current-user-score">
+                        {formatScore(playerStats.marketCap)}
+                      </span>
+                    </div>
+                    <div className="cell-level">
+                      <span className="level-badge current-user-level">
+                        lvl {playerStats.levelIndex + 1}
+                      </span>
+                    </div>
+                  </div>
+                )}
+                
                 <div className="table-header">
                   <div className="header-rank">Rank</div>
                   <div className="header-name">Player</div>
@@ -53,15 +117,19 @@ const LeaderboardScreen = ({ onStartGame, playerName, playerStats, onClose }) =>
 
                 <div className="table-body">
                   {displayedData.map((player, index) => {
-                    const rank = index + 1;
+                    const rank = index + 1; // A valódi rank az index + 1
+                    const isCurrentUser = player.isCurrentUser;
+                    const isPodium = rank <= 3;
+                    const isUserPodium = isCurrentUser && player.actualRank <= 3;
+                    
                     return (
                       <div 
                         key={player.id} 
-                        className={`table-row ${rank <= 3 ? 'podium' : ''} ${rank === 1 ? 'first' : ''} ${rank === 2 ? 'second' : ''} ${rank === 3 ? 'third' : ''}`}
+                        className={`table-row ${isCurrentUser ? 'current-user' : ''} ${isPodium ? 'podium' : ''} ${rank === 1 ? 'first' : ''} ${rank === 2 ? 'second' : ''} ${rank === 3 ? 'third' : ''}`}
                       >
                         <div className="cell-rank">
                           <span className="rank-number">
-                            {rank <= 3 ? (
+                            {isPodium ? (
                               <span className="medal">
                                 {rank === 1 && '🥇'}
                                 {rank === 2 && '🥈'}
@@ -73,13 +141,20 @@ const LeaderboardScreen = ({ onStartGame, playerName, playerStats, onClose }) =>
                           </span>
                         </div>
                         <div className="cell-name">
-                          <span className="player-name">{player.name}</span>
+                          <span className={`player-name ${isCurrentUser ? 'current-user-name' : ''}`}>
+                            {player.name}
+                            {isCurrentUser && <span className="current-user-badge"> (YOU)</span>}
+                          </span>
                         </div>
                         <div className="cell-score">
-                          <span className="score-value">{formatScore(player.score)}</span>
+                          <span className={`score-value ${isCurrentUser ? 'current-user-score' : ''}`}>
+                            {formatScore(player.score)}
+                          </span>
                         </div>
                         <div className="cell-level">
-                          <span className="level-badge">lvl {player.level}</span>
+                          <span className={`level-badge ${isCurrentUser ? 'current-user-level' : ''}`}>
+                            lvl {player.level}
+                          </span>
                         </div>
                       </div>
                     );
@@ -89,14 +164,26 @@ const LeaderboardScreen = ({ onStartGame, playerName, playerStats, onClose }) =>
                 <div className="table-footer">
                   <div className="footer-left">
                     <button 
-                      className={`toggle-btn ${showTopTen ? 'active' : ''}`}
-                      onClick={toggleView}
+                      className={`toggle-btn ${viewMode === 'top10' ? 'active' : ''}`}
+                      onClick={() => toggleView('top10')}
                     >
                       Top 10
                     </button>
                     <button 
-                      className={`toggle-btn ${!showTopTen ? 'active' : ''}`}
-                      onClick={toggleView}
+                      className={`toggle-btn ${viewMode === 'top50' ? 'active' : ''}`}
+                      onClick={() => toggleView('top50')}
+                    >
+                      Top 50
+                    </button>
+                    <button 
+                      className={`toggle-btn ${viewMode === 'top100' ? 'active' : ''}`}
+                      onClick={() => toggleView('top100')}
+                    >
+                      Top 100
+                    </button>
+                    <button 
+                      className={`toggle-btn ${viewMode === 'all' ? 'active' : ''}`}
+                      onClick={() => toggleView('all')}
                     >
                       All Players
                     </button>
@@ -109,38 +196,74 @@ const LeaderboardScreen = ({ onStartGame, playerName, playerStats, onClose }) =>
       </div>
 
       {/* Mobile: Full width container */}
-          <div className="mobile-leaderboard-container">
-            <div className="leaderboard-container">
-              <div className="leaderboard-header">
-                <div className="header-left">
-                  <button className="start-game-btn" onClick={onStartGame}>
-                    START GAME
-                  </button>
-                </div>
-                <div className="header-right">
-                  {playerName && playerStats && (
-                    <div className="player-info">
-                      <div className="player-name-display">{playerName}</div>
-                      <div className="player-stats">
-                        <span className="stat">MC: ${playerStats.marketCap.toLocaleString()}</span>
-                        <span className="stat">Rank: #{playerRank}</span>
-                        <span className="stat">lvl: {playerStats.levelIndex + 1}</span>
-                      </div>
-                    </div>
-                  )}
-                </div>
-                {/* Elválasztó vonal a fejléc alatt - csak ha van játékos név */}
-                {playerName && (
-                  <div className="md:hidden absolute top-16 left-4 right-4 h-0.5 bg-gradient-to-r from-transparent via-yellow-400/60 to-transparent z-[10002]"></div>
-                )}
-              </div>
+      {/* Mobile Header - START GAME left, X right - OUTSIDE container */}
+      <div className="md:hidden absolute top-8 left-4 z-[10003]">
+        <button className="start-game-btn" onClick={onStartGame}>
+          START GAME
+        </button>
+      </div>
+      
+      <div className="md:hidden absolute top-8 right-4 z-[10003]">
+        <button
+          onClick={onClose}
+          className="bg-gray-800/80 hover:bg-gray-700/90 text-white/80 hover:text-white transition-all duration-200 rounded-full p-2 backdrop-blur-sm border border-gray-600/50 hover:border-gray-500/70"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      
+      <div className="md:hidden absolute top-24 left-4 right-4 h-0.5 bg-gradient-to-r from-transparent via-yellow-400/60 to-transparent z-[10002]"></div>
+
+      <div className="mobile-leaderboard-container">
+        <div className="leaderboard-container">
+          {/* Mobile Title */}
+          <div className="md:hidden text-center mb-12">
+            <h1 className="leaderboard-title text-2xl font-bold text-yellow-400 mb-2">BULL RUN LEADERBOARD</h1>
+            <p className="leaderboard-subtitle text-gray-300 text-sm">Top Pumpers of All Time</p>
+          </div>
 
               <div className="leaderboard-content">
                 <div className="leaderboard-table">
-                  <div className="table-title-section">
-                    <h1 className="table-title">BULL RUN LEADERBOARD</h1>
-                    <p className="table-subtitle">Top Pumpers of All Time</p>
-                  </div>
+                  
+                  {/* Current User Row Above Header - Mobile */}
+                  {userEntry && (
+                    <div className="table-row current-user-above-header">
+                      <div className="cell-rank">
+                        <span className="rank-number">
+                          {playerRank <= 3 ? (
+                            <span className="medal">
+                              {playerRank === 1 && '🥇'}
+                              {playerRank === 2 && '🥈'}
+                              {playerRank === 3 && '🥉'}
+                            </span>
+                          ) : (
+                            `${playerRank}.`
+                          )}
+                        </span>
+                      </div>
+                      <div className="cell-name">
+                        <span className="player-name current-user-name">
+                          {playerName}
+                          <span className="current-user-badge"> (YOU)</span>
+                        </span>
+                      </div>
+                      <div className="cell-score">
+                        <span className="score-value current-user-score">
+                          {formatScore(playerStats.marketCap)}
+                        </span>
+                      </div>
+                      <div className="cell-level">
+                        <span className="level-badge current-user-level">
+                          lvl {playerStats.levelIndex + 1}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* START GAME Button removed - now in header */}
+                  
                   <div className="table-header">
                     <div className="header-rank">Rank</div>
                     <div className="header-name">Player</div>
@@ -150,15 +273,19 @@ const LeaderboardScreen = ({ onStartGame, playerName, playerStats, onClose }) =>
 
               <div className="table-body">
                 {displayedData.map((player, index) => {
-                  const rank = index + 1;
+                  const rank = index + 1; // A valódi rank az index + 1
+                  const isCurrentUser = player.isCurrentUser;
+                  const isPodium = rank <= 3;
+                  const isUserPodium = isCurrentUser && player.actualRank <= 3;
+                  
                   return (
                     <div 
                       key={player.id} 
-                      className={`table-row ${rank <= 3 ? 'podium' : ''} ${rank === 1 ? 'first' : ''} ${rank === 2 ? 'second' : ''} ${rank === 3 ? 'third' : ''}`}
+                      className={`table-row ${isCurrentUser ? 'current-user' : ''} ${isPodium ? 'podium' : ''} ${rank === 1 ? 'first' : ''} ${rank === 2 ? 'second' : ''} ${rank === 3 ? 'third' : ''}`}
                     >
                       <div className="cell-rank">
                         <span className="rank-number">
-                          {rank <= 3 ? (
+                          {isPodium ? (
                             <span className="medal">
                               {rank === 1 && '🥇'}
                               {rank === 2 && '🥈'}
@@ -170,13 +297,20 @@ const LeaderboardScreen = ({ onStartGame, playerName, playerStats, onClose }) =>
                         </span>
                       </div>
                       <div className="cell-name">
-                        <span className="player-name">{player.name}</span>
+                        <span className={`player-name ${isCurrentUser ? 'current-user-name' : ''}`}>
+                          {player.name}
+                          {isCurrentUser && <span className="current-user-badge"> (YOU)</span>}
+                        </span>
                       </div>
                       <div className="cell-score">
-                        <span className="score-value">{formatScore(player.score)}</span>
+                        <span className={`score-value ${isCurrentUser ? 'current-user-score' : ''}`}>
+                          {formatScore(player.score)}
+                        </span>
                       </div>
                       <div className="cell-level">
-                        <span className="level-badge">lvl {player.level}</span>
+                        <span className={`level-badge ${isCurrentUser ? 'current-user-level' : ''}`}>
+                          lvl {player.level}
+                        </span>
                       </div>
                     </div>
                   );
@@ -186,27 +320,28 @@ const LeaderboardScreen = ({ onStartGame, playerName, playerStats, onClose }) =>
               <div className="table-footer">
                 <div className="footer-left">
                   <button 
-                    className={`toggle-btn ${showTopTen ? 'active' : ''}`}
-                    onClick={toggleView}
+                    className={`toggle-btn ${viewMode === 'top10' ? 'active' : ''}`}
+                    onClick={() => toggleView('top10')}
                   >
                     Top 10
                   </button>
                   <button 
-                    className={`toggle-btn ${!showTopTen ? 'active' : ''}`}
-                    onClick={toggleView}
+                    className={`toggle-btn ${viewMode === 'top50' ? 'active' : ''}`}
+                    onClick={() => toggleView('top50')}
+                  >
+                    Top 50
+                  </button>
+                  <button 
+                    className={`toggle-btn ${viewMode === 'top100' ? 'active' : ''}`}
+                    onClick={() => toggleView('top100')}
+                  >
+                    Top 100
+                  </button>
+                  <button 
+                    className={`toggle-btn ${viewMode === 'all' ? 'active' : ''}`}
+                    onClick={() => toggleView('all')}
                   >
                     All Players
-                  </button>
-                </div>
-                <div className="footer-right">
-                  <button 
-                    onClick={onClose}
-                    className="close-btn"
-                    title="Close"
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
                   </button>
                 </div>
               </div>
