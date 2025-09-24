@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import { mockLeaderboardData, formatScore } from '../../data/leaderboardData';
-import './LeaderboardScreen.css';
+import './LeaderboardLayout.css';
+import './LeaderboardTable.css';
+import './LeaderboardCells.css';
+import './LeaderboardButtons.css';
+import './LeaderboardCurrentUser.css';
 
 const LeaderboardScreen = ({ onStartGame, playerName, playerStats, onClose }) => {
   const [viewMode, setViewMode] = useState('top10'); // 'top10', 'top50', 'top100', 'all'
@@ -60,9 +64,9 @@ const LeaderboardScreen = ({ onStartGame, playerName, playerStats, onClose }) =>
         <div className="desktop-leaderboard-panel">
           <div className="leaderboard-container">
             <div className="leaderboard-header">
-              <div className="header-left">
-                <h1 className="leaderboard-title">BULL RUN LEADERBOARD</h1>
-                <p className="leaderboard-subtitle">Top Pumpers of All Time</p>
+              <div className="header-left" style={{lineHeight: '0.8', paddingTop: '24px', paddingBottom: '24px'}}>
+                <h1 className="leaderboard-title text-xs font-bold text-yellow-400" style={{margin: '0', padding: '0', lineHeight: '0.8'}}>BULL RUN LEADERBOARD</h1>
+                <p className="leaderboard-subtitle text-xs text-gray-300" style={{margin: '0', padding: '0', lineHeight: '0.8'}}>Top Pumpers of All Time</p>
               </div>
               <div className="header-right">
                 <button className="start-game-btn" onClick={onStartGame}>
@@ -184,12 +188,6 @@ const LeaderboardScreen = ({ onStartGame, playerName, playerStats, onClose }) =>
                     >
                       Top 100
                     </button>
-                    <button 
-                      className={`toggle-btn ${viewMode === 'all' ? 'active' : ''}`}
-                      onClick={() => toggleView('all')}
-                    >
-                      All Players
-                    </button>
                   </div>
                 </div>
               </div>
@@ -219,9 +217,9 @@ const LeaderboardScreen = ({ onStartGame, playerName, playerStats, onClose }) =>
           
           <div className="md:hidden mb-2 h-0.5 bg-gradient-to-r from-transparent via-yellow-400/60 to-transparent"></div>
           {/* Mobile Title */}
-          <div className="md:hidden flex flex-col items-center justify-center mb-12 pt-4">
-            <h1 className="leaderboard-title text-2xl font-bold text-yellow-400 mb-2">BULL RUN LEADERBOARD</h1>
-            <p className="leaderboard-subtitle text-gray-300 text-sm">Top Pumpers of All Time</p>
+          <div className="md:hidden flex flex-col items-center justify-center mb-1 pt-2">
+            <h1 className="leaderboard-title text-xl font-bold text-yellow-400 mb-1">BULL RUN LEADERBOARD</h1>
+            <p className="leaderboard-subtitle text-gray-300 text-xs">Top Pumpers of All Time</p>
           </div>
 
               <div className="leaderboard-content">
@@ -339,13 +337,6 @@ const LeaderboardScreen = ({ onStartGame, playerName, playerStats, onClose }) =>
                     onClick={() => toggleView('top100')}
                   >
                     Top 100
-                  </button>
-                  <button 
-                    className={`toggle-btn ${viewMode === 'all' ? 'active' : ''}`}
-                    onClick={() => toggleView('all')}
-                  >
-                    <span className="md:hidden">All</span>
-                    <span className="hidden md:inline">All Players</span>
                   </button>
                 </div>
               </div>

@@ -1,0 +1,198 @@
+/* LeaderboardLayout.css - Layout és container stílusok */
+
+.leaderboard-screen {
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  position: relative;
+}
+
+/* Desktop: Centered layout */
+.desktop-leaderboard-container {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .desktop-leaderboard-container {
+    display: flex;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+  }
+  
+  .desktop-leaderboard-panel {
+    width: 100%;
+    max-width: 72rem;
+    height: 83.333333%;
+    background: linear-gradient(to right, rgba(15, 23, 42, 0.5), rgba(31, 41, 55, 0.4), rgba(31, 41, 55, 0.5));
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+    border-radius: 1rem;
+    border: 2px solid rgba(234, 179, 8, 0.6);
+  }
+}
+
+/* Mobile: Full width layout */
+.mobile-leaderboard-container {
+  display: block;
+  height: 100%;
+  position: relative;
+  padding: 1rem 0 0 0; /* Minimal padding for mobile */
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.8), rgba(31, 41, 55, 0.6));
+  overflow-y: auto; /* Enable scrolling on mobile */
+}
+
+@media (min-width: 768px) {
+  .mobile-leaderboard-container {
+    display: none;
+  }
+}
+
+.leaderboard-container {
+  background: transparent;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.leaderboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1px;
+  flex-shrink: 0;
+  position: relative;
+  padding: 1px 20px 0 20px;
+}
+
+/* Mobile header adjustments */
+@media (max-width: 767px) {
+  .mobile-leaderboard-container .leaderboard-header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 0.5rem 1rem 0.5rem 1rem;
+    text-align: left;
+  }
+  
+  .mobile-leaderboard-container .header-left {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+  
+  .mobile-leaderboard-container .header-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.25rem;
+  }
+}
+
+.header-left {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.header-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+
+.player-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
+}
+
+.player-name-display {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #ffd700;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+.player-stats {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.stat {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.leaderboard-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #ffd700 0%, #ffed4e 25%, #f1c40f 50%, #f39c12 75%, #e67e22 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  margin: 0 0 0.5rem 0;
+  letter-spacing: -0.02em;
+  text-align: center;
+}
+
+@media (max-width: 767px) {
+  .mobile-leaderboard-container .leaderboard-title {
+    font-size: 1.3rem;
+  }
+}
+
+.leaderboard-subtitle {
+  font-size: 1.125rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0 0 1.5rem 0;
+  font-weight: 500;
+  text-align: center;
+  letter-spacing: 0.01em;
+}
+
+.leaderboard-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  min-height: 0;
+}
+
+@media (max-width: 767px) {
+  .mobile-leaderboard-container .leaderboard-content {
+    padding: 0;
+  }
+}
