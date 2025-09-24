@@ -84,7 +84,7 @@ const UpgradeContainer = ({
       />
 
       {/* Mobile fixed bottom stats */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-gray-900/95 backdrop-blur-sm border-t border-gray-700/50 p-4 z-50">
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-gray-900/95 backdrop-blur-sm border-t border-yellow-400/60 p-4 z-50">
         <div className="flex justify-center items-center gap-8">
           <div className="text-center">
             <div className="text-xs text-gray-400 mb-1">MC / Click</div>
