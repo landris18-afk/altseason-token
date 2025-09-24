@@ -24,8 +24,8 @@ export const fmt = (n) => Math.round(n).toLocaleString('en-US');
  */
 export const priceMultiplier = (id) => {
   if (id === 1) return 1.02;         // Diamond Hands: 2% growth
-  if (id === 5 || id === 6) return 1.05;  // FOMO Generator & Whale Magnet: 5% growth
-  return 1.05;                       // Bull's Strength, Moon Shot, Shill Army: 5% growth
+  if (id === 5 || id === 6) return 1.15;  // FOMO Generator & Whale Magnet: 15% growth
+  return 1.10;                       // Bull's Strength, Moon Shot, Shill Army: 10% growth
 };
 
 /**

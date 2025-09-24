@@ -28,7 +28,7 @@ export const useUpgradeUnlock = (
   useEffect(() => {
     if (isLoaded) {
       // Végigmegyünk azokon az upgrade-eken, amelyeknek van követelménye
-      for (let id = 2; id <= 6; id++) {
+      for (let id = 2; id <= 8; id++) {
         const req = gameState.upgrades.find(u => u.id === id - 1);
         const upgrade = gameState.upgrades.find(u => u.id === id);
         if (!req || !upgrade || !upgrade.requirements) continue;
@@ -52,6 +52,10 @@ export const useUpgradeUnlock = (
               newUses[id] = 100; // FOMO Generator: 100 használat
             } else if (id === 6) {
               newUses[id] = 20; // Whale Magnet: 20 használat
+            } else if (id === 7) {
+              newUses[id] = Infinity; // Rocket Boost: végtelen
+            } else if (id === 8) {
+              newUses[id] = Infinity; // Supernova Strike: végtelen
             }
             
             return {

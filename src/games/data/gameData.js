@@ -34,7 +34,9 @@ export const getInitialState = () => ({
     3: Infinity, // Moon Shot: végtelen
     4: Infinity, // Shill Army: végtelen
     5: 100, // FOMO Generator: 100 használat
-    6: 20 // Whale Magnet: 20 használat
+    6: 20, // Whale Magnet: 20 használat
+    7: Infinity, // Rocket Boost: végtelen
+    8: Infinity // Supernova Strike: végtelen
   },
   // Upgrade definíciók
   upgrades: [
@@ -110,6 +112,32 @@ export const getInitialState = () => ({
       requirements: {
         upgradeId: 5,
         level: 15
+      }
+    },
+    { 
+      id: 7, 
+      name: "Rocket Boost", 
+      description: "+50 Click Power", 
+      baseCost: 2500, 
+      level: 0, 
+      power: 50, 
+      type: 'click',
+      requirements: {
+        upgradeId: 3,
+        level: 10
+      }
+    },
+    { 
+      id: 8, 
+      name: "Supernova Strike", 
+      description: "+100 Click Power", 
+      baseCost: 10000, 
+      level: 0, 
+      power: 100, 
+      type: 'click',
+      requirements: {
+        upgradeId: 7,
+        level: 10
       }
     }
   ],

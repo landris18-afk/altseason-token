@@ -111,7 +111,10 @@ const LeaderboardScreen = ({ onStartGame, playerName, playerStats, onClose }) =>
                 <div className="table-header">
                   <div className="header-rank">Rank</div>
                   <div className="header-name">Player</div>
-                  <div className="header-score">Market Cap</div>
+                  <div className="header-score">
+                    <span className="desktop-market-cap">Market Cap</span>
+                    <span className="mobile-market-cap">MC</span>
+                  </div>
                   <div className="header-level">Level</div>
                 </div>
 
@@ -196,30 +199,27 @@ const LeaderboardScreen = ({ onStartGame, playerName, playerStats, onClose }) =>
       </div>
 
       {/* Mobile: Full width container */}
-      {/* Mobile Header - START GAME left, X right - OUTSIDE container */}
-      <div className="md:hidden absolute top-8 left-4 z-[10003]">
-        <button className="start-game-btn" onClick={onStartGame}>
-          START GAME
-        </button>
-      </div>
-      
-      <div className="md:hidden absolute top-8 right-4 z-[10003]">
-        <button
-          onClick={onClose}
-          className="bg-gray-800/80 hover:bg-gray-700/90 text-white/80 hover:text-white transition-all duration-200 rounded-full p-2 backdrop-blur-sm border border-gray-600/50 hover:border-gray-500/70"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-      </div>
-      
-      <div className="md:hidden absolute top-24 left-4 right-4 h-0.5 bg-gradient-to-r from-transparent via-yellow-400/60 to-transparent z-[10002]"></div>
-
       <div className="mobile-leaderboard-container">
         <div className="leaderboard-container">
+          {/* Mobile Header - START GAME left, X right - INSIDE SCROLLABLE CONTAINER */}
+          <div className="md:hidden flex justify-between items-center mb-6 pt-4 px-6">
+            <button className="start-game-btn" onClick={onStartGame}>
+              START GAME
+            </button>
+            
+            <button
+              onClick={onClose}
+              className="bg-gray-800/80 hover:bg-gray-700/90 text-white/80 hover:text-white transition-all duration-200 rounded-full p-2 backdrop-blur-sm border border-gray-600/50 hover:border-gray-500/70"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          
+          <div className="md:hidden mb-2 h-0.5 bg-gradient-to-r from-transparent via-yellow-400/60 to-transparent"></div>
           {/* Mobile Title */}
-          <div className="md:hidden text-center mb-12">
+          <div className="md:hidden flex flex-col items-center justify-center mb-12 pt-4">
             <h1 className="leaderboard-title text-2xl font-bold text-yellow-400 mb-2">BULL RUN LEADERBOARD</h1>
             <p className="leaderboard-subtitle text-gray-300 text-sm">Top Pumpers of All Time</p>
           </div>
@@ -267,7 +267,10 @@ const LeaderboardScreen = ({ onStartGame, playerName, playerStats, onClose }) =>
                   <div className="table-header">
                     <div className="header-rank">Rank</div>
                     <div className="header-name">Player</div>
-                    <div className="header-score">Market Cap</div>
+                    <div className="header-score">
+                      <span className="desktop-market-cap">Market Cap</span>
+                      <span className="mobile-market-cap">MC</span>
+                    </div>
                     <div className="header-level">Level</div>
                   </div>
 
@@ -341,7 +344,8 @@ const LeaderboardScreen = ({ onStartGame, playerName, playerStats, onClose }) =>
                     className={`toggle-btn ${viewMode === 'all' ? 'active' : ''}`}
                     onClick={() => toggleView('all')}
                   >
-                    All Players
+                    <span className="md:hidden">All</span>
+                    <span className="hidden md:inline">All Players</span>
                   </button>
                 </div>
               </div>

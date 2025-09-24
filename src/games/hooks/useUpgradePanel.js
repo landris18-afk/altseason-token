@@ -43,7 +43,7 @@ export const useUpgradePanel = (upgrades, marketCap, buyUpgrade, usesLeft) => {
   // Upgrade követelmények ellenőrzése
   useEffect(() => {
     // Végigmegyünk azokon az upgrade-eken, amelyeknek van követelménye
-    for (let id = 2; id <= 6; id++) {
+    for (let id = 2; id <= 8; id++) {
       const req = upgrades.find(u => u.id === id - 1);
       const upgrade = upgrades.find(u => u.id === id);
       if (!req || !upgrade || !upgrade.requirements) continue;

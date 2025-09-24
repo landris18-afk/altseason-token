@@ -44,8 +44,9 @@
   display: block;
   height: 100%;
   position: relative;
-  padding: 7rem 0 0 0; /* Increased padding to move content below header */
+  padding: 1rem 0 0 0; /* Minimal padding for mobile */
   background: linear-gradient(135deg, rgba(15, 23, 42, 0.8), rgba(31, 41, 55, 0.6));
+  overflow-y: auto; /* Enable scrolling on mobile */
 }
 
 @media (min-width: 768px) {
@@ -262,31 +263,6 @@
   border-radius: 0;
 }
 
-/* Mobile only table title section */
-@media (max-width: 767px) {
-  .table-title-section {
-    padding: 0.25rem 1rem 0.5rem 1rem;
-    text-align: left;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  }
-
-  .table-title {
-    font-size: 1.4rem;
-    font-weight: 700;
-    color: #ffd700;
-    margin: 0 0 0.25rem 0;
-    text-shadow: none;
-    letter-spacing: -0.01em;
-  }
-
-  .table-subtitle {
-    font-size: 0.9rem;
-    color: rgba(255, 255, 255, 0.7);
-    margin: 0;
-    font-weight: 500;
-    letter-spacing: 0.01em;
-  }
-}
 
 .table-footer {
   display: grid;
@@ -381,14 +357,44 @@
   align-items: center;
 }
 
+.header-rank {
+  justify-content: center;
+  text-align: center;
+}
+
+.header-name {
+  justify-content: flex-start;
+  text-align: left;
+  padding-left: 8px;
+}
+
 .header-score {
-  justify-content: flex-end;
-  text-align: right;
+  justify-content: center;
+  text-align: center;
 }
 
 .header-level {
-  justify-content: flex-end;
-  text-align: right;
+  justify-content: center;
+  text-align: center;
+}
+
+/* Market Cap responsive display */
+.desktop-market-cap {
+  display: inline;
+}
+
+.mobile-market-cap {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .desktop-market-cap {
+    display: none !important;
+  }
+  
+  .mobile-market-cap {
+    display: inline !important;
+  }
 }
 
 .table-body {
@@ -420,27 +426,29 @@
 /* Mobile scrollbar adjustments */
 @media (max-width: 767px) {
   .mobile-leaderboard-container .table-body {
-    scrollbar-width: auto;
-    scrollbar-color: rgba(234, 179, 8, 0.9) rgba(31, 41, 55, 0.7);
+    overflow-y: auto; /* Restored to auto for proper scrolling */
+    flex: 1; /* Keep flex: 1 for proper layout */
+    scrollbar-width: thin; /* Restored thin scrollbar */
+    scrollbar-color: rgba(234, 179, 8, 0.7) rgba(31, 41, 55, 0.5);
   }
   
   .mobile-leaderboard-container .table-body::-webkit-scrollbar {
-    width: 12px;
+    width: 8px;
   }
   
   .mobile-leaderboard-container .table-body::-webkit-scrollbar-track {
-    background: rgba(31, 41, 55, 0.7);
-    border-radius: 6px;
+    background: rgba(31, 41, 55, 0.5);
+    border-radius: 4px;
   }
   
   .mobile-leaderboard-container .table-body::-webkit-scrollbar-thumb {
-    background: rgba(234, 179, 8, 0.9);
-    border-radius: 6px;
-    border: 2px solid rgba(31, 41, 55, 0.7);
+    background: rgba(234, 179, 8, 0.7);
+    border-radius: 4px;
+    transition: background 0.2s ease;
   }
   
   .mobile-leaderboard-container .table-body::-webkit-scrollbar-thumb:hover {
-    background: rgba(234, 179, 8, 1);
+    background: rgba(234, 179, 8, 0.9);
   }
 }
 
@@ -572,6 +580,8 @@
 .cell-rank {
   display: flex;
   align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 
 .rank-number {
@@ -593,6 +603,9 @@
 .cell-name {
   display: flex;
   align-items: center;
+  justify-content: flex-start;
+  text-align: left;
+  padding-left: 8px;
 }
 
 .player-name {
@@ -605,8 +618,8 @@
 .cell-score {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  text-align: right;
+  justify-content: center;
+  text-align: center;
 }
 
 .score-value {
@@ -628,8 +641,8 @@
 .cell-level {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  text-align: right;
+  justify-content: center;
+  text-align: center;
 }
 
 .level-badge {
@@ -641,7 +654,7 @@
   font-weight: 700;
   border: 1px solid rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(10px);
-  text-transform: uppercase;
+  text-transform: none; /* Changed from uppercase to none */
   letter-spacing: 0.05em;
 }
 
@@ -710,16 +723,17 @@
   
   .mobile-leaderboard-container .leaderboard-table {
     border-radius: 0;
-    overflow: hidden;
+    overflow: hidden; /* Restored to hidden for proper table styling */
     margin: 0;
     width: 100%;
+    min-height: 350px; /* Minimum 7 sor magasság (7 * 50px) */
   }
   
   
   .mobile-leaderboard-container .table-header,
   .mobile-leaderboard-container .table-row,
   .mobile-leaderboard-container .table-footer {
-    grid-template-columns: 35px 1fr 100px 60px;
+    grid-template-columns: 60px 1fr 70px 60px;
     padding: 10px 12px;
   }
   
@@ -780,6 +794,7 @@
 .table-row.current-user-above-header {
   background: linear-gradient(135deg, rgba(147, 51, 234, 0.3) 0%, rgba(124, 58, 237, 0.2) 100%);
   border: 2px solid rgba(147, 51, 234, 0.6);
+  border-right: none;
   box-shadow: 
     0 0 20px rgba(147, 51, 234, 0.4),
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
@@ -808,6 +823,7 @@
 .table-row.current-user {
   background: linear-gradient(135deg, rgba(147, 51, 234, 0.3) 0%, rgba(124, 58, 237, 0.2) 100%);
   border: 2px solid rgba(147, 51, 234, 0.6);
+  border-right: none;
   box-shadow: 
     0 0 20px rgba(147, 51, 234, 0.4),
     inset 0 1px 0 rgba(255, 255, 255, 0.2);

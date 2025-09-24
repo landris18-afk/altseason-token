@@ -151,71 +151,11 @@ const GameModal = ({ isOpen, onClose, gameSectionProps, modalManagerProps }) => 
         </button>
       )}
 
-      {/* Mobil navigációs gombok - csak játék oldalon */}
-      {gameFlowState === 'game' && !showUpgradesPage && (
-        <>
-          <div className="md:hidden absolute top-8 left-4 right-4 flex justify-between items-center z-[10003]">
-            <button
-              onClick={() => setShowUpgradesPage(true)}
-              className="relative bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 text-black py-2 px-4 rounded-lg font-bold text-sm transition-all hover:from-yellow-500 hover:via-yellow-600 hover:to-yellow-700 hover:shadow-lg hover:shadow-yellow-500/25 backdrop-blur-sm border border-yellow-600/50 hover:border-yellow-500/70 uppercase tracking-wide"
-              style={{
-                background: 'linear-gradient(135deg, #ffd700 0%, #ffed4e 25%, #f1c40f 50%, #f39c12 75%, #e67e22 100%)',
-                border: '1px solid #f39c12',
-                boxShadow: '0 2px 8px rgba(241, 196, 15, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1)'
-              }}
-            >
-              <span className="flex items-center space-x-2">
-                <span>Upgrades</span>
-                {availableUpgradesCount > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold shadow-lg">
-                    {availableUpgradesCount}
-                  </span>
-                )}
-              </span>
-            </button>
-
-            <button
-              onClick={() => setGameFlowState('leaderboard')}
-              className="bg-gray-800/80 hover:bg-gray-700/90 text-white/80 hover:text-white transition-all duration-200 rounded-full p-2 backdrop-blur-sm border border-gray-600/50 hover:border-gray-500/70"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-              </svg>
-            </button>
-          </div>
-          
-          {playerName && (
-            <div className="md:hidden absolute top-24 left-4 right-4 h-0.5 bg-gradient-to-r from-transparent via-yellow-400/60 to-transparent z-[10002]"></div>
-          )}
-        </>
-      )}
-
-      {/* Upgrades oldal header - csak upgrades oldalon */}
-      {gameFlowState === 'game' && showUpgradesPage && (
-        <>
-          <div className="md:hidden absolute top-8 left-1/2 transform -translate-x-1/2 z-[10004]">
-            <h3 className="text-3xl font-bold text-gray-300">Upgrades</h3>
-          </div>
-          
-          <div className="md:hidden absolute top-22 left-4 right-4 h-0.5 bg-gradient-to-r from-transparent via-yellow-400/60 to-transparent z-[10004]"></div>
-          
-          <div className="md:hidden absolute top-8 right-4 z-[10003]">
-            <button
-              onClick={() => setShowUpgradesPage(false)}
-              className="bg-gray-800/80 hover:bg-gray-700/90 text-white/80 hover:text-white transition-all duration-200 rounded-full p-2 backdrop-blur-sm border border-gray-600/50 hover:border-gray-500/70"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-              </svg>
-            </button>
-          </div>
-        </>
-      )}
 
           {/* Tartalom a játék flow állapot alapján */}
           <div className="w-full h-full">
             <div className="w-full h-full animate-fade-in-up">
-              <div className="w-full h-full relative z-[9998] overflow-hidden">
+              <div className="w-full h-full relative z-[9998] md:overflow-hidden overflow-y-auto">
             {gameFlowState === 'leaderboard' ? (
               <LeaderboardScreen 
                 key={`leaderboard-${playerName}-${gameSectionProps?.marketCap || 0}`}
@@ -235,6 +175,7 @@ const GameModal = ({ isOpen, onClose, gameSectionProps, modalManagerProps }) => 
                   onBackToLeaderboard={() => setGameFlowState('leaderboard')}
                   showUpgradesPage={showUpgradesPage}
                   setShowUpgradesPage={setShowUpgradesPage}
+                  availableUpgradesCount={availableUpgradesCount}
                 />
                 <ModalManager {...modalManagerProps} />
               </>

@@ -20,9 +20,9 @@
  * @returns {Object} Javított használatok objektum
  */
 export const fixUsesLeft = (usesLeftRaw) => {
-  const defaults = {1: Infinity, 2: Infinity, 3: Infinity, 4: Infinity, 5: 100, 6: 20};
+  const defaults = {1: Infinity, 2: Infinity, 3: Infinity, 4: Infinity, 5: 100, 6: 20, 7: Infinity, 8: Infinity};
   const fixed = {};
-  for (let i = 1; i <= 6; i++) {
+  for (let i = 1; i <= 8; i++) {
     const val = usesLeftRaw && usesLeftRaw[i];
     if (typeof val === 'number' && !isNaN(val)) {
       fixed[i] = val;

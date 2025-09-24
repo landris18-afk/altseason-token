@@ -53,7 +53,7 @@ const UpgradeContainer = ({
   } = panelState;
 
   return (
-    <div className="bg-gray-800/50 md:rounded-2xl md:p-4 p-4 flex flex-col h-full md:pt-4 pt-24 overflow-hidden" key={forceUpdate}>
+    <div className="bg-gray-800/50 md:rounded-2xl md:p-4 p-4 flex flex-col h-full md:pt-4 pt-2 md:overflow-hidden overflow-y-auto" key={forceUpdate}>
       {/* Header */}
       <UpgradeHeader />
 

@@ -97,7 +97,7 @@ const UpgradeCard = ({
               <div className="flex flex-row gap-2 mt-1">
                 <span className="text-xs text-gray-400">Lvl {upgrade.level}</span>
                 <span className="text-xs text-gray-500">
-                  {[1,2,3,4].includes(upgrade.id) ? 'infinite' : `${usesLeft[upgrade.id] ?? 0}/${getNextLevelUses(upgrade.id)}`}
+                  {[1,2,3,4,7,8].includes(upgrade.id) ? 'infinite' : `${usesLeft[upgrade.id] ?? 0}/${getNextLevelUses(upgrade.id)}`}
                 </span>
               </div>
             </div>
