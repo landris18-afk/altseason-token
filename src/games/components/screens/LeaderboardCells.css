@@ -59,6 +59,8 @@
   filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.3));
   position: relative;
   white-space: nowrap;
+  overflow: visible;
+  text-overflow: unset;
 }
 
 .cell-level {
@@ -125,5 +127,19 @@
     justify-content: center;
     white-space: nowrap;
     min-width: fit-content;
+  }
+  
+  .mobile-leaderboard-container .score-value {
+    font-size: 0.9rem;
+    overflow: visible;
+    text-overflow: unset;
+    white-space: nowrap;
+    min-width: fit-content;
+  }
+  
+  .mobile-leaderboard-container .cell-score {
+    padding: 0 8px;
+    overflow: visible;
+    justify-content: flex-end;
   }
 }

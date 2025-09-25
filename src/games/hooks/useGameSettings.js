@@ -21,8 +21,11 @@ export const useGameSettings = () => {
 
   // Load settings from localStorage on mount
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const savedSettings = localStorage.getItem('gameSettings');
+    if (typeof window !== 'undefined' && user?.id) {
+      // User-specifikus beállítások betöltése
+      const userSettingsKey = `gameSettings_${user.id}`;
+      const savedSettings = localStorage.getItem(userSettingsKey);
+      
       if (savedSettings) {
         try {
           const parsed = JSON.parse(savedSettings);
@@ -33,12 +36,19 @@ export const useGameSettings = () => {
           }));
         } catch (error) {
           console.error('Error parsing game settings:', error);
+          // Fallback: default beállítások
+          setSettings(prev => ({
+            ...prev,
+            displayName: user?.firstName || ''
+          }));
         }
       } else {
-        // Default settings
+        // Default settings új felhasználónak
         setSettings(prev => ({
           ...prev,
-          displayName: user?.firstName || ''
+          useRealName: true,
+          displayName: user?.firstName || '',
+          enableLeaderboard: true
         }));
       }
     }
@@ -48,9 +58,10 @@ export const useGameSettings = () => {
   const saveSettings = (newSettings) => {
     const updatedSettings = { ...settings, ...newSettings };
     setSettings(updatedSettings);
-    if (typeof window !== 'undefined') {
+    if (typeof window !== 'undefined' && user?.id) {
       try {
-        localStorage.setItem('gameSettings', JSON.stringify(updatedSettings));
+        const userSettingsKey = `gameSettings_${user.id}`;
+        localStorage.setItem(userSettingsKey, JSON.stringify(updatedSettings));
       } catch (error) {
         console.error('Error saving game settings:', error);
       }
