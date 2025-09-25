@@ -39,7 +39,7 @@ export const useModalManager = () => {
       document.body.style.height = 'unset';
       document.documentElement.style.overflow = 'unset';
     };
-  }, [isResetModalOpen, isLevelUpModalOpen, isSolanaModalOpen, isRulesModalOpen]);
+  }, [anyModalOpen]);
 
 
   return {

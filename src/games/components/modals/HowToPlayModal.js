@@ -60,7 +60,7 @@ const HowToPlayModal = ({ isOpen, onClose }) => {
             <div className="space-y-3">
               <div className="flex items-start gap-3 p-4 bg-gray-800/50 rounded-xl border border-gray-700/50">
                 <span className="bg-yellow-500 text-black font-bold rounded-full w-6 h-6 flex items-center justify-center text-sm flex-shrink-0 mt-0.5">1</span>
-                <p className="text-gray-300">Smash <span className="text-yellow-400 font-semibold">"PUMP THE BULL"</span> to increase the market cap with each click.</p>
+                <p className="text-gray-300">Smash <span className="text-yellow-400 font-semibold">&quot;PUMP THE BULL&quot;</span> to increase the market cap with each click.</p>
               </div>
               <div className="flex items-start gap-3 p-4 bg-gray-800/50 rounded-xl border border-gray-700/50">
                 <span className="bg-yellow-500 text-black font-bold rounded-full w-6 h-6 flex items-center justify-center text-sm flex-shrink-0 mt-0.5">2</span>
@@ -99,9 +99,9 @@ const HowToPlayModal = ({ isOpen, onClose }) => {
                 <h5 className="font-semibold text-yellow-400 mb-2">Pro Tips</h5>
                 <ul className="text-gray-300 text-sm space-y-1">
                   <li>• Focus on upgrades that give you the best return on investment</li>
-                  <li>• Passive income upgrades work even when you're not clicking</li>
+                  <li>• Passive income upgrades work even when you&apos;re not clicking</li>
                   <li>• Higher levels unlock more powerful upgrades</li>
-                  <li>• Don't forget to share your achievements!</li>
+                  <li>• Don&apos;t forget to share your achievements!</li>
                 </ul>
               </div>
             </div>
@@ -114,7 +114,7 @@ const HowToPlayModal = ({ isOpen, onClose }) => {
             onClick={onClose}
             className="w-full py-3 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-400 hover:to-yellow-500 text-black font-semibold rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl"
           >
-            Got it! Let's Pump!
+            Got it! Let&apos;s Pump!
           </button>
         </div>
       </div>

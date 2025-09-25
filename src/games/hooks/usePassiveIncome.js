@@ -104,5 +104,5 @@ export const usePassiveIncome = (
       }, 1000);
       return () => clearInterval(incomeInterval);
     }
-  }, [gameState.passiveIncome, gameState.solanaBlessingLevel, gameState.clickPower, subThousandAccumulator, isDesktop]);
+  }, [gameState.passiveIncome, gameState.solanaBlessingLevel, gameState.clickPower, subThousandAccumulator, isDesktop, setGameState, setSubThousandAccumulator]);
 };
