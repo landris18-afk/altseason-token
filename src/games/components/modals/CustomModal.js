@@ -1,25 +1,5 @@
 import React from 'react';
 
-/**
- * CustomModal - Egyedi modal komponens
- * 
- * Ez a komponens egy általános modal ablakot biztosít:
- * - Testreszabható cím és tartalom
- * - Megerősítő és megszakító gombok
- * - Reszponzív design
- * - Animációk
- * 
- * @param {Object} props - Props objektum
- * @param {boolean} props.isOpen - Modal nyitott állapot
- * @param {Function} props.onClose - Bezárás kezelő
- * @param {Function} props.onConfirm - Megerősítés kezelő
- * @param {string} props.title - Modal címe
- * @param {React.ReactNode} props.children - Modal tartalma
- * @param {string} props.confirmText - Megerősítő gomb szövege
- * @param {string} props.cancelText - Megszakító gomb szövege
- * @param {boolean} props.showConfirmButton - Megerősítő gomb megjelenítése
- * @returns {JSX.Element|null} Modal komponens vagy null
- */
 const CustomModal = ({ 
   isOpen, 
   onClose, 
@@ -33,44 +13,45 @@ const CustomModal = ({
   if (!isOpen) return null;
   
   return (
-    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-[10005] p-4">
-      <div className="bg-gray-900 border-2 border-yellow-500/30 rounded-2xl shadow-lg shadow-yellow-500/20 w-full max-w-lg flex flex-col max-h-[90vh] animate-fade-in-up">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[10005] p-4">
+      <div className="bg-gray-900/95 backdrop-blur-md border border-yellow-400/30 rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden">
         {/* Header */}
-        <h3 className="text-2xl font-bold p-6 border-b border-gray-700">{title}</h3>
-        
-        {/* Content */}
-        <div className="flex-grow overflow-y-auto p-6 space-y-4">{children}</div>
-        
-        {/* Footer */}
-        <div className="p-6 border-t border-gray-700">
-          {/* Mobile: vertical layout with spacing */}
-          <div className="flex flex-col space-y-6 md:hidden">
-            <button 
-              onClick={onConfirm} 
-              className="bg-red-700 py-3 px-8 rounded-lg hover:bg-red-600 transition-all w-48 mx-auto whitespace-nowrap"
+        <div className="px-6 py-4 border-b border-gray-700/50">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-bold text-white">
+              {title}
+            </h2>
+            <button
+              onClick={onClose}
+              className="p-2 hover:bg-gray-700/50 rounded-lg transition-colors duration-200"
             >
-              {confirmText || "Confirm"}
-            </button>
-            <button 
-              onClick={onClose} 
-              className="bg-gray-600 py-3 px-8 rounded-lg hover:bg-gray-500 transition-all w-48 mx-auto whitespace-nowrap"
-            >
-              {cancelText || "Cancel"}
+              <svg className="w-5 h-5 text-gray-400 hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
             </button>
           </div>
-          
-          {/* Desktop: horizontal layout */}
-          <div className="hidden md:flex justify-end space-x-4">
-            <button 
-              onClick={onClose} 
-              className="bg-gray-600 py-3 px-8 rounded-lg hover:bg-gray-500 transition-all w-48 whitespace-nowrap"
+        </div>
+
+        {/* Content */}
+        <div className="px-6 py-6">
+          <div className="text-gray-300 leading-relaxed">
+            {children}
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="px-6 py-4 border-t border-gray-700/50">
+          <div className="flex gap-3">
+            <button
+              onClick={onClose}
+              className="flex-1 px-4 py-3 bg-gray-700/50 hover:bg-gray-700 text-white rounded-xl transition-colors duration-200 border border-gray-600/50"
             >
               {cancelText || "Cancel"}
             </button>
             {showConfirmButton && (
-              <button 
-                onClick={onConfirm} 
-                className="bg-red-700 py-3 px-8 rounded-lg hover:bg-red-600 transition-all w-48 whitespace-nowrap"
+              <button
+                onClick={onConfirm}
+                className="flex-1 px-4 py-3 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-400 hover:to-yellow-500 text-black font-semibold rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl"
               >
                 {confirmText || "Confirm"}
               </button>
@@ -83,9 +64,3 @@ const CustomModal = ({
 };
 
 export default CustomModal;
-
-
-
-
-
-

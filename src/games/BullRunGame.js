@@ -12,9 +12,9 @@ import { useBullRunGame } from './hooks/useBullRunGame';
  * 
  * @returns {JSX.Element} A játék teljes UI-ja
  */
-export default function BullRunGame() {
+export default function BullRunGame({ showHeader = true } = {}) {
   // Master hook - minden game logika egy helyen
   const gameData = useBullRunGame();
 
-  return <BullRunGameWrapper {...gameData} />;
+  return <BullRunGameWrapper {...gameData} showHeader={showHeader} />;
 }

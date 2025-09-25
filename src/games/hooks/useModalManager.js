@@ -6,7 +6,6 @@ import { useState, useEffect } from 'react';
  * Ez a hook kezeli a játék összes modal ablakát:
  * - Modal állapotok kezelése
  * - Scroll tiltás modal nyitáskor
- * - Terms elfogadás funkció
  * 
  * @returns {Object} Modal állapotok és kezelő funkciók
  */
@@ -15,14 +14,13 @@ export const useModalManager = () => {
   const [isResetModalOpen, setIsResetModalOpen] = useState(false);
   const [isLevelUpModalOpen, setIsLevelUpModalOpen] = useState(false);
   const [isSolanaModalOpen, setIsSolanaModalOpen] = useState(false);
-  const [isTermsModalOpen, setIsTermsModalOpen] = useState(false);
-  const [isTermsAccepted, setIsTermsAccepted] = useState(false);
-  const [isCheckboxChecked, setIsCheckboxChecked] = useState(false);
   const [isRulesModalOpen, setIsRulesModalOpen] = useState(false);
+
+  // Modal nyitott állapot ellenőrzése
+  const anyModalOpen = isResetModalOpen || isLevelUpModalOpen || isSolanaModalOpen || isRulesModalOpen;
 
   // Scroll tiltás modal nyitáskor (kivéve játék modal)
   useEffect(() => {
-    const anyModalOpen = isResetModalOpen || isLevelUpModalOpen || isSolanaModalOpen || isTermsModalOpen || isRulesModalOpen;
     
     if (anyModalOpen) {
       // Tiltja a body scrolling-ot
@@ -41,15 +39,8 @@ export const useModalManager = () => {
       document.body.style.height = 'unset';
       document.documentElement.style.overflow = 'unset';
     };
-  }, [isResetModalOpen, isLevelUpModalOpen, isSolanaModalOpen, isTermsModalOpen, isRulesModalOpen]);
+  }, [isResetModalOpen, isLevelUpModalOpen, isSolanaModalOpen, isRulesModalOpen]);
 
-  // Terms elfogadás funkció
-  const acceptTerms = () => {
-    if (!isCheckboxChecked) return;
-    setIsTermsAccepted(true);
-    // Ne zárjuk be azonnal a TermsModal-t, hagyjuk a startGame-nek
-    // setIsTermsModalOpen(false);
-  };
 
   return {
     // Modal állapotok
@@ -59,19 +50,8 @@ export const useModalManager = () => {
     setIsLevelUpModalOpen,
     isSolanaModalOpen,
     setIsSolanaModalOpen,
-    isTermsModalOpen,
-    setIsTermsModalOpen,
-    isTermsAccepted,
-    setIsTermsAccepted,
     isRulesModalOpen,
     setIsRulesModalOpen,
-    
-    // Checkbox állapot
-    isCheckboxChecked,
-    setIsCheckboxChecked,
-    
-    // Funkciók
-    acceptTerms
+    anyModalOpen
   };
 };
-

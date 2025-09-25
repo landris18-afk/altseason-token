@@ -43,7 +43,7 @@ export const useLevelUp = (
       if (nextLevel && gameState.marketCap >= nextLevel.threshold) {
         if (levelUpSound && !muted) {
           levelUpSound.currentTime = 0;
-          levelUpSound.play().catch(error => console.log('Audio playback failed:', error));
+          levelUpSound.play().catch(() => {});
         }
         setIsLevelUpModalOpen(true);
         setGameState(prevState => ({
@@ -55,4 +55,3 @@ export const useLevelUp = (
     }
   }, [gameState.marketCap, gameState.levelIndex, isLoaded, levelUpSound, muted, setIsLevelUpModalOpen, setGameState, confirmReset]);
 };
-

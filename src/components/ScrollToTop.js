@@ -6,7 +6,6 @@ const ScrollToTop = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [isAtBottom, setIsAtBottom] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const [isGameModalOpen, setIsGameModalOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
@@ -26,26 +25,7 @@ const ScrollToTop = () => {
     // Only run on client side after mount
     if (!isMounted) return;
     
-    const checkGameModal = () => {
-      // Check if game modal is open by looking for the game-modal-open class
-      const gameModal = document.querySelector('.game-modal-open');
-      const isOpen = !!gameModal;
-      setIsGameModalOpen(isOpen);
-    };
 
-    // Check initially and set up observer
-    checkGameModal();
-    
-    // Use MutationObserver to watch for DOM changes
-    const observer = new MutationObserver(checkGameModal);
-    observer.observe(document.body, { 
-      childList: true, 
-      subtree: true, 
-      attributes: true,
-      attributeFilter: ['class']
-    });
-
-    return () => observer.disconnect();
   }, [isMounted]);
 
   useEffect(() => {
@@ -54,7 +34,7 @@ const ScrollToTop = () => {
     
     const toggleVisibility = () => {
       // Don't show if game modal is open
-      if (isGameModalOpen) {
+      if (false) {
         setIsVisible(false);
         return;
       }
@@ -81,7 +61,7 @@ const ScrollToTop = () => {
     
     window.addEventListener('scroll', toggleVisibility);
     return () => window.removeEventListener('scroll', toggleVisibility);
-  }, [isMobile, isGameModalOpen, isMounted]);
+  }, [isMobile, isMounted]);
 
   const scrollToTop = () => {
     window.scrollTo({
@@ -99,7 +79,7 @@ const ScrollToTop = () => {
     <button
       onClick={scrollToTop}
       className={`fixed bottom-8 right-8 p-3 rounded-full bg-gradient-to-r from-[#1a1a1a] to-[#2a2a2a] hover:from-[#2a2a2a] hover:to-[#3a3a3a] text-yellow-500 border-2 border-yellow-500/20 transition-all duration-300 hover:scale-110 hover:shadow-lg hover:shadow-yellow-500/20 z-[9997] ${
-        isVisible && !isGameModalOpen ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'
+        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'
       }`}
       aria-label="Scroll to top"
     >

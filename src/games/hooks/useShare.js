@@ -32,4 +32,3 @@ export const useShare = (gameState) => {
     handleCustomShare
   };
 };
-

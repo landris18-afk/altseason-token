@@ -1,42 +1,58 @@
 import { useMemo } from 'react';
 import { calculateDisplayValues } from '../utils/calculations';
-import { useProgressCalculation } from './useProgressCalculation';
 
 export const useDisplayValues = (gameState, subThousandAccumulator, isDesktop) => {
   const displayValues = useMemo(() => {
+    if (!gameState || gameState.marketCap === undefined) {
+      // Alapértelmezett értékek a gameLevels-ből
+      const defaultCurrent = { threshold: 0, name: "Wet-Noodle-Handed Normie Who Missed Every Pump Since 2013" };
+      const defaultNext = { threshold: 100, name: "Sandbox Bull Noob" };
+      
+      return {
+        displayedClickPower: 1,
+        displayedPassiveIncome: 0,
+        current: defaultCurrent,
+        next: defaultNext,
+        safeMarketCap: 0,
+        safeSubThousand: 0,
+        safeMinMarketCap: 0,
+        progress: 0,
+        currentLevelColor: { text: '#ffffff', buttonBg: '#374151', buttonShadow: '#1f2937', barFrom: '#374151', barTo: '#1f2937' }
+      };
+    }
+    
     return calculateDisplayValues(gameState, subThousandAccumulator);
   }, [gameState, subThousandAccumulator]);
 
-  const progress = useProgressCalculation(displayValues, isDesktop);
+  const {
+    marketCap = 0,
+    clickPower = 1,
+    passiveIncome = 0,
+    upgrades = [],
+    levelIndex = 0,
+    solanaBlessingLevel = 0,
+    hasPremiumUpgrade = false
+  } = gameState || {};
 
   const {
-    marketCap,
-    clickPower,
-    passiveIncome,
-    upgrades,
-    levelIndex,
-    solanaBlessingLevel,
-    hasPremiumUpgrade
-  } = gameState;
+    displayedClickPower = 1,
+    displayedPassiveIncome = 0,
+    current = null,
+    next = null,
+    safeMarketCap = 0,
+    safeSubThousand = 0,
+    safeMinMarketCap = 0,
+    progress = 0,
+    currentLevelColor = { text: '#ffffff', buttonBg: '#374151', buttonShadow: '#1f2937', barFrom: '#374151', barTo: '#1f2937' }
+  } = displayValues || {};
 
   const {
-    displayedClickPower,
-    displayedPassiveIncome,
-    current,
-    next,
-    safeMarketCap,
-    safeSubThousand,
-    safeMinMarketCap,
-    currentLevelColor
-  } = displayValues;
-
-  const {
-    text: currentTextColor,
-    buttonBg: currentButtonBg,
-    buttonShadow: currentButtonShadow,
-    barFrom: currentBarFrom,
-    barTo: currentBarTo
-  } = currentLevelColor;
+    text: currentTextColor = '#ffffff',
+    buttonBg: currentButtonBg = '#374151',
+    buttonShadow: currentButtonShadow = '#1f2937',
+    barFrom: currentBarFrom = '#374151',
+    barTo: currentBarTo = '#1f2937'
+  } = currentLevelColor || {};
 
   return {
     // Game state values

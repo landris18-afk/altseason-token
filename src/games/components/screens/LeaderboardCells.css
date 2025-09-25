@@ -11,6 +11,7 @@
 .rank-number {
   font-weight: bold;
   font-size: 1.1rem;
+  color: white;
 }
 
 @media (max-width: 767px) {
@@ -52,10 +53,12 @@
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  font-size: 0.95rem;
+  color: #ffd700 !important; /* Fallback szín */
+  font-size: 1.1rem;
   letter-spacing: 0.01em;
   filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.3));
   position: relative;
+  white-space: nowrap;
 }
 
 .cell-level {
@@ -80,6 +83,36 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.cell-click {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  text-align: right;
+  padding: 0 20px;
+}
+
+.click-value {
+  font-weight: 600;
+  color: #4ade80; /* Green color for MC/Click */
+  font-size: 0.85rem;
+  letter-spacing: 0.01em;
+}
+
+.cell-passive {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  text-align: right;
+  padding: 0 20px;
+}
+
+.passive-value {
+  font-weight: 600;
+  color: #60a5fa; /* Blue color for MC/Second */
+  font-size: 0.85rem;
+  letter-spacing: 0.01em;
 }
 
 /* Mobile level badge adjustments */

@@ -39,6 +39,18 @@
     border-radius: 1rem;
     border: 2px solid rgba(234, 179, 8, 0.6);
   }
+  
+  /* Game panel - same style as leaderboard but with overflow visible */
+  .desktop-game-panel {
+    width: 100%;
+    max-width: 72rem;
+    height: 83.333333%;
+    background: linear-gradient(to right, rgba(15, 23, 42, 0.5), rgba(31, 41, 55, 0.4), rgba(31, 41, 55, 0.5));
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    overflow: visible;
+    border-radius: 1rem;
+    border: 2px solid rgba(234, 179, 8, 0.6);
+  }
 }
 
 /* Mobile: Full width layout */
@@ -46,8 +58,8 @@
   display: block;
   height: 100%;
   position: relative;
-  padding: 1rem 0 0 0; /* Minimal padding for mobile */
-  background: linear-gradient(135deg, rgba(15, 23, 42, 0.8), rgba(31, 41, 55, 0.6));
+  padding: 0; /* No padding for mobile */
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.4), rgba(31, 41, 55, 0.3));
   overflow-y: auto; /* Enable scrolling on mobile */
 }
 
@@ -195,4 +207,58 @@
   .mobile-leaderboard-container .leaderboard-content {
     padding: 0;
   }
+}
+
+/* Start Game Button - konzisztens stílus */
+.start-game-btn {
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  color: #000;
+  font-weight: bold;
+  padding: 0.5rem 1rem;
+  height: 2.5rem;
+  border-radius: 0.75rem;
+  border: 2px solid rgba(234, 179, 8, 0.3);
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (hover: hover) {
+  .start-game-btn:hover {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    border-color: rgba(234, 179, 8, 0.5);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 8px -1px rgba(0, 0, 0, 0.15);
+  }
+}
+
+/* Platform indicator styling */
+.platform-indicator {
+  margin-left: 0.5rem;
+  font-size: 0.875rem;
+  opacity: 0.7;
+  display: inline-block;
+}
+
+/* Upgrade scrollbar styling */
+.upgrade-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+
+.upgrade-scroll::-webkit-scrollbar-track {
+  background: rgba(31, 41, 55, 0.5);
+  border-radius: 4px;
+}
+
+.upgrade-scroll::-webkit-scrollbar-thumb {
+  background: rgba(234, 179, 8, 0.7);
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+.upgrade-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(234, 179, 8, 0.9);
 }

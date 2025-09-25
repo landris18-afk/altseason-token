@@ -118,7 +118,7 @@ const Header = () => {
   }
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-[100] bg-black/80 backdrop-blur-lg text-white border-b border-yellow-500/20 transition-all duration-500 h-20">
+    <header className="fixed top-0 left-0 right-0 z-[100] bg-black/20 backdrop-blur-lg text-white border-b border-yellow-500/20 transition-all duration-500 h-20">
       <div className="max-w-7xl mx-auto px-6 h-full">
         <div className="flex items-center justify-between h-full relative md:hidden">
           {/* Hamburger ikon + X logó mobilon */}

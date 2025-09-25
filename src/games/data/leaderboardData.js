@@ -41,7 +41,10 @@ export const mockLeaderboardData = americanNames.map((name, index) => ({
   id: index + 1,
   name: name,
   score: randomBetween(1000000, 50000000), // 1M - 50M közötti score
-  level: randomBetween(1, 100) // 1-100 közötti level
+  level: randomBetween(1, 100), // 1-100 közötti level
+  platform: Math.random() > 0.5 ? 'desktop' : 'mobile', // Véletlenszerű platform
+  clickPower: randomBetween(1000, 50000), // MC/Click érték
+  passiveIncome: randomBetween(100, 5000) // MC/Second érték
 })).sort((a, b) => b.score - a.score); // Score szerint csökkenő sorrend
 
 /**

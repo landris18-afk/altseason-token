@@ -59,8 +59,8 @@ export const calculateDisplayValues = (gameState, subThousandAccumulator) => {
 };
 
 export const generateShareData = (gameState) => {
-  const { marketCap, levelIndex } = gameState;
-  const current = gameLevels[levelIndex];
+  const { marketCap = 0, levelIndex = 0 } = gameState || {};
+  const current = gameLevels[levelIndex] || gameLevels[0];
   
   const shareText = `Just became a ${current.name} with $${fmt(marketCap)} MC! The bull run is real - join before you miss out: assbull.meme #BullRun #Altseason @assbull2025`;
   const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`;

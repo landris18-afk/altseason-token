@@ -13,25 +13,16 @@ import React from 'react';
  */
 const LoadingScreen = () => {
   return (
-    <div className="min-h-screen bg-gray-900 flex flex-col items-center justify-center text-white">
-      {/* Spinner animáció */}
-      <div className="relative w-24 h-24 mb-8">
-        <div className="absolute inset-0 border-4 border-yellow-500/30 rounded-full animate-pulse"></div>
-        <div className="absolute inset-0 border-4 border-t-yellow-500 rounded-full animate-spin"></div>
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="w-16 h-16 bg-yellow-500/20 rounded-full animate-ping"></div>
-        </div>
-      </div>
-      
-      {/* Betöltési szöveg */}
-      <h2 className="text-2xl font-bold mb-2 animate-pulse">Loading Bull Run Clicker</h2>
-      <p className="text-gray-400 text-sm">Preparing your bull market adventure...</p>
-      
-      {/* Bounce pontok */}
-      <div className="mt-8 flex gap-2">
-        <div className="w-2 h-2 bg-yellow-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-        <div className="w-2 h-2 bg-yellow-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-        <div className="w-2 h-2 bg-yellow-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+    <div className="min-h-screen bg-gray-900 flex items-center justify-center" style={{
+      background: 'url(/images/rockat_pump_bacground.jpg)',
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundRepeat: 'no-repeat'
+    }}>
+      <div className="bg-gray-900/80 backdrop-blur-sm rounded-2xl p-8 text-center">
+        <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-yellow-400 mx-auto mb-4"></div>
+        <div className="text-white text-xl font-bold">Loading Bull Run...</div>
+        <div className="text-gray-400 text-sm mt-2">Preparing your market cap adventure</div>
       </div>
     </div>
   );

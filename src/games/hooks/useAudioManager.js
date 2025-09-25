@@ -32,7 +32,7 @@ export const useAudioManager = () => {
   const playSound = (sound, errorMessage = 'Audio playback failed') => {
     if (sound && !muted) {
       sound.currentTime = 0;
-      sound.play().catch(error => console.log(errorMessage, error));
+      sound.play().catch(() => {});
     }
   };
 
@@ -56,4 +56,3 @@ export const useAudioManager = () => {
     playUpgradeSound
   };
 };
-

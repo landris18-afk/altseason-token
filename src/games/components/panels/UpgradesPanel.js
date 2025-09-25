@@ -20,6 +20,7 @@ import UpgradeHookAggregator from '../upgrades/UpgradeHookAggregator';
  * @param {boolean} props.hasPremiumUpgrade - Premium upgrade flag
  * @param {Audio} props.unlockSound - Unlock hang
  * @param {Object} props.usesLeft - Maradék használatok
+ * @param {Function} props.onBackToLeaderboard - Vissza a ranglistához függvény
  * @returns {JSX.Element} Minimális upgrade panel komponens
  */
 const UpgradesPanel = (props) => {

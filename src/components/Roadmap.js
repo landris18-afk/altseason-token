@@ -34,8 +34,11 @@ const Roadmap = () => {
   ];
 
   return (
-    <section id="roadmap" className="py-20 bg-gray-700/50 text-white relative overflow-hidden">
-      <div className="container mx-auto px-6 lg:px-8">
+    <section id="roadmap" className="py-20 text-white relative overflow-hidden">
+      {/* Finom overlay a szöveg olvashatóságához */}
+      <div className="absolute inset-0 bg-black/5"></div>
+      
+      <div className="container mx-auto px-6 lg:px-8 relative z-10">
         <h2 className="text-4xl md:text-5xl font-bold text-center mb-4">Roadmap</h2>
         <p className="text-lg text-yellow-400 text-center mb-12">Our journey to success</p>
 

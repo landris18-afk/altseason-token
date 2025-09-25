@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useGameState } from './useGameState';
 import { useAudioManager } from './useAudioManager';
 import { useGameLogic } from './useGameLogic';
@@ -57,15 +58,9 @@ export const useBullRunGame = () => {
     setIsLevelUpModalOpen,
     isSolanaModalOpen,
     setIsSolanaModalOpen,
-    isTermsModalOpen,
-    setIsTermsModalOpen,
-    isTermsAccepted,
-    setIsTermsAccepted,
     isRulesModalOpen,
     setIsRulesModalOpen,
-    isCheckboxChecked,
-    setIsCheckboxChecked,
-    acceptTerms
+    anyModalOpen
   } = useModalManager();
 
   // Game logic
@@ -85,7 +80,7 @@ export const useBullRunGame = () => {
   // Game effects
   useLevelUp(gameState, setGameState, isLoaded, levelUpSound, muted, setIsLevelUpModalOpen, confirmReset);
   useUpgradeUnlock(gameState, setGameState, isLoaded, unlockSound, muted, lastReqLevelRef);
-  useModalScrollLock(isTermsModalOpen);
+  useModalScrollLock(anyModalOpen);
   usePassiveIncome(gameState, setGameState, subThousandAccumulator, setSubThousandAccumulator, isDesktop);
 
   // Display values
@@ -112,6 +107,7 @@ export const useBullRunGame = () => {
     currentBarTo
   } = useDisplayValues(gameState, subThousandAccumulator, isDesktop);
 
+
   // Share functionality
   const { shareText, twitterUrl, handleCustomShare } = useShare(gameState);
 
@@ -132,15 +128,8 @@ export const useBullRunGame = () => {
     setIsLevelUpModalOpen,
     isSolanaModalOpen,
     setIsSolanaModalOpen,
-    isTermsModalOpen,
-    setIsTermsModalOpen,
-    isTermsAccepted,
-    setIsTermsAccepted,
     isRulesModalOpen,
     setIsRulesModalOpen,
-    isCheckboxChecked,
-    setIsCheckboxChecked,
-    acceptTerms,
     
     // Game logic
     handlePump,

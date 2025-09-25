@@ -10,7 +10,7 @@ const About = () => {
     // és az `unoptimized` prop a helyes megközelítés a GIF-ekhez.
 
     return (
-        <section id="about-section" className="relative pt-0 pb-4 md:pt-0 md:pb-0 h-auto md:h-[calc(100vh-5rem)] overflow-y-auto flex items-center justify-center px-4 md:px-8 lg:px-16 bg-black">
+        <section id="about-section" className="relative pt-0 pb-4 md:pt-0 md:pb-0 h-auto md:h-[calc(100vh-5rem)] overflow-y-auto flex items-center justify-center px-4 md:px-8 lg:px-16">
             {/* Content */}
             <div className="relative z-10 flex flex-col-reverse md:flex-row items-center justify-between gap-8 max-w-7xl mx-auto">
                 {/* Text Content */}

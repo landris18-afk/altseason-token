@@ -106,4 +106,3 @@ export const usePassiveIncome = (
     }
   }, [gameState.passiveIncome, gameState.solanaBlessingLevel, gameState.clickPower, subThousandAccumulator, isDesktop]);
 };
-

@@ -7,7 +7,7 @@ import Roadmap from '@/components/Roadmap'
 import HowToBuy from '@/components/HowToBuy'
 import Header from '@/components/Header'
 import SectionDivider from '@/components/SectionDivider'
-import BullRunGame from '@/games/BullRunGame'
+import GamePreview from '@/components/GamePreview'
 
 export default function Home() {
   const [isHeaderVisible, setIsHeaderVisible] = useState(true);
@@ -51,7 +51,8 @@ export default function Home() {
       background: 'url(/images/rockat_pump_bacground.jpg)',
       backgroundSize: 'cover',
       backgroundPosition: 'center',
-      backgroundRepeat: 'no-repeat'
+      backgroundRepeat: 'no-repeat',
+      backgroundAttachment: 'fixed'
     }}>
       <Header />
       <div className={isMobile && !isHeaderVisible ? 'pt-0' : 'pt-20'}>
@@ -59,7 +60,7 @@ export default function Home() {
         <SectionDivider />
         <Tokenomics />
         <SectionDivider />
-        <BullRunGame />
+        <GamePreview />
         <SectionDivider />
         <Roadmap />
         <SectionDivider />

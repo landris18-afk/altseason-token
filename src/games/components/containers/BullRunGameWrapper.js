@@ -1,8 +1,7 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import ModalManager from '../managers/ModalManager';
-import GameRenderer from '../renderers/GameRenderer';
 import GameSection from '../sections/GameSection';
-import { useGameModal } from '../../hooks/useGameModal';
+import '../screens/LeaderboardLayout.css';
 
 /**
  * BullRunGameWrapper - Játék wrapper komponens
@@ -31,15 +30,8 @@ export default function BullRunGameWrapper({
   setIsLevelUpModalOpen,
   isSolanaModalOpen,
   setIsSolanaModalOpen,
-  isTermsModalOpen,
-  setIsTermsModalOpen,
-  isTermsAccepted,
-  setIsTermsAccepted,
   isRulesModalOpen,
   setIsRulesModalOpen,
-  isCheckboxChecked,
-  setIsCheckboxChecked,
-  acceptTerms,
   
   // Game logic
   handlePump,
@@ -68,39 +60,28 @@ export default function BullRunGameWrapper({
   currentBarTo,
   
   // Share
-  twitterUrl
-}) {
-  // Játék modal hook használata
-  const { isGameModalOpen, closeGameModal: originalCloseGameModal, startGame: originalStartGame } = useGameModal();
+  twitterUrl,
   
-  // Játék indítás terms elfogadással
-  const startGame = () => {
-    originalStartGame(acceptTerms, setIsTermsModalOpen);
-  };
-
-  // Modal bezárás terms visszaállítással
-  const closeGameModal = () => {
-    const resetTerms = () => {
-      setIsTermsAccepted(false);
-      setIsCheckboxChecked(false);
-    };
-    originalCloseGameModal(resetTerms);
-  };
+  // Header control
+  showHeader = true,
+  
+  // Navigation
+  onBackToLeaderboard
+}) {
+  // Mobile upgrades state
+  const [showUpgrades, setShowUpgrades] = useState(false);
+  
+  console.log('🎮 BullRunGameWrapper - props received:', { 
+    isLoaded, 
+    onBackToLeaderboard, 
+    current, 
+    next, 
+    gameState: !!gameState 
+  });
 
   // Props csoportosítása a komponenseknek
   const gameRendererProps = {
     isLoaded,
-    isTermsAccepted,
-    setMuted,
-    muted,
-    setIsTermsModalOpen,
-    isTermsModalOpen,
-    isCheckboxChecked,
-    setIsCheckboxChecked,
-    acceptTerms,
-    isGameModalOpen,
-    closeGameModal,
-    startGame,
     gameSectionProps: {
       current,
       next,
@@ -126,7 +107,10 @@ export default function BullRunGameWrapper({
       hasPremiumUpgrade: gameState.hasPremiumUpgrade,
       onSolanaUpgradeClick: () => setIsSolanaModalOpen(true),
       unlockSound,
-      usesLeft: gameState.usesLeft
+      usesLeft: gameState.usesLeft,
+      onBackToLeaderboard: onBackToLeaderboard,
+      showUpgrades: showUpgrades,
+      setShowUpgrades: setShowUpgrades
     },
     modalManagerProps: {
       isLevelUpModalOpen,
@@ -136,7 +120,7 @@ export default function BullRunGameWrapper({
       isResetModalOpen,
       setIsResetModalOpen,
       confirmReset,
-      onResetComplete: closeGameModal,
+      onResetComplete: onBackToLeaderboard,
       isRulesModalOpen,
       setIsRulesModalOpen,
       isSolanaModalOpen,
@@ -146,10 +130,20 @@ export default function BullRunGameWrapper({
     }
   };
 
+  // Mindig GameSection-et használunk (nincs GameModal)
+  console.log('🎮 BullRunGameWrapper - rendering GameSection directly');
+  console.log('🎮 BullRunGameWrapper - gameSectionProps:', gameRendererProps.gameSectionProps);
   return (
-    <GameRenderer {...gameRendererProps}>
+    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm">
+      {/* Game content - full screen */}
+      <div className="w-full h-full">
+        <GameSection 
+          {...gameRendererProps.gameSectionProps} 
+          onBackToLeaderboard={onBackToLeaderboard}
+        />
+      </div>
+      
       <ModalManager {...gameRendererProps.modalManagerProps} />
-      <GameSection {...gameRendererProps.gameSectionProps} />
-    </GameRenderer>
+    </div>
   );
 }

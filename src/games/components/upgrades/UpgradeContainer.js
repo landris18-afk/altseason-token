@@ -43,7 +43,8 @@ const UpgradeContainer = ({
   usesLeft,
   panelState,
   onUpgradeClick,
-  onCloseInsufficientFunds
+  onCloseInsufficientFunds,
+  onBackToLeaderboard
 }) => {
   const {
     insufficientFundsUpgrade,
@@ -53,9 +54,9 @@ const UpgradeContainer = ({
   } = panelState;
 
   return (
-    <div className="bg-gray-800/50 md:rounded-2xl md:p-4 p-4 flex flex-col h-full md:pt-4 pt-2 md:overflow-hidden overflow-y-auto" key={forceUpdate}>
+    <div className="bg-gray-800/50 md:rounded-2xl md:p-4 px-4 pt-2 flex flex-col h-full md:pt-4 md:overflow-y-auto overflow-hidden" key={forceUpdate}>
       {/* Header */}
-      <UpgradeHeader />
+      <UpgradeHeader onBackToLeaderboard={onBackToLeaderboard} />
 
       {/* Tab gombok */}
       <UpgradeTabs 
@@ -66,36 +67,54 @@ const UpgradeContainer = ({
         marketCap={marketCap}
       />
 
-      {/* Upgrade lista */}
-      <UpgradeList
-        upgrades={upgrades}
-        activeTab={activeTab}
-        usesLeft={usesLeft}
-        marketCap={marketCap}
-        onUpgradeClick={onUpgradeClick}
-        getNextLevelUses={getNextLevelUses}
-      />
+      {/* Upgrade lista - külön box */}
+      <div className="flex-1 overflow-y-auto md:max-h-72 upgrade-scroll md:pb-0 pb-20 scrollbar-hide" style={{
+        scrollbarWidth: 'thin',
+        scrollbarColor: 'rgba(234, 179, 8, 0.7) rgba(31, 41, 55, 0.5)'
+      }}>
+        <UpgradeList
+          upgrades={upgrades}
+          activeTab={activeTab}
+          usesLeft={usesLeft}
+          marketCap={marketCap}
+          onUpgradeClick={onUpgradeClick}
+          getNextLevelUses={getNextLevelUses}
+        />
+      </div>
 
-      {/* Footer */}
-      <UpgradeFooter
-        clickPower={clickPower}
-        passiveIncome={passiveIncome}
-        hasPremiumUpgrade={hasPremiumUpgrade}
-      />
-
-      {/* Mobile fixed bottom stats */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-gray-900/95 backdrop-blur-sm border-t border-yellow-400/60 p-4 z-50">
-        <div className="flex justify-center items-center gap-8">
-          <div className="text-center">
-            <div className="text-xs text-gray-400 mb-1">MC / Click</div>
-            <div className="text-lg font-bold text-yellow-400">${clickPower.toLocaleString()}</div>
-          </div>
-          <div className="text-center">
-            <div className="text-xs text-gray-400 mb-1">MC / Second</div>
-            <div className="text-lg font-bold text-purple-400">${passiveIncome.toLocaleString()}</div>
+      {/* Footer - mobilnézetben fix alul */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-gray-800/95 backdrop-blur-sm border-t border-yellow-400/30 z-20">
+        <UpgradeFooter
+          clickPower={clickPower}
+          passiveIncome={passiveIncome}
+          hasPremiumUpgrade={hasPremiumUpgrade}
+          marketCap={marketCap}
+        />
+      </div>
+      
+      {/* Footer - asztali nézetben külön box */}
+      <div className="hidden md:block mb-4 mt-2">
+        <div className="h-px bg-gradient-to-r from-transparent via-yellow-400/30 to-transparent mb-2"></div>
+        <div className="bg-gray-800/30 rounded-lg p-2">
+          <div className="flex justify-around gap-2">
+            <div className="flex-1 text-center">
+              <p className="text-gray-400 text-xs">MC / Click</p>
+              <p className="font-bold text-white text-base">
+                ${clickPower?.toLocaleString() || '0'}
+              </p>
+            </div>
+            <div className="flex-1 text-center">
+              <p className="text-gray-400 text-xs">MC / Second</p>
+              <p className={`font-bold text-base ${
+                hasPremiumUpgrade ? 'text-purple-400' : 'text-white'
+              }`}>
+                ${(hasPremiumUpgrade ? passiveIncome * 10 : passiveIncome)?.toLocaleString() || '0'}
+              </p>
+            </div>
           </div>
         </div>
       </div>
+      
 
       {/* Modals */}
       <UpgradeModals

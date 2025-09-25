@@ -13,9 +13,9 @@ const LaunchInfo = () => {
   ];
 
   return (
-    <section id="tokenomics" className="py-20 bg-gray-800/50 text-white relative overflow-hidden">
-      {/* Opcionális háttér grafika */}
-      <div className="absolute -bottom-1/2 -left-1/4 w-full h-full bg-[url('/images/abstract-background.svg')] bg-no-repeat opacity-5"></div>
+    <section id="tokenomics" className="py-20 text-white relative overflow-hidden">
+      {/* Sötétítés a Launch Info szekcióhoz */}
+      <div className="absolute inset-0 bg-black/40"></div>
       
       <div className="container mx-auto px-6 lg:px-8 text-center">
         <h2 className="text-4xl md:text-5xl font-bold mb-4">Launch Info</h2>

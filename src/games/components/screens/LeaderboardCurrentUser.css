@@ -10,11 +10,12 @@
   position: relative;
   overflow: hidden;
   margin-bottom: 0;
+  padding: 6px 0 6px 0; /* Csökkentett padding a border kompenzálásához */
 }
 
 @media (min-width: 768px) {
   .table-row.current-user-above-header {
-    padding: 16px 0 16px 0;
+    padding: 14px 0 14px 0; /* Csökkentett padding a border kompenzálásához */
   }
 }
 
@@ -124,11 +125,13 @@
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  color: #ffd700 !important; /* Fallback szín */
   font-weight: 900;
-  font-size: 1.2rem;
+  font-size: 1.3rem;
   letter-spacing: 0.01em;
   filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.3));
   position: relative;
+  white-space: nowrap;
 }
 
 @keyframes currentUserScoreGlow {
@@ -140,6 +143,20 @@
     filter: drop-shadow(0 0 20px rgba(251, 191, 36, 1));
     text-shadow: 0 0 25px rgba(251, 191, 36, 1);
   }
+}
+
+.current-user-click {
+  font-weight: 600;
+  color: #4ade80; /* Green color for MC/Click */
+  font-size: 0.85rem;
+  letter-spacing: 0.01em;
+}
+
+.current-user-passive {
+  font-weight: 600;
+  color: #60a5fa; /* Blue color for MC/Second */
+  font-size: 0.85rem;
+  letter-spacing: 0.01em;
 }
 
 .current-user-level {
@@ -161,13 +178,55 @@
   .mobile-leaderboard-container .table-row,
   .mobile-leaderboard-container .table-header,
   .mobile-leaderboard-container .table-footer {
-    grid-template-columns: 60px 1fr 100px 100px;
-    padding: 8px 20px 8px 20px;
+    grid-template-columns: 50px 1fr 150px;
+    padding: 8px 10px 8px 10px;
     align-items: center;
+  }
+  
+  .mobile-leaderboard-container .header-score {
+    justify-content: flex-end;
+    text-align: right;
+    white-space: nowrap;
+    font-size: 0.875rem;
+    line-height: 1;
+  }
+  
+  .mobile-leaderboard-container .cell-score {
+    justify-content: flex-end;
+    text-align: right;
+  }
+  
+  .mobile-leaderboard-container .score-value {
+    white-space: nowrap;
+    font-size: 0.8rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .mobile-leaderboard-container .current-user-score {
+    white-space: nowrap;
+    font-size: 0.9rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .mobile-leaderboard-container .current-user-badge {
+    font-size: 0.6rem;
+    opacity: 0.7;
+    margin-left: 2px;
+  }
+  
+  .mobile-leaderboard-container .table-row.podium .score-value {
+    font-size: 1.0rem;
+    font-weight: 800;
   }
   
   .mobile-leaderboard-container .table-header {
     padding: 12px 20px 12px 20px !important;
+  }
+  
+  .mobile-leaderboard-container .table-row.current-user-above-header {
+    padding: 10px 20px 10px 20px !important; /* Csökkentett padding a border kompenzálásához */
   }
   
   .mobile-leaderboard-container .footer-left {
@@ -183,8 +242,8 @@
   }
   
   .mobile-leaderboard-container .table-footer {
-    grid-template-columns: 40px 1fr 120px 90px;
-    padding: 4px 20px 4px 20px;
+    grid-template-columns: 50px 1fr 150px;
+    padding: 4px 10px 4px 10px;
     align-items: center;
   }
   
@@ -211,9 +270,9 @@
   .mobile-leaderboard-container .table-row,
   .mobile-leaderboard-container .table-header,
   .mobile-leaderboard-container .table-footer {
-    grid-template-columns: 25px 1fr 60px 45px;
-    padding: 8px 8px;
-    gap: 8px;
+    grid-template-columns: 35px 1fr 100px;
+    padding: 8px 5px;
+    gap: 4px;
   }
   
   .mobile-leaderboard-container .footer-left {

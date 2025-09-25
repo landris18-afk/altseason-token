@@ -35,7 +35,7 @@ const UpgradeList = ({
   const currentUpgrades = activeTab === 'click' ? click : passive;
 
   return (
-    <div className="flex-1 overflow-y-auto space-y-4 pb-2 pr-2 upgrade-list-scroll" style={{
+    <div className="md:space-y-4 space-y-2 pb-2 pr-2 upgrade-list-scroll" style={{
       scrollbarWidth: 'thin',
       scrollbarColor: 'rgba(234, 179, 8, 0.7) rgba(31, 41, 55, 0.5)'
     }}>

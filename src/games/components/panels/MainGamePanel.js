@@ -31,6 +31,9 @@ import GameControls from '../ui/GameControls';
  * @param {Function} props.setMuted - Némítás beállító
  * @param {string} props.twitterUrl - Twitter URL
  * @param {boolean} props.muted - Némított állapot
+ * @param {number} props.levelIndex - Jelenlegi szint indexe
+ * @param {number} props.clickPower - Kattintás erő
+ * @param {number} props.passiveIncome - Passzív jövedelem
  * @returns {JSX.Element} Fő játék panel komponens
  */
 export default function MainGamePanel({
@@ -51,12 +54,12 @@ export default function MainGamePanel({
   setMuted,
   twitterUrl,
   muted,
-  onShowUpgrades,
-  availableUpgradesCount,
-  onBackToLeaderboard
+  levelIndex,
+  clickPower,
+  passiveIncome,
 }) {
   return (
-    <div className="w-full h-full p-4 flex flex-col justify-start md:pt-4 pt-2 bg-gray-800/50 md:bg-transparent md:overflow-hidden overflow-y-auto">
+    <div className="w-full h-full md:p-4 px-4 pt-2 flex flex-col justify-start">
         {/* Progress Bar */}
         <ProgressBar 
           current={current}
@@ -89,6 +92,6 @@ export default function MainGamePanel({
           twitterUrl={twitterUrl}
           muted={muted}
         />
-    </div>
-  );
+      </div>
+    );
 }

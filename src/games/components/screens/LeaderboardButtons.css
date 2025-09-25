@@ -75,11 +75,51 @@
     0 0 0 1px rgba(255, 255, 255, 0.1);
 }
 
+/* Sign out button */
+.sign-out-btn {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(10px);
+}
+
+.sign-out-btn:hover {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.5);
+  color: #fca5a5;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.sign-out-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2);
+}
+
+/* Header right container adjustments */
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-direction: row;
+}
+
 /* Mobile start game button adjustments */
 @media (max-width: 767px) {
   .mobile-leaderboard-container .start-game-btn {
     font-size: 0.75rem;
     padding: 8px 16px;
     border-radius: 6px;
+  }
+  
+  .mobile-leaderboard-container .sign-out-btn {
+    display: none; /* Hide sign out button on mobile */
   }
 }

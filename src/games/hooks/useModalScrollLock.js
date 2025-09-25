@@ -22,4 +22,3 @@ export const useModalScrollLock = (isModalOpen) => {
     };
   }, [isModalOpen]);
 };
-

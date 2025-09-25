@@ -38,6 +38,9 @@ export const useUpgradeUnlock = (
         
         // Csak akkor unlockolunk, ha most lépte át a requirements.level-t
         if (last !== undefined && last < upgrade.requirements.level && lvl >= upgrade.requirements.level) {
+          // Ellenőrizzük, hogy valóban egy új unlock történt-e (nem csak a játék betöltésekor)
+          const wasAlreadyUnlocked = upgrade.isUnlocked;
+          
           setGameState(prevState => {
             const newUses = fixUsesLeft(prevState.usesLeft);
             if (id === 1) {
@@ -69,10 +72,10 @@ export const useUpgradeUnlock = (
             };
           });
           
-          // Hang lejátszása a használatok újratöltésekor, de csak ha nincs némítva
-          if (unlockSound && !muted) {
+          // Hang lejátszása csak akkor, ha valóban egy új unlock történt (nem volt korábban feloldva)
+          if (!wasAlreadyUnlocked && unlockSound && !muted) {
             unlockSound.currentTime = 0;
-            unlockSound.play().catch(error => console.log('Audio playback failed:', error));
+            unlockSound.play().catch(() => {});
           }
         }
         lastReqLevelRef.current[id] = lvl;
@@ -80,4 +83,3 @@ export const useUpgradeUnlock = (
     }
   }, [gameState.upgrades, isLoaded, unlockSound, muted, setGameState, lastReqLevelRef]);
 };
-

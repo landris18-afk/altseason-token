@@ -72,7 +72,7 @@
 
 .table-header {
   display: grid;
-  grid-template-columns: 60px 1fr 150px 120px;
+  grid-template-columns: 60px 1fr 180px 140px 140px 120px;
   background: 
     linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.08) 100%);
   border-bottom: 1px solid rgba(234, 179, 8, 0.3);
@@ -100,6 +100,8 @@
 .header-rank,
 .header-name,
 .header-score,
+.header-click,
+.header-passive,
 .header-level {
   display: flex;
   align-items: center;
@@ -108,25 +110,76 @@
 .header-rank {
   justify-content: center;
   text-align: center;
-  padding: 0 20px;
+  padding: 0 20px 0 25px;
 }
 
 .header-name {
   justify-content: flex-start;
   text-align: left;
-  padding: 0 20px 0 8px;
+  padding: 0 20px 0 20px;
 }
 
 .header-score {
   justify-content: flex-end;
   text-align: right;
+  padding: 0 25px;
+}
+
+.header-click {
+  justify-content: center;
+  text-align: center;
+  padding: 0 20px;
+}
+
+.header-passive {
+  justify-content: center;
+  text-align: center;
   padding: 0 20px;
 }
 
 .header-level {
+  justify-content: flex-start;
+  text-align: left;
+  padding: 0 25px;
+}
+
+/* Cell styles */
+.cell-rank,
+.cell-name,
+.cell-score,
+.cell-level {
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+}
+
+.cell-rank {
+  justify-content: center;
+  text-align: center;
+}
+
+.cell-name {
+  justify-content: flex-start;
+  text-align: left;
+}
+
+.cell-score {
   justify-content: flex-end;
   text-align: right;
+}
+
+.cell-click,
+.cell-passive {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
   padding: 0 20px;
+}
+
+.cell-level {
+  justify-content: flex-start;
+  text-align: left;
 }
 
 /* Market Cap responsive display */
@@ -225,13 +278,18 @@
 
 .table-row {
   display: grid;
-  grid-template-columns: 60px 1fr 150px 120px;
-  padding: 3px 0 0 0;
+  grid-template-columns: 60px 1fr 180px 140px 140px 120px;
+  padding: 8px 0 8px 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   align-items: center;
   transition: background 0.2s ease;
   position: relative;
   overflow: hidden;
+}
+
+/* 4. helyezéstől kezdve sárga elválasztó */
+.table-row:nth-child(n+4) {
+  border-bottom: 1px solid rgba(234, 179, 8, 0.6);
 }
 
 .table-row::before {
@@ -263,6 +321,8 @@
   color: #ffd700;
   text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
   animation: scoreGlow 1.5s infinite alternate;
+  font-size: 1.2rem;
+  font-weight: 800;
 }
 
 @keyframes scoreGlow {

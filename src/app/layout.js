@@ -1,27 +1,23 @@
-import { Inter } from "next/font/google";
-import "./globals.css";
-import Footer from "@/components/Footer";
-import ScrollToTop from "@/components/ScrollToTop";
-import { MuteProvider } from '@/games/components/context/MuteContext';
-
-const inter = Inter({ subsets: ["latin"] });
+import './globals.css';
+import { ClerkProvider } from '@clerk/nextjs';
+import { MuteProvider } from '../games/components/context/MuteContext';
 
 export const metadata = {
-  title: "Altseason Token",
-  description: "The next generation of meme tokens",
+  title: 'Altseason Token - Bull Run Clicker',
+  description: 'How high can you pump the market cap?',
 };
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
-        <MuteProvider>
-          <main className="min-h-screen">
+      <body className="bg-gray-900 text-white">
+        <ClerkProvider
+          publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
+        >
+          <MuteProvider>
             {children}
-          </main>
-          <Footer />
-          <ScrollToTop />
-        </MuteProvider>
+          </MuteProvider>
+        </ClerkProvider>
       </body>
     </html>
   );

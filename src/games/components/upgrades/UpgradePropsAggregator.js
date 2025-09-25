@@ -21,6 +21,7 @@ import React from 'react';
  * @param {boolean} props.hasPremiumUpgrade - Premium upgrade flag
  * @param {Audio} props.unlockSound - Unlock hang
  * @param {Object} props.usesLeft - Maradék használatok
+ * @param {Function} props.onBackToLeaderboard - Vissza a ranglistához függvény
  * @param {Function} props.children - Gyerek komponens renderelő
  * @returns {JSX.Element} Aggregált props-okkal renderelt gyerek komponens
  */
@@ -33,6 +34,7 @@ const UpgradePropsAggregator = ({
   hasPremiumUpgrade,
   unlockSound,
   usesLeft,
+  onBackToLeaderboard,
   children
 }) => {
   // Props validáció
@@ -60,7 +62,8 @@ const UpgradePropsAggregator = ({
     passiveIncome: passiveIncome || 0,
     hasPremiumUpgrade: hasPremiumUpgrade || false,
     unlockSound,
-    usesLeft: usesLeft || {}
+    usesLeft: usesLeft || {},
+    onBackToLeaderboard
   };
 
   // Gyerek komponens renderelése aggregált props-okkal

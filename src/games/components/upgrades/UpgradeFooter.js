@@ -17,15 +17,21 @@ import { fmt } from '../../utils/upgradeUtils';
  * @param {number} props.clickPower - Click power érték
  * @param {number} props.passiveIncome - Passzív jövedelem
  * @param {boolean} props.hasPremiumUpgrade - Premium upgrade flag
+ * @param {number} props.marketCap - Market Cap (egyenleg)
  * @returns {JSX.Element} Footer komponens
  */
-const UpgradeFooter = ({ clickPower, passiveIncome, hasPremiumUpgrade }) => {
+const UpgradeFooter = ({ clickPower, passiveIncome, hasPremiumUpgrade, marketCap }) => {
   const displayedPassiveIncome = hasPremiumUpgrade ? passiveIncome * 10 : passiveIncome;
 
   return (
-    <div className="mt-auto pt-4 text-center">
-      <div className="h-px bg-gradient-to-r from-transparent via-yellow-400/30 to-transparent mb-4"></div>
+    <div className="pt-3 pb-3 text-center">
       <div className="flex justify-around gap-2">
+        <div className="flex-1">
+          <p className="text-gray-400 text-xs sm:text-sm">Balance</p>
+          <p className="font-bold text-yellow-400 text-base sm:text-lg">
+            ${fmt(marketCap)}
+          </p>
+        </div>
         <div className="flex-1">
           <p className="text-gray-400 text-xs sm:text-sm">MC / Click</p>
           <p className="font-bold text-white text-base sm:text-lg">
