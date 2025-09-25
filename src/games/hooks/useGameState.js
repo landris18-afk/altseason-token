@@ -46,6 +46,7 @@ export const useGameState = () => {
   const hasLoadedFromStorage = useRef(false);
   const saveTimeoutRef = useRef(null);
   const lastUserIdRef = useRef(null); // Utolsó bejelentkezett user ID követése
+  const hasInitializedRef = useRef(false); // Kezdeti betöltés jelzője
 
   // Mentett állapot betöltése
   useEffect(() => {
@@ -53,11 +54,53 @@ export const useGameState = () => {
       if (typeof window !== 'undefined') {
         const userId = user?.id;
         
-        // Ellenőrizzük, hogy új bejelentkezés történt-e
-        const isNewLogin = lastUserIdRef.current !== null && lastUserIdRef.current !== userId;
+        // Ha még nem történt inicializálás, akkor betöltjük a mentett adatokat
+        if (!hasInitializedRef.current) {
+          const storageKey = userId ? `bullRunGameState_${userId}` : 'bullRunGameState_v3';
+          const savedState = localStorage.getItem(storageKey);
+          
+          if (savedState) {
+            try {
+              const parsed = JSON.parse(savedState);
+              const initialState = getInitialState();
+              const fixedUsesLeft = fixUsesLeft(parsed.usesLeft);
+              const mergedUpgrades = initialState.upgrades.map(init => {
+                const savedUpgrade = parsed.upgrades && parsed.upgrades.find(u => u.id === init.id);
+                const usesLeft = fixedUsesLeft[init.id];
+                return {
+                  ...init,
+                  ...savedUpgrade,
+                  isUnlocked: init.id === 1 || (typeof usesLeft === 'number' && usesLeft > 0)
+                };
+              });
+              const newGameState = {
+                ...initialState,
+                ...parsed,
+                usesLeft: fixedUsesLeft,
+                upgrades: mergedUpgrades,
+                minMarketCapThisLevel: parsed.minMarketCapThisLevel ?? parsed.marketCap ?? 0
+              };
+              setGameState(newGameState);
+              hasLoadedFromStorage.current = true;
+              console.log('Mentett játék állapot betöltve:', newGameState.marketCap);
+            } catch (e) {
+              console.error('Hiba a mentett állapot betöltésekor:', e);
+            }
+          }
+          
+          hasInitializedRef.current = true;
+          lastUserIdRef.current = userId;
+          setIsGameLoaded(true);
+          return;
+        }
+        
+        // Ha már inicializálva volt, ellenőrizzük hogy új bejelentkezés történt-e
+        const isNewLogin = lastUserIdRef.current !== null && 
+                          lastUserIdRef.current !== undefined && 
+                          lastUserIdRef.current !== userId;
         
         if (isNewLogin) {
-          // Új bejelentkezés: nulláról kezdjük, ne töltjük be a localStorage adatokat
+          // Új bejelentkezés: nulláról kezdjük
           console.log('Új bejelentkezés észlelve, nulláról kezdjük a játékot');
           const initialState = getInitialState();
           setGameState(initialState);
@@ -67,43 +110,8 @@ export const useGameState = () => {
           return;
         }
         
-        // Ha van bejelentkezett user, akkor user-specifikus állapot
-        const storageKey = userId ? `bullRunGameState_${userId}` : 'bullRunGameState_v3';
-        const savedState = localStorage.getItem(storageKey);
-        
-        if (savedState) {
-          try {
-            const parsed = JSON.parse(savedState);
-            const initialState = getInitialState();
-            const fixedUsesLeft = fixUsesLeft(parsed.usesLeft);
-            const mergedUpgrades = initialState.upgrades.map(init => {
-              const savedUpgrade = parsed.upgrades && parsed.upgrades.find(u => u.id === init.id);
-              const usesLeft = fixedUsesLeft[init.id];
-              return {
-                ...init,
-                ...savedUpgrade,
-                isUnlocked: init.id === 1 || (typeof usesLeft === 'number' && usesLeft > 0)
-              };
-            });
-            const newGameState = {
-              ...initialState,
-              ...parsed,
-              usesLeft: fixedUsesLeft,
-              upgrades: mergedUpgrades,
-              minMarketCapThisLevel: parsed.minMarketCapThisLevel ?? parsed.marketCap ?? 0
-            };
-            setGameState(newGameState);
-            hasLoadedFromStorage.current = true;
-          } catch (e) {
-            console.error('Hiba a mentett állapot betöltésekor:', e);
-          }
-        } else {
-          // Ha nincs mentett állapot, akkor is beállítjuk az isGameLoaded-et true-ra
-          setIsGameLoaded(true);
-        }
-        
-        // Frissítjük az utolsó user ID-t
-        lastUserIdRef.current = userId;
+        // Ha ugyanaz a user, akkor nem csinálunk semmit
+        setIsGameLoaded(true);
       } else {
         // Ha nincs user.id, akkor is beállítjuk az isGameLoaded-et true-ra
         setIsGameLoaded(true);
