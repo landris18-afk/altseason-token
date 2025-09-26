@@ -71,7 +71,7 @@ const LeaderboardTable = ({
                   {currentUserRank === 3 && '🥉'}
                 </span>
               ) : (
-                `${currentUserRank || 'N/A'}.`
+                `${currentUserRank > 0 ? currentUserRank : 'N/A'}.`
               )}
             </span>
           </div>
@@ -119,7 +119,7 @@ const LeaderboardTable = ({
                     {currentUserRank === 3 && '🥉'}
                   </span>
                 ) : (
-                  `${currentUserRank || 'N/A'}.`
+                  `${currentUserRank > 0 ? currentUserRank : 'N/A'}.`
                 )}
               </span>
             </div>

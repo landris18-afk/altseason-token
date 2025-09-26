@@ -80,7 +80,7 @@ const MobileLeaderboard = ({
             <LeaderboardTable
               players={leaderboardPlayers}
               currentUser={currentUser}
-              currentPlayerRank={currentPlayerRank}
+              currentUserRank={currentPlayerRank}
               isDesktop={false}
               expandedPlayers={expandedPlayers}
               onTogglePlayerDetails={onTogglePlayerDetails}

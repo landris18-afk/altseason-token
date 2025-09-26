@@ -8,11 +8,13 @@
  * - Számítások
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { useLeaderboard } from '../../../hooks/useLeaderboard';
 import { useGameSettings } from '../../../hooks/useGameSettings';
 import { useDesktopDetection } from '../../../hooks/useDesktopDetection';
+import { useAudioManager } from '../../../hooks/useAudioManager';
+import { useMute } from '../../context/MuteContext';
 
 export const useLeaderboardLogic = (playerStats, onStartGame) => {
   // State kezelés
@@ -25,6 +27,8 @@ export const useLeaderboardLogic = (playerStats, onStartGame) => {
   const { isSignedIn, user } = useUser();
   const { displayName, leaderboardEnabled } = useGameSettings();
   const isDesktop = useDesktopDetection();
+  const { playLevelUpSound } = useAudioManager();
+  const { muted } = useMute();
   
   // Ranglista adatok
   const { 
@@ -32,12 +36,26 @@ export const useLeaderboardLogic = (playerStats, onStartGame) => {
     totalPlayers, 
     loading: leaderboardLoading, 
     error: leaderboardError, 
-    refresh: refreshLeaderboard 
+    refresh: originalRefreshLeaderboard 
   } = useLeaderboard({ 
     viewMode, 
     platform: 'all', 
     autoRefresh: false 
   });
+
+  // Frissítés gomb kezelése szintlépés hanggal
+  const refreshLeaderboard = () => {
+    // Szintlépés hang lejátszása 2x egymás után
+    if (!muted) {
+      playLevelUpSound();
+      // Második hang 2,5 másodperc késéssel
+      setTimeout(() => {
+        playLevelUpSound();
+      }, 2500);
+    }
+    // Ranglista frissítése
+    originalRefreshLeaderboard();
+  };
   
   // Játékos rang adatok - kikapcsolva, fallback logika használata
   const playerRank = null; // Mindig null, hogy a fallback logika használja a ranglista adatokat
@@ -98,7 +116,8 @@ export const useLeaderboardLogic = (playerStats, onStartGame) => {
         clickPower: dbUser.clickPower || 0,
         passiveIncome: dbUser.passiveIncome || 0,
         isCurrentUser: true,
-        userId: user.id
+        userId: user.id,
+        clerkId: user.id // Hozzáadjuk a clerkId-t is
       };
     }
     
@@ -112,13 +131,16 @@ export const useLeaderboardLogic = (playerStats, onStartGame) => {
       clickPower: 0,
       passiveIncome: 0,
       isCurrentUser: true,
-      userId: user.id
+      userId: user.id,
+      clerkId: user.id // Hozzáadjuk a clerkId-t is
     };
   })();
 
   // Current user rank számítás - mindig a ranglista adatokból számítjuk
-  const currentPlayerRank = (() => {
-    if (!currentUser) return null;
+  const currentPlayerRank = useMemo(() => {
+    if (!currentUser) {
+      return 0; // 0-t adunk vissza null helyett
+    }
     
     // Ha van playerRank az API-ból, használjuk azt
     if (playerRank) {
@@ -136,7 +158,7 @@ export const useLeaderboardLogic = (playerStats, onStartGame) => {
     }
     
     return currentUserIndex + 1;
-  })();
+  }, [currentUser, playerRank, leaderboardPlayers]);
 
   return {
     // State
