@@ -163,7 +163,7 @@ export default function GameSection({
             /* Main Panel with Header */
             <div className="relative h-full flex flex-col">
               {/* Mobile Game Header - Top (same as upgrade header) */}
-              <div className="flex justify-between items-center mb-2 px-6 py-4 bg-gray-800 border-b border-yellow-400">
+              <div className="flex justify-between items-center mb-2 px-6 py-4 bg-gray-800/20 backdrop-blur-md border-b border-yellow-400">
                 <div className="relative">
                   <button 
                     className="start-game-btn" 
@@ -241,7 +241,7 @@ export default function GameSection({
             /* Upgrades Panel with Header */
             <div className="relative h-full flex flex-col">
               {/* Mobile Upgrades Header - Top */}
-              <div className="flex justify-between items-center mb-2 px-6 py-4 bg-gray-800 border-b border-yellow-400">
+              <div className="flex justify-between items-center mb-2 px-6 py-4 bg-gray-800/20 backdrop-blur-md border-b border-yellow-400">
                 <h2 className="text-4xl font-bold text-gray-300">Upgrades</h2>
                 
                 <button

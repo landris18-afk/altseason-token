@@ -33,7 +33,7 @@ const MobileLeaderboard = ({
     <div className="mobile-leaderboard-container">
       <div className="leaderboard-container">
         {/* Mobile Header */}
-        <div className="md:hidden flex justify-between items-center mb-4 px-6 py-4 bg-gray-800 border-b border-yellow-400">
+        <div className="md:hidden flex justify-between items-center mb-4 px-6 py-4 bg-gray-800/20 backdrop-blur-md border-b border-yellow-400">
           <button 
             className="start-game-btn" 
             onClick={() => {
