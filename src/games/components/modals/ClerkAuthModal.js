@@ -56,40 +56,35 @@ const ClerkAuthModal = ({ isOpen, onClose, onPlayWithoutAuth }) => {
           </div>
         </div>
 
-        {/* Mobile: Full screen page */}
-        <div className="md:hidden fixed inset-0 bg-gray-900 z-[10005]">
-          <div className="w-full h-full bg-gray-900 flex flex-col">
-            {/* Mobile Header - like leaderboard */}
-            <div className="flex justify-between items-center px-4 py-4 bg-gray-800 border-b border-yellow-400">
-              <h2 className="text-lg font-bold text-white">Sign In</h2>
-              <button
-                onClick={() => setShowClerkAuth(false)}
-                className="w-8 h-8 bg-gray-700/80 hover:bg-gray-600/90 text-gray-300 hover:text-white transition-all duration-200 rounded-lg flex items-center justify-center"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                </svg>
-              </button>
-            </div>
+        {/* Mobile: Simple modal popup */}
+        <div className="md:hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[10005] p-4">
+          <div className="relative">
+            {/* Close button */}
+            <button
+              onClick={() => setShowClerkAuth(false)}
+              className="absolute -top-2 -right-2 z-10 w-8 h-8 bg-gray-800 hover:bg-gray-700 text-gray-400 hover:text-white transition-all duration-200 rounded-full flex items-center justify-center border border-yellow-400/60 hover:border-yellow-400/80"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
 
-            {/* Mobile Content */}
-            <div className="flex-1 p-4 overflow-y-auto">
-              <SignIn 
-                routing="hash"
-                appearance={{
-                  elements: {
-                    rootBox: "w-full",
-                    card: "bg-transparent shadow-none border-none",
-                    headerTitle: "text-white",
-                    headerSubtitle: "text-gray-300",
-                    socialButtonsBlockButton: "bg-gray-800 hover:bg-gray-700 text-white border border-gray-600",
-                    formButtonPrimary: "bg-yellow-500 hover:bg-yellow-600 text-black font-bold",
-                    footerActionLink: "text-yellow-400 hover:text-yellow-300"
-                  }
-                }}
-                afterSignInUrl="/game"
-              />
-            </div>
+            {/* Sign In Box */}
+            <SignIn 
+              routing="hash"
+              appearance={{
+                elements: {
+                  rootBox: "w-full",
+                  card: "bg-transparent shadow-none border-none",
+                  headerTitle: "text-white",
+                  headerSubtitle: "text-gray-300",
+                  socialButtonsBlockButton: "bg-gray-800 hover:bg-gray-700 text-white border border-gray-600",
+                  formButtonPrimary: "bg-yellow-500 hover:bg-yellow-600 text-black font-bold",
+                  footerActionLink: "text-yellow-400 hover:text-yellow-300"
+                }
+              }}
+              afterSignInUrl="/game"
+            />
           </div>
         </div>
       </>
@@ -220,10 +215,18 @@ const ClerkAuthModal = ({ isOpen, onClose, onPlayWithoutAuth }) => {
       </div>
 
       {/* Mobile: Full screen page */}
-      <div className="md:hidden fixed inset-0 bg-gray-900 z-[10005]">
-        <div className="w-full h-full bg-gray-900 flex flex-col">
+      <div className="md:hidden fixed inset-0 z-[10005]">
+        <div 
+          className="w-full h-full flex flex-col"
+          style={{
+            backgroundImage: 'url(/images/rockat_pump_bacground.jpg)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat'
+          }}
+        >
           {/* Header */}
-          <div className="px-4 py-4 bg-gray-800 border-b border-yellow-400">
+          <div className="px-4 py-4 bg-gray-900/98 border-b border-yellow-400">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-bold text-white">Join the Bull Run!</h2>
               <button

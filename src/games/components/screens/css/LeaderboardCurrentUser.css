@@ -260,7 +260,7 @@
   
   .mobile-leaderboard-container .toggle-btn {
     font-size: 0.8rem;
-    padding: 8px 12px;
+    padding: 0 20px 0 16px;
     min-width: 50px;
     min-height: 50px;
   }

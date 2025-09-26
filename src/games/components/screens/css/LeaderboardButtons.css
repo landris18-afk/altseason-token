@@ -16,6 +16,7 @@
   align-items: center;
   justify-content: center;
   gap: 6px;
+  text-align: center;
   margin: 0 2px;
   min-height: 36px;
   position: relative;
@@ -28,7 +29,7 @@
   .toggle-btn {
     min-height: 52px;
     font-size: 0.85rem;
-    padding: 0 16px;
+    padding: 0 20px 0 16px;
     border-radius: 6px;
     margin: 0 2px;
     gap: 4px;
