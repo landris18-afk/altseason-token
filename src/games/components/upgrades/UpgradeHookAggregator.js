@@ -18,6 +18,7 @@ import { useUpgradePanel } from '../../hooks/useUpgradePanel';
  * @param {number} props.marketCap - Market Cap érték
  * @param {Function} props.buyUpgrade - Upgrade vásárlás
  * @param {Object} props.usesLeft - Maradék használatok
+ * @param {number} props.subThousandAccumulator - Sub-thousand akkumulátor
  * @param {Function} props.children - Gyerek komponens renderelő
  * @returns {JSX.Element} Hook állapottal renderelt gyerek komponens
  */
@@ -26,10 +27,11 @@ const UpgradeHookAggregator = ({
   marketCap,
   buyUpgrade,
   usesLeft,
+  subThousandAccumulator = 0,
   children
 }) => {
   // Hook használata
-  const panelState = useUpgradePanel(upgrades, marketCap, buyUpgrade, usesLeft);
+  const panelState = useUpgradePanel(upgrades, marketCap, buyUpgrade, usesLeft, subThousandAccumulator);
 
   // Hook állapot validáció
   if (!panelState) {

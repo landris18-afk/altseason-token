@@ -71,9 +71,14 @@ export const useGameLogic = (
     }));
   }, [gameState.solanaBlessingLevel, setGameState]);
 
+  // Wrapper a handleUpgrade-hez, hogy átadja a szükséges paramétereket
+  const handleUpgradeWithParams = useCallback((upgrade) => {
+    handleUpgrade(upgrade, subThousandAccumulator, setSubThousandAccumulator);
+  }, [handleUpgrade, subThousandAccumulator, setSubThousandAccumulator]);
+
   return {
     handlePump,
-    handleUpgrade,
+    handleUpgrade: handleUpgradeWithParams,
     activatePremiumUpgrade,
     buySolanaBlessing
   };

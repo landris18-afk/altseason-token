@@ -26,11 +26,39 @@ export const useUpgradeLogic = (
   const { autoSavePlayer } = usePlayerSave();
 
   // Upgrade vásárlás kezelése
-  const handleUpgrade = useCallback((upgrade) => {
+  const handleUpgrade = useCallback((upgrade, subThousandAccumulator, setSubThousandAccumulator) => {
     const cost = getUpgradeCost(upgrade);
-    if (gameState.marketCap >= cost) {
+    
+    // Ellenőrizzük, hogy van-e elég pénz (marketCap + subThousandAccumulator)
+    const totalAvailable = gameState.marketCap + subThousandAccumulator;
+    if (totalAvailable >= cost) {
       playUpgradeSound();
       const wasLocked = !upgrade.isUnlocked;
+      
+      // Először a subThousandAccumulator-ból vonjuk le, ha van
+      let remainingCost = cost;
+      let newSubThousandAccumulator = subThousandAccumulator;
+      let newMarketCap = gameState.marketCap;
+      
+      if (subThousandAccumulator > 0) {
+        if (subThousandAccumulator >= remainingCost) {
+          // Ha a subThousandAccumulator elég, akkor csak azt csökkentjük
+          newSubThousandAccumulator = subThousandAccumulator - remainingCost;
+          remainingCost = 0;
+        } else {
+          // Ha nem elég, akkor a subThousandAccumulator-t nullázzuk és a maradékot a marketCap-ból vonjuk le
+          remainingCost = remainingCost - subThousandAccumulator;
+          newSubThousandAccumulator = 0;
+        }
+      }
+      
+      // Ha még mindig van költség, akkor a marketCap-ból vonjuk le
+      if (remainingCost > 0) {
+        newMarketCap = gameState.marketCap - remainingCost;
+      }
+      
+      // Frissítjük a subThousandAccumulator-t
+      setSubThousandAccumulator(newSubThousandAccumulator);
       
       setGameState(prevState => {
         const newUses = fixUsesLeft(prevState.usesLeft);
@@ -41,7 +69,7 @@ export const useUpgradeLogic = (
         
         return {
           ...prevState,
-          marketCap: prevState.marketCap - cost,
+          marketCap: newMarketCap,
           clickPower: prevState.clickPower + (upgrade.type === 'click' ? upgrade.power : 0),
           passiveIncome: prevState.passiveIncome + (upgrade.type === 'passive' ? upgrade.power : 0),
           usesLeft: newUses,
@@ -50,7 +78,7 @@ export const useUpgradeLogic = (
               ? { ...u, level: u.level + 1, isUnlocked: true }
               : u
           ),
-          minMarketCapThisLevel: prevState.marketCap - cost
+          minMarketCapThisLevel: newMarketCap
         };
       });
       
@@ -60,7 +88,7 @@ export const useUpgradeLogic = (
 
       // Upgrade után NEM mentünk - csak kilépéskor és szintlépéskor
     }
-  }, [gameState, setGameState, playUpgradeSound, playUnlockSound]);
+  }, [gameState, setGameState, playUpgradeSound, playUnlockSound, subThousandAccumulator, setSubThousandAccumulator]);
 
   return { handleUpgrade };
 };

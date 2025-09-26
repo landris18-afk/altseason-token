@@ -46,10 +46,10 @@ export default function GameSection({
   const availableUpgrades = upgrades ? (() => {
     const { click, passive } = getUpgradeCategories(upgrades);
     const availableClick = click.filter(upgrade => 
-      isUpgradeUnlocked(upgrade, usesLeft, upgrades) && canAffordUpgrade(upgrade, marketCap)
+      isUpgradeUnlocked(upgrade, usesLeft, upgrades) && canAffordUpgrade(upgrade, marketCap, subThousandAccumulator)
     ).length;
     const availablePassive = passive.filter(upgrade => 
-      isUpgradeUnlocked(upgrade, usesLeft, upgrades) && canAffordUpgrade(upgrade, marketCap)
+      isUpgradeUnlocked(upgrade, usesLeft, upgrades) && canAffordUpgrade(upgrade, marketCap, subThousandAccumulator)
     ).length;
     return availableClick + availablePassive;
   })() : 0;
@@ -111,6 +111,7 @@ export default function GameSection({
             usesLeft={usesLeft}
             onBackToLeaderboard={onBackToLeaderboard}
             isSaving={isSaving}
+            subThousandAccumulator={subThousandAccumulator}
           />
           
           {/* Back button - positioned at top right of upgrades panel */}
@@ -269,6 +270,7 @@ export default function GameSection({
                   usesLeft={usesLeft}
                   onBackToLeaderboard={onBackToLeaderboard}
                   isSaving={isSaving}
+                  subThousandAccumulator={subThousandAccumulator}
                 />
               </div>
             </div>

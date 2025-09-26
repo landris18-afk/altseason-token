@@ -23,9 +23,10 @@ import {
  * @param {number} marketCap - Market Cap érték
  * @param {Function} buyUpgrade - Upgrade vásárlás funkció
  * @param {Object} usesLeft - Maradék használatok
+ * @param {number} subThousandAccumulator - Sub-thousand akkumulátor
  * @returns {Object} Upgrade panel állapot és funkciók
  */
-export const useUpgradePanel = (upgrades, marketCap, buyUpgrade, usesLeft) => {
+export const useUpgradePanel = (upgrades, marketCap, buyUpgrade, usesLeft, subThousandAccumulator = 0) => {
   // Állapot változók
   const [insufficientFundsUpgrade, setInsufficientFundsUpgrade] = useState(null);
   const [activeTab, setActiveTab] = useState('click');
@@ -58,7 +59,7 @@ export const useUpgradePanel = (upgrades, marketCap, buyUpgrade, usesLeft) => {
   const handleUpgradeClick = (upgrade) => {
     // Ellenőrizzük, hogy feloldott-e és megfizethető-e
     const isUnlocked = isUpgradeUnlocked(upgrade, usesLeft, upgrades);
-    const canAfford = canAffordUpgrade(upgrade, marketCap);
+    const canAfford = canAffordUpgrade(upgrade, marketCap, subThousandAccumulator);
     
     if (!isUnlocked || !canAfford) {
       // Ha nincs feloldva vagy nincs elég pénz, ne csináljunk semmit

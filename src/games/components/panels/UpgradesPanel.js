@@ -34,6 +34,7 @@ const UpgradesPanel = (props) => {
             marketCap={aggregatedProps.marketCap}
             buyUpgrade={aggregatedProps.buyUpgrade}
             usesLeft={aggregatedProps.usesLeft}
+            subThousandAccumulator={aggregatedProps.subThousandAccumulator}
           >
             {(panelState, hookFunctions) => (
               <UpgradeContainer

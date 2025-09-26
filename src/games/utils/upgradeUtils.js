@@ -66,11 +66,13 @@ export const isUpgradeUnlocked = (upgrade, usesLeft, allUpgrades = []) => {
  * 
  * @param {Object} upgrade - Upgrade objektum
  * @param {number} marketCap - Jelenlegi Market Cap
+ * @param {number} subThousandAccumulator - Sub-thousand akkumulátor (opcionális)
  * @returns {boolean} Megfizethető-e
  */
-export const canAffordUpgrade = (upgrade, marketCap) => {
+export const canAffordUpgrade = (upgrade, marketCap, subThousandAccumulator = 0) => {
   const cost = calculateUpgradeCost(upgrade);
-  return marketCap >= cost;
+  const totalAvailable = marketCap + subThousandAccumulator;
+  return totalAvailable >= cost;
 };
 
 /**
@@ -103,11 +105,12 @@ export const formatUpgradeDescription = (description) => {
  * @param {Object} usesLeft - Maradék használatok
  * @param {number} marketCap - Jelenlegi Market Cap
  * @param {Array} allUpgrades - Összes upgrade (requirements ellenőrzéshez)
+ * @param {number} subThousandAccumulator - Sub-thousand akkumulátor (opcionális)
  * @returns {Object} Státusz információk
  */
-export const getUpgradeStatus = (upgrade, usesLeft, marketCap, allUpgrades = []) => {
+export const getUpgradeStatus = (upgrade, usesLeft, marketCap, allUpgrades = [], subThousandAccumulator = 0) => {
   const isUnlocked = isUpgradeUnlocked(upgrade, usesLeft, allUpgrades);
-  const canAfford = canAffordUpgrade(upgrade, marketCap);
+  const canAfford = canAffordUpgrade(upgrade, marketCap, subThousandAccumulator);
   const cost = calculateUpgradeCost(upgrade);
   
   return {
