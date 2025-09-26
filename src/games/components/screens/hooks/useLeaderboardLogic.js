@@ -126,19 +126,16 @@ export const useLeaderboardLogic = (playerStats, onStartGame) => {
     }
     
     // Különben számítsuk ki a ranglista adatokból
-    let rank = 1;
-    for (const player of leaderboardPlayers) {
-      // Ha a currentUser marketCap-je kisebb vagy egyenlő, akkor rosszabb rangot kap
-      if (currentUser.marketCap <= (player.marketCap || player.score || 0)) {
-        rank++;
-      } else {
-        // Ha nagyobb, akkor jobb rangot kap, megállunk
-        break;
-      }
+    // Megkeressük a current user pozícióját a ranglistában
+    const sortedPlayers = [...leaderboardPlayers].sort((a, b) => (b.marketCap || b.score || 0) - (a.marketCap || a.score || 0));
+    const currentUserIndex = sortedPlayers.findIndex(player => player.clerkId === currentUser.userId);
+    
+    if (currentUserIndex === -1) {
+      // Ha nincs a ranglistában, akkor a végére kerül
+      return sortedPlayers.length + 1;
     }
     
-    
-    return rank;
+    return currentUserIndex + 1;
   })();
 
   return {

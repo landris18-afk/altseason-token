@@ -144,13 +144,6 @@ const SettingsModal = ({ isOpen, onClose }) => {
                     <span className="text-gray-300">Email:</span>
                     <span className="text-white text-sm">{user?.emailAddresses?.[0]?.emailAddress || 'Unknown'}</span>
                   </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-300">Login Method:</span>
-                    <div className="flex items-center gap-2">
-                      <span className="text-xl">{loginMethod.icon}</span>
-                      <span className="text-white font-medium">{loginMethod.provider}</span>
-                    </div>
-                  </div>
                 </div>
               </div>
             </div>
@@ -288,13 +281,6 @@ const SettingsModal = ({ isOpen, onClose }) => {
                 <div className="flex justify-between items-center">
                   <span className="text-gray-300">Email:</span>
                   <span className="text-white font-medium">{user?.emailAddresses?.[0]?.emailAddress || 'Unknown'}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-300">Login Method:</span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xl">{loginMethod.icon}</span>
-                    <span className="text-white font-medium">{loginMethod.provider}</span>
-                  </div>
                 </div>
               </div>
             </div>
