@@ -115,23 +115,38 @@ const GamePage = () => {
           showHeader={false}
           isSaving={isSaving}
           onBackToLeaderboard={async (skipSave = false) => {
+            console.log('🔙 onBackToLeaderboard called with skipSave:', skipSave);
+            console.log('🔙 isSaving:', isSaving);
+            
             // Ha már ment, ne csináljunk semmit
-            if (isSaving) return;
+            if (isSaving) {
+              console.log('⏭️ Already saving, skipping...');
+              return;
+            }
             
             // Loading state bekapcsolása
+            console.log('⏳ Setting isSaving to true');
             setIsSaving(true);
             
             try {
               // Először mentjük az adatokat (kivéve ha skipSave = true)
               if (gameProps.clearUserCache) {
+                console.log('🔄 Calling clearUserCache...');
                 await gameProps.clearUserCache(skipSave);
+                console.log('✅ clearUserCache completed');
+              } else {
+                console.log('❌ clearUserCache function not available');
               }
               
               // Visszalépünk a ranglistára
+              console.log('🔙 Setting showGame to false');
               setShowGame(false);
               
+            } catch (error) {
+              console.error('❌ Error in onBackToLeaderboard:', error);
             } finally {
               // Loading state kikapcsolása
+              console.log('⏳ Setting isSaving to false');
               setIsSaving(false);
             }
           }}

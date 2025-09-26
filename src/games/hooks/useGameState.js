@@ -385,23 +385,33 @@ export const useGameState = () => {
 
   // localStorage törlése minden felhasználónak (játék bezárásakor)
   const clearUserCache = useCallback(async (skipSave = false) => {
+    console.log('🔄 clearUserCache called with skipSave:', skipSave);
+    console.log('🔄 User ID:', user?.id);
+    console.log('🔄 Game state:', gameState);
+    
     if (user?.id) {
       // Bejelentkezett felhasználó: először mentjük az aktuális állapotot az adatbázisba (kivéve ha skipSave = true)
       if (!skipSave) {
         try {
+          console.log('💾 Saving game state to database before clearing cache...');
           // Azonnal mentjük, nem várunk
-          await autoSavePlayer(gameState);
+          const saveResult = await autoSavePlayer(gameState);
+          console.log('💾 Save result:', saveResult);
         } catch (error) {
-          console.error('Error saving game state to database:', error);
+          console.error('❌ Error saving game state to database:', error);
         }
+      } else {
+        console.log('⏭️ Skipping save due to skipSave=true');
       }
       
       // Majd töröljük a cache-t
       const userStorageKey = `bullRunGameState_${user.id}`;
       localStorage.removeItem(userStorageKey);
+      console.log('🗑️ Cleared localStorage for user:', user.id);
     } else {
       // Névtelen felhasználó cache törlése
       localStorage.removeItem('bullRunGameState_v3');
+      console.log('🗑️ Cleared localStorage for anonymous user');
     }
   }, [user?.id, gameState, autoSavePlayer]);
 
