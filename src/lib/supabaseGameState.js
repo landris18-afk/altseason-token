@@ -55,39 +55,50 @@ class SupabaseGameState {
 
     // Server-side: közvetlenül Supabase-be mentjük
     try {
+      console.log('🖥️ Server-side save: starting...');
       // Először a felhasználót biztosítjuk
+      console.log('👤 Upserting user with clerkId:', clerkId);
       const userResult = await supabaseAuth.upsertUser({ id: clerkId });
+      console.log('👤 User upsert result:', userResult);
       if (!userResult.success) throw new Error(userResult.error);
 
       const userId = userResult.data.id;
+      console.log('👤 User ID from database:', userId);
 
       // Játék állapot mentése
+      const gameDataToSave = {
+        user_id: userId,
+        market_cap: gameState.marketCap || 0,
+        click_power: gameState.clickPower || 0,
+        passive_income: gameState.passiveIncome || 0,
+        level: (gameState.levelIndex || 0) + 1,
+        level_index: gameState.levelIndex || 0,
+        total_clicks: gameState.totalClicks || 0,
+        total_earned: gameState.totalEarned || 0,
+        upgrades: gameState.upgrades || [],
+        achievements: gameState.achievements || [],
+        settings: gameState.settings || {},
+        platform: gameState.platform || 'desktop',
+        last_active: new Date().toISOString()
+      };
+      
+      console.log('💾 Saving game data to database:', gameDataToSave);
+      
       const { data, error } = await supabaseAdmin
         .from('game_states')
-        .upsert({
-          user_id: userId,
-          market_cap: gameState.marketCap || 0,
-          click_power: gameState.clickPower || 0,
-          passive_income: gameState.passiveIncome || 0,
-          level: (gameState.levelIndex || 0) + 1,
-          level_index: gameState.levelIndex || 0,
-          total_clicks: gameState.totalClicks || 0,
-          total_earned: gameState.totalEarned || 0,
-          upgrades: gameState.upgrades || [],
-          achievements: gameState.achievements || [],
-          settings: gameState.settings || {},
-          platform: gameState.platform || 'desktop',
-          last_active: new Date().toISOString()
-        }, {
+        .upsert(gameDataToSave, {
           onConflict: 'user_id'
         })
         .select()
         .single();
 
+      console.log('💾 Database response:', { data, error });
+
       if (error) throw error;
+      console.log('✅ Game state saved successfully to database');
       return { success: true, data };
     } catch (error) {
-      console.error('Error saving game state:', error);
+      console.error('❌ Error saving game state:', error);
       return { success: false, error: error.message };
     }
   }
