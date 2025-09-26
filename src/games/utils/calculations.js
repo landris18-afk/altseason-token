@@ -39,8 +39,9 @@ export const calculateDisplayValues = (gameState, subThousandAccumulator) => {
   const safeSubThousand = safeNumber(subThousandAccumulator);
   const safeMinMarketCap = safeNumber(gameState.minMarketCapThisLevel);
   
+  const totalMarketCap = safeMarketCap + safeSubThousand;
   const progress = next ? 
-    Math.min(100, ((safeMarketCap - current.threshold) / (next.threshold - current.threshold)) * 100) : 100;
+    Math.min(100, ((totalMarketCap - safeMinMarketCap) / (next.threshold - safeMinMarketCap)) * 100) : 100;
   
   const colorIndex = Math.min(levelIndex, levelColors.length - 1);
   const currentLevelColor = levelColors[colorIndex] || levelColors[0];

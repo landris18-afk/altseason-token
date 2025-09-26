@@ -154,6 +154,7 @@ export const useBullRunGame = () => {
     current,
     next,
     safeMarketCap,
+    safeMinMarketCap,
     progress: prog,
     currentTextColor,
     currentBarFrom,

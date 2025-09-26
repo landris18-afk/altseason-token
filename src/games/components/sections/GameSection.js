@@ -12,6 +12,7 @@ export default function GameSection({
   currentBarTo,
   progress,
   safeMarketCap,
+  safeMinMarketCap,
   marketCap,
   subThousandAccumulator,
   isDesktop,
@@ -81,6 +82,7 @@ export default function GameSection({
             currentBarTo={currentBarTo}
             progress={progress}
             safeMarketCap={safeMarketCap}
+            safeMinMarketCap={safeMinMarketCap}
             marketCap={marketCap}
             subThousandAccumulator={subThousandAccumulator}
             isDesktop={isDesktop}

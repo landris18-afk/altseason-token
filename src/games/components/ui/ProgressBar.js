@@ -27,7 +27,9 @@ const ProgressBar = ({
   currentBarFrom, 
   currentBarTo, 
   progress, 
-  safeMarketCap
+  safeMarketCap,
+  safeMinMarketCap,
+  subThousandAccumulator
 }) => {
   
   return (
@@ -57,7 +59,7 @@ const ProgressBar = ({
       {/* Progress info */}
       <div className="w-full text-right mt-1">
         <p className="text-sm text-gray-400 font-mono">
-          {next ? `Next: $${fmt(safeMarketCap)}/$${fmt(next.threshold)}` : (window.innerWidth >= 768 ? "MAX LEVEL" : "MAX")}
+          {next ? `Next: $${fmt(safeMarketCap + (subThousandAccumulator || 0))}/$${fmt(next.threshold)}` : (window.innerWidth >= 768 ? "MAX LEVEL" : "MAX")}
         </p>
       </div>
     </div>

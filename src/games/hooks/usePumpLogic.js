@@ -57,10 +57,10 @@ export const usePumpLogic = (
             const billionsToAdd = Math.floor(newAccumulator / 1e9);
             const remainder = newAccumulator % 1e9;
             
-            setSubThousandAccumulator(remainder);
             setGameState(p => ({
               ...p,
               marketCap: Math.min(p.marketCap + (billionsToAdd * 1e9), 5e12),
+              subThousandAccumulator: remainder,
               totalClicks: (p.totalClicks || 0) + 1
             }));
           } else {

@@ -43,7 +43,9 @@ export const useGameLogic = (
     gameState,
     setGameState,
     playUpgradeSound,
-    playUnlockSound
+    playUnlockSound,
+    subThousandAccumulator,
+    setSubThousandAccumulator
   );
 
   // Premium upgrade aktiválása
@@ -71,14 +73,9 @@ export const useGameLogic = (
     }));
   }, [gameState.solanaBlessingLevel, setGameState]);
 
-  // Wrapper a handleUpgrade-hez, hogy átadja a szükséges paramétereket
-  const handleUpgradeWithParams = useCallback((upgrade) => {
-    handleUpgrade(upgrade, subThousandAccumulator, setSubThousandAccumulator);
-  }, [handleUpgrade, subThousandAccumulator, setSubThousandAccumulator]);
-
   return {
     handlePump,
-    handleUpgrade: handleUpgradeWithParams,
+    handleUpgrade,
     activatePremiumUpgrade,
     buySolanaBlessing
   };

@@ -44,6 +44,7 @@ export default function MainGamePanel({
   currentBarTo,
   progress,
   safeMarketCap,
+  safeMinMarketCap,
   marketCap,
   subThousandAccumulator,
   isDesktop,
@@ -69,6 +70,8 @@ export default function MainGamePanel({
           currentBarTo={currentBarTo}
           progress={progress}
           safeMarketCap={safeMarketCap}
+          safeMinMarketCap={safeMinMarketCap}
+          subThousandAccumulator={subThousandAccumulator}
         />
 
         {/* Market Cap Display és Pump Button */}
