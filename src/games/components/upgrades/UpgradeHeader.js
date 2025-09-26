@@ -25,7 +25,7 @@ const UpgradeHeader = ({ onBackToLeaderboard, isSaving = false }) => {
           <h3 className="text-4xl font-bold text-gray-300">Upgrades</h3>
           {onBackToLeaderboard && (
             <button
-              onClick={onBackToLeaderboard}
+              onClick={() => onBackToLeaderboard(false)}
               disabled={isSaving}
               className={`rounded-full p-2 border transition-all duration-200 ${
                 isSaving

@@ -115,7 +115,7 @@ export default function GameSection({
           
           {/* Back button - positioned at top right of upgrades panel */}
           <button
-            onClick={onBackToLeaderboard}
+            onClick={() => onBackToLeaderboard(false)}
             disabled={isSaving}
             className={`absolute top-4 right-4 transition-all duration-500 ease-in-out rounded-full backdrop-blur-sm border z-20 overflow-hidden ${
               isSaving
@@ -179,7 +179,7 @@ export default function GameSection({
                 </div>
                 
                 <button
-                  onClick={onBackToLeaderboard}
+                  onClick={() => onBackToLeaderboard(false)}
                   disabled={isSaving}
                   className={`rounded-xl border transition-all duration-500 ease-in-out overflow-hidden ${
                     isSaving

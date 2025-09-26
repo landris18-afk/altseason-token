@@ -58,6 +58,7 @@ class SupabaseAuth {
       }
 
       // Server-side: csak a clerk_id-t és a nevet mentjük
+      console.log('🖥️ Server-side upsertUser with clerkUser:', clerkUser);
       const userData = {
         clerk_id: clerkUser.id,
         updated_at: new Date().toISOString()
@@ -67,8 +68,10 @@ class SupabaseAuth {
       if (clerkUser.firstName || clerkUser.lastName) {
         userData.first_name = clerkUser.firstName;
         userData.last_name = clerkUser.lastName;
+        console.log('👤 Adding name to userData:', { first_name: clerkUser.firstName, last_name: clerkUser.lastName });
       }
 
+      console.log('👤 Upserting user data:', userData);
       const { data, error } = await supabaseAdmin
         .from('users')
         .upsert(userData, {
@@ -77,7 +80,10 @@ class SupabaseAuth {
         .select()
         .single();
 
+      console.log('👤 User upsert result:', { data, error });
+
       if (error) throw error;
+      console.log('✅ User upserted successfully');
       return { success: true, data };
     } catch (error) {
       console.error('Error upserting user:', error);
