@@ -20,6 +20,7 @@
 export const getInitialState = () => ({
   // Alapértékek
   marketCap: 0,
+  subThousandAccumulator: 0,
   clickPower: 1,
   passiveIncome: 0,
   levelIndex: 0,

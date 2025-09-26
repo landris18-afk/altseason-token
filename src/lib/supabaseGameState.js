@@ -57,6 +57,7 @@ class SupabaseGameState {
       const gameDataToSave = {
         user_id: userId,
         market_cap: gameState.marketCap || 0,
+        sub_thousand_accumulator: gameState.subThousandAccumulator || 0,
         click_power: gameState.clickPower || 0,
         passive_income: gameState.passiveIncome || 0,
         level: (gameState.levelIndex || 0) + 1,

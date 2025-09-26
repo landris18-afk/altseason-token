@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS game_states (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id UUID REFERENCES users(id) ON DELETE CASCADE,
   market_cap DECIMAL(15,2) DEFAULT 0,
+  sub_thousand_accumulator DECIMAL(15,2) DEFAULT 0,
   click_power DECIMAL(10,2) DEFAULT 0,
   passive_income DECIMAL(10,2) DEFAULT 0,
   level INTEGER DEFAULT 1,

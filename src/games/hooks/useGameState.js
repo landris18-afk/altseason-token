@@ -25,10 +25,7 @@ export const useGameState = () => {
   // Játék állapot inicializálása
   const [gameState, setGameState] = useState(() => {
     const initialState = getInitialState();
-    return {
-      ...initialState,
-      subThousandAccumulator: 0
-    };
+    return initialState;
   });
 
   // Állapot változók

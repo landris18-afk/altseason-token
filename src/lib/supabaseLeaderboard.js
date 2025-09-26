@@ -82,9 +82,7 @@ class SupabaseLeaderboard {
       // Először lekérdezzük a game_states adatokat
       let query = client
         .from('game_states')
-        .select('*')
-        .order('market_cap', { ascending: false })
-        .range(offset, offset + limit - 1);
+        .select('*');
 
       // Platform szűrés
       if (platform !== 'all') {
@@ -93,11 +91,20 @@ class SupabaseLeaderboard {
 
       const { data: gameStates, error } = await query;
 
-
       if (error) throw error;
 
+      // Rendezzük a teljes egyenleg szerint (market_cap + sub_thousand_accumulator)
+      const sortedGameStates = gameStates.sort((a, b) => {
+        const totalA = (a.market_cap || 0) + (a.sub_thousand_accumulator || 0);
+        const totalB = (b.market_cap || 0) + (b.sub_thousand_accumulator || 0);
+        return totalB - totalA; // Csökkenő sorrend
+      });
+
+      // Pagination alkalmazása a rendezés után
+      const paginatedGameStates = sortedGameStates.slice(offset, offset + limit);
+
       // Adatok átalakítása ranglista formátumra
-      const playersWithRank = await Promise.all(gameStates.map(async (gameState, index) => {
+      const playersWithRank = await Promise.all(paginatedGameStates.map(async (gameState, index) => {
         // Felhasználó adatok lekérdezése
         const { data: userData } = await client
           .from('users')
@@ -133,19 +140,24 @@ class SupabaseLeaderboard {
           }
         }
 
+        // Teljes egyenleg számítása a rendezéshez
+        const totalBalance = (gameState.market_cap || 0) + (gameState.sub_thousand_accumulator || 0);
+
         return {
           id: gameState.user_id,
           userId: gameState.user_id,
           clerkId: userData?.clerk_id,
           name: displayName,
-          marketCap: gameState.market_cap || 0,
+          marketCap: gameState.market_cap || 0, // Csak a fő számláló a megjelenítéshez
           clickPower: gameState.click_power || 0,
           passiveIncome: gameState.passive_income || 0,
           level: gameState.level || 1,
           platform: gameState.platform || 'desktop',
           lastActive: gameState.last_active,
           rank: offset + index + 1,
-          score: gameState.market_cap || 0 // Kompatibilitás
+          score: gameState.market_cap || 0, // Kompatibilitás
+          // Teljes egyenleg a rendezéshez (nem jelenik meg)
+          totalBalance: totalBalance
         };
       }));
 
@@ -179,8 +191,7 @@ class SupabaseLeaderboard {
       // Ranglista adatok lekérdezése a game_states táblázatból
       let query = supabase
         .from('game_states')
-        .select('market_cap')
-        .order('market_cap', { ascending: false });
+        .select('market_cap, sub_thousand_accumulator');
 
       if (platform !== 'all') {
         query = query.eq('platform', platform);
@@ -190,10 +201,18 @@ class SupabaseLeaderboard {
 
       if (error) throw error;
 
+      // Rendezzük a teljes egyenleg szerint
+      const sortedPlayers = data.sort((a, b) => {
+        const totalA = (a.market_cap || 0) + (a.sub_thousand_accumulator || 0);
+        const totalB = (b.market_cap || 0) + (b.sub_thousand_accumulator || 0);
+        return totalB - totalA;
+      });
+
       // Rang meghatározása
       let rank = 1;
-      for (const player of data) {
-        if (marketCap > player.market_cap) {
+      for (const player of sortedPlayers) {
+        const playerTotal = (player.market_cap || 0) + (player.sub_thousand_accumulator || 0);
+        if (marketCap > playerTotal) {
           break;
         }
         rank++;

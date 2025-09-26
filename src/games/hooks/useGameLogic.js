@@ -13,8 +13,6 @@ import { useUpgradeLogic } from './useUpgradeLogic';
  * 
  * @param {Object} gameState - Játék állapot
  * @param {Function} setGameState - Játék állapot frissítő
- * @param {number} subThousandAccumulator - Sub-thousand akkumulátor
- * @param {Function} setSubThousandAccumulator - Sub-thousand akkumulátor frissítő
  * @param {Function} playPumpSound - Pump hang lejátszó
  * @param {Function} playUpgradeSound - Upgrade hang lejátszó
  * @param {Function} playUnlockSound - Unlock hang lejátszó
@@ -23,8 +21,6 @@ import { useUpgradeLogic } from './useUpgradeLogic';
 export const useGameLogic = (
   gameState,
   setGameState,
-  subThousandAccumulator,
-  setSubThousandAccumulator,
   playPumpSound,
   playUpgradeSound,
   playUnlockSound
@@ -33,8 +29,6 @@ export const useGameLogic = (
   const { handlePump } = usePumpLogic(
     gameState,
     setGameState,
-    subThousandAccumulator,
-    setSubThousandAccumulator,
     playPumpSound
   );
 
@@ -44,8 +38,8 @@ export const useGameLogic = (
     setGameState,
     playUpgradeSound,
     playUnlockSound,
-    subThousandAccumulator,
-    setSubThousandAccumulator
+    gameState.subThousandAccumulator || 0,
+    (value) => setGameState(prevState => ({ ...prevState, subThousandAccumulator: value }))
   );
 
   // Premium upgrade aktiválása

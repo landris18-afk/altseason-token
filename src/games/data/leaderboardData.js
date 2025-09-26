@@ -61,11 +61,11 @@ export const formatScore = (score) => {
   const numScore = Number(score);
   
   if (numScore >= 1000000000) {
-    return `$${(numScore / 1000000000).toFixed(1)}B`;
+    return `$${Math.round(numScore / 1000000000)}B`;
   } else if (numScore >= 1000000) {
-    return `$${(numScore / 1000000).toFixed(1)}M`;
+    return `$${Math.round(numScore / 1000000)}M`;
   } else if (numScore >= 1000) {
-    return `$${(numScore / 1000).toFixed(1)}K`;
+    return `$${Math.round(numScore / 1000)}K`;
   } else {
     return `$${numScore.toLocaleString()}`;
   }

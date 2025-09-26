@@ -37,26 +37,86 @@ export const useUpgradeLogic = (
       playUpgradeSound();
       const wasLocked = !upgrade.isUnlocked;
       
-      // Először a subThousandAccumulator-ból vonjuk le, ha van
-      let remainingCost = cost;
-      let newSubThousandAccumulator = subThousandAccumulator;
-      let newMarketCap = gameState.marketCap;
+      // Összesítjük a teljes egyenleget
+      const totalBalance = gameState.marketCap + subThousandAccumulator;
+      const newTotalBalance = totalBalance - cost;
       
-      if (subThousandAccumulator > 0) {
-        if (subThousandAccumulator >= remainingCost) {
-          // Ha a subThousandAccumulator elég, akkor csak azt csökkentjük
-          newSubThousandAccumulator = subThousandAccumulator - remainingCost;
-          remainingCost = 0;
-        } else {
-          // Ha nem elég, akkor a subThousandAccumulator-t nullázzuk és a maradékot a marketCap-ból vonjuk le
-          remainingCost = remainingCost - subThousandAccumulator;
+      // Újraosztjuk a két részre a megjelenítés miatt
+      // A logika ugyanaz, mint a pump logikában
+      let newMarketCap, newSubThousandAccumulator;
+      
+      if (typeof window !== 'undefined' && window.innerWidth >= 768) {
+        // Desktop logika
+        if (newTotalBalance < 1e4) {
+          newMarketCap = newTotalBalance;
           newSubThousandAccumulator = 0;
+        } else {
+          // 10K felett a subThousandAccumulator logikát használjuk
+          if (newTotalBalance >= 1e12) {
+            // 1T felett 1B-ig gyűjtünk
+            const billions = Math.floor(newTotalBalance / 1e9);
+            const remainder = newTotalBalance % 1e9;
+            newMarketCap = billions * 1e9;
+            newSubThousandAccumulator = remainder;
+          } else if (newTotalBalance >= 1e8) {
+            // 100M és 1T között 1M-ig gyűjtünk
+            const millions = Math.floor(newTotalBalance / 1e6);
+            const remainder = newTotalBalance % 1e6;
+            newMarketCap = millions * 1e6;
+            newSubThousandAccumulator = remainder;
+          } else if (newTotalBalance >= 1e6) {
+            // 1M és 100M között 100K-ig gyűjtünk
+            const hundreds = Math.floor(newTotalBalance / 1e5);
+            const remainder = newTotalBalance % 1e5;
+            newMarketCap = hundreds * 1e5;
+            newSubThousandAccumulator = remainder;
+          } else {
+            // 10K és 1M között 1K-ig gyűjtünk
+            const thousands = Math.floor(newTotalBalance / 1000);
+            const remainder = newTotalBalance % 1000;
+            newMarketCap = thousands * 1000;
+            newSubThousandAccumulator = remainder;
+          }
         }
-      }
-      
-      // Ha még mindig van költség, akkor a marketCap-ból vonjuk le
-      if (remainingCost > 0) {
-        newMarketCap = gameState.marketCap - remainingCost;
+      } else {
+        // Mobile logika
+        if (newTotalBalance < 1e4) {
+          newMarketCap = newTotalBalance;
+          newSubThousandAccumulator = 0;
+        } else {
+          // 10K felett a subThousandAccumulator logikát használjuk
+          if (newTotalBalance >= 1e12) {
+            // 1T felett 100B-ig gyűjtünk
+            const hundredsOfBillions = Math.floor(newTotalBalance / 1e11);
+            const remainder = newTotalBalance % 1e11;
+            newMarketCap = hundredsOfBillions * 1e11;
+            newSubThousandAccumulator = remainder;
+          } else if (newTotalBalance >= 1e9) {
+            // 1B és 1T között 100M-ig gyűjtünk
+            const hundredsOfMillions = Math.floor(newTotalBalance / 1e8);
+            const remainder = newTotalBalance % 1e8;
+            newMarketCap = hundredsOfMillions * 1e8;
+            newSubThousandAccumulator = remainder;
+          } else if (newTotalBalance >= 1e8) {
+            // 100M és 1B között 1M-ig gyűjtünk
+            const millions = Math.floor(newTotalBalance / 1e6);
+            const remainder = newTotalBalance % 1e6;
+            newMarketCap = millions * 1e6;
+            newSubThousandAccumulator = remainder;
+          } else if (newTotalBalance >= 1e6) {
+            // 1M és 100M között 100K-ig gyűjtünk
+            const hundreds = Math.floor(newTotalBalance / 1e5);
+            const remainder = newTotalBalance % 1e5;
+            newMarketCap = hundreds * 1e5;
+            newSubThousandAccumulator = remainder;
+          } else {
+            // 10K és 1M között 1K-ig gyűjtünk
+            const thousands = Math.floor(newTotalBalance / 1000);
+            const remainder = newTotalBalance % 1000;
+            newMarketCap = thousands * 1000;
+            newSubThousandAccumulator = remainder;
+          }
+        }
       }
       
       

@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { calculateDisplayValues } from '../utils/calculations';
 
-export const useDisplayValues = (gameState, subThousandAccumulator, isDesktop) => {
+export const useDisplayValues = (gameState, isDesktop) => {
   const displayValues = useMemo(() => {
     if (!gameState || gameState.marketCap === undefined) {
       // Alapértelmezett értékek a gameLevels-ből
@@ -21,8 +21,8 @@ export const useDisplayValues = (gameState, subThousandAccumulator, isDesktop) =
       };
     }
     
-    return calculateDisplayValues(gameState, subThousandAccumulator);
-  }, [gameState, subThousandAccumulator]);
+    return calculateDisplayValues(gameState, gameState.subThousandAccumulator || 0);
+  }, [gameState]);
 
   const {
     marketCap = 0,

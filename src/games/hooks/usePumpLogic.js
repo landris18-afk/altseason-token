@@ -14,16 +14,12 @@ import { useDesktopDetection } from './useDesktopDetection';
  * 
  * @param {Object} gameState - Játék állapot
  * @param {Function} setGameState - Játék állapot frissítő
- * @param {number} subThousandAccumulator - Sub-thousand akkumulátor
- * @param {Function} setSubThousandAccumulator - Sub-thousand akkumulátor frissítő
  * @param {Function} playPumpSound - Pump hang lejátszó
  * @returns {Object} Pump kezelő funkciók
  */
 export const usePumpLogic = (
   gameState,
   setGameState,
-  subThousandAccumulator,
-  setSubThousandAccumulator,
   playPumpSound
 ) => {
   const { autoSavePlayer } = usePlayerSave();
@@ -42,14 +38,27 @@ export const usePumpLogic = (
     // Asztali nézet: fő számláló növekszik, ha 10K alatt van
     if (window.innerWidth >= 768) { // md breakpoint
       if (gameState.marketCap < 1e4) {
-        setGameState(p => ({
-          ...p,
-          marketCap: Math.min(p.marketCap + newIncrement, 5e12),
-          totalClicks: (p.totalClicks || 0) + 1
-        }));
+        const newMarketCap = gameState.marketCap + newIncrement;
+        
+        // Ha túllépi a 10K-t, akkor osztjuk szét
+        if (newMarketCap >= 1e4) {
+          const remainder = newMarketCap - 1e4;
+          setGameState(p => ({
+            ...p,
+            marketCap: 1e4,
+            subThousandAccumulator: remainder,
+            totalClicks: (p.totalClicks || 0) + 1
+          }));
+        } else {
+          setGameState(p => ({
+            ...p,
+            marketCap: newMarketCap,
+            totalClicks: (p.totalClicks || 0) + 1
+          }));
+        }
       } else {
         // 10K felett a második számláló növekszik
-        const newAccumulator = subThousandAccumulator + newIncrement;
+        const newAccumulator = (gameState.subThousandAccumulator || 0) + newIncrement;
         
         // 1T felett 1B-ig gyűjtünk
         if (gameState.marketCap >= 1e12) {
@@ -64,9 +73,9 @@ export const usePumpLogic = (
               totalClicks: (p.totalClicks || 0) + 1
             }));
           } else {
-            setSubThousandAccumulator(newAccumulator);
             setGameState(p => ({
               ...p,
+              subThousandAccumulator: newAccumulator,
               totalClicks: (p.totalClicks || 0) + 1
             }));
           }
@@ -77,16 +86,16 @@ export const usePumpLogic = (
             const millionsToAdd = Math.floor(newAccumulator / 1e6);
             const remainder = newAccumulator % 1e6;
             
-            setSubThousandAccumulator(remainder);
             setGameState(p => ({
               ...p,
               marketCap: Math.min(p.marketCap + (millionsToAdd * 1e6), 5e12),
+              subThousandAccumulator: remainder,
               totalClicks: (p.totalClicks || 0) + 1
             }));
           } else {
-            setSubThousandAccumulator(newAccumulator);
             setGameState(p => ({
               ...p,
+              subThousandAccumulator: newAccumulator,
               totalClicks: (p.totalClicks || 0) + 1
             }));
           }
@@ -97,16 +106,16 @@ export const usePumpLogic = (
             const hundredsToAdd = Math.floor(newAccumulator / 1e5);
             const remainder = newAccumulator % 1e5;
             
-            setSubThousandAccumulator(remainder);
             setGameState(p => ({
               ...p,
               marketCap: Math.min(p.marketCap + (hundredsToAdd * 1e5), 5e12),
+              subThousandAccumulator: remainder,
               totalClicks: (p.totalClicks || 0) + 1
             }));
           } else {
-            setSubThousandAccumulator(newAccumulator);
             setGameState(p => ({
               ...p,
+              subThousandAccumulator: newAccumulator,
               totalClicks: (p.totalClicks || 0) + 1
             }));
           }
@@ -117,16 +126,16 @@ export const usePumpLogic = (
             const thousandsToAdd = Math.floor(newAccumulator / 1000);
             const remainder = newAccumulator % 1000;
             
-            setSubThousandAccumulator(remainder);
             setGameState(p => ({
               ...p,
               marketCap: Math.min(p.marketCap + (thousandsToAdd * 1000), 5e12),
+              subThousandAccumulator: remainder,
               totalClicks: (p.totalClicks || 0) + 1
             }));
           } else {
-            setSubThousandAccumulator(newAccumulator);
             setGameState(p => ({
               ...p,
+              subThousandAccumulator: newAccumulator,
               totalClicks: (p.totalClicks || 0) + 1
             }));
           }
@@ -136,13 +145,26 @@ export const usePumpLogic = (
     // Mobilnézet: ugyanaz a logika
     else {
       if (gameState.marketCap < 1e4) {
-        setGameState(p => ({
-          ...p,
-          marketCap: Math.min(p.marketCap + newIncrement, 5e12),
-          totalClicks: (p.totalClicks || 0) + 1
-        }));
+        const newMarketCap = gameState.marketCap + newIncrement;
+        
+        // Ha túllépi a 10K-t, akkor osztjuk szét
+        if (newMarketCap >= 1e4) {
+          const remainder = newMarketCap - 1e4;
+          setGameState(p => ({
+            ...p,
+            marketCap: 1e4,
+            subThousandAccumulator: remainder,
+            totalClicks: (p.totalClicks || 0) + 1
+          }));
+        } else {
+          setGameState(p => ({
+            ...p,
+            marketCap: newMarketCap,
+            totalClicks: (p.totalClicks || 0) + 1
+          }));
+        }
       } else {
-        const newAccumulator = subThousandAccumulator + newIncrement;
+        const newAccumulator = (gameState.subThousandAccumulator || 0) + newIncrement;
         
         // 1T felett 100B-ig gyűjtünk
         if (gameState.marketCap >= 1e12) {
@@ -150,16 +172,16 @@ export const usePumpLogic = (
             const hundredsOfBillionsToAdd = Math.floor(newAccumulator / 1e11);
             const remainder = newAccumulator % 1e11;
             
-            setSubThousandAccumulator(remainder);
             setGameState(p => ({
               ...p,
               marketCap: Math.min(p.marketCap + (hundredsOfBillionsToAdd * 1e11), 5e12),
+              subThousandAccumulator: remainder,
               totalClicks: (p.totalClicks || 0) + 1
             }));
           } else {
-            setSubThousandAccumulator(newAccumulator);
             setGameState(p => ({
               ...p,
+              subThousandAccumulator: newAccumulator,
               totalClicks: (p.totalClicks || 0) + 1
             }));
           }
@@ -170,16 +192,16 @@ export const usePumpLogic = (
             const hundredsOfMillionsToAdd = Math.floor(newAccumulator / 1e8);
             const remainder = newAccumulator % 1e8;
             
-            setSubThousandAccumulator(remainder);
             setGameState(p => ({
               ...p,
               marketCap: Math.min(p.marketCap + (hundredsOfMillionsToAdd * 1e8), 5e12),
+              subThousandAccumulator: remainder,
               totalClicks: (p.totalClicks || 0) + 1
             }));
           } else {
-            setSubThousandAccumulator(newAccumulator);
             setGameState(p => ({
               ...p,
+              subThousandAccumulator: newAccumulator,
               totalClicks: (p.totalClicks || 0) + 1
             }));
           }
@@ -190,16 +212,16 @@ export const usePumpLogic = (
             const millionsToAdd = Math.floor(newAccumulator / 1e6);
             const remainder = newAccumulator % 1e6;
             
-            setSubThousandAccumulator(remainder);
             setGameState(p => ({
               ...p,
               marketCap: Math.min(p.marketCap + (millionsToAdd * 1e6), 5e12),
+              subThousandAccumulator: remainder,
               totalClicks: (p.totalClicks || 0) + 1
             }));
           } else {
-            setSubThousandAccumulator(newAccumulator);
             setGameState(p => ({
               ...p,
+              subThousandAccumulator: newAccumulator,
               totalClicks: (p.totalClicks || 0) + 1
             }));
           }
@@ -210,16 +232,16 @@ export const usePumpLogic = (
             const hundredsToAdd = Math.floor(newAccumulator / 1e5);
             const remainder = newAccumulator % 1e5;
             
-            setSubThousandAccumulator(remainder);
             setGameState(p => ({
               ...p,
               marketCap: Math.min(p.marketCap + (hundredsToAdd * 1e5), 5e12),
+              subThousandAccumulator: remainder,
               totalClicks: (p.totalClicks || 0) + 1
             }));
           } else {
-            setSubThousandAccumulator(newAccumulator);
             setGameState(p => ({
               ...p,
+              subThousandAccumulator: newAccumulator,
               totalClicks: (p.totalClicks || 0) + 1
             }));
           }
@@ -230,16 +252,16 @@ export const usePumpLogic = (
             const thousandsToAdd = Math.floor(newAccumulator / 1000);
             const remainder = newAccumulator % 1000;
             
-            setSubThousandAccumulator(remainder);
             setGameState(p => ({
               ...p,
               marketCap: Math.min(p.marketCap + (thousandsToAdd * 1000), 5e12),
+              subThousandAccumulator: remainder,
               totalClicks: (p.totalClicks || 0) + 1
             }));
           } else {
-            setSubThousandAccumulator(newAccumulator);
             setGameState(p => ({
               ...p,
+              subThousandAccumulator: newAccumulator,
               totalClicks: (p.totalClicks || 0) + 1
             }));
           }
@@ -248,10 +270,7 @@ export const usePumpLogic = (
     }
 
     // Pump után NEM mentünk - csak kilépéskor és szintlépéskor
-  }, [gameState, subThousandAccumulator, setSubThousandAccumulator, setGameState, playPumpSound]);
+  }, [gameState, setGameState, playPumpSound]);
 
   return { handlePump };
 };
-
-
-

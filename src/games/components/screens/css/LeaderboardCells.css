@@ -8,6 +8,13 @@
   padding: 0 20px;
 }
 
+/* Sub-accumulator stílus */
+.sub-accumulator {
+  color: #fbbf24; /* yellow-400 */
+  font-weight: 500;
+  font-size: 0.9em;
+}
+
 .rank-number {
   font-weight: bold;
   font-size: 1.1rem;

@@ -110,6 +110,7 @@ export const useGameLoading = (
                 const newGameState = {
                   ...initialState,
                   marketCap: dbData.market_cap || 0,
+                  subThousandAccumulator: dbData.sub_thousand_accumulator || 0,
                   clickPower: dbData.click_power || 1,
                   passiveIncome: dbData.passive_income || 0,
                   levelIndex: dbData.level_index || 0,

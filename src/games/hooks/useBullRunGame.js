@@ -71,7 +71,7 @@ export const useBullRunGame = () => {
     handleUpgrade,
     activatePremiumUpgrade,
     buySolanaBlessing
-  } = useGameLogic(gameState, setGameState, subThousandAccumulator, setSubThousandAccumulator, playPumpSound, playUpgradeSound, playUnlockSound);
+  } = useGameLogic(gameState, setGameState, playPumpSound, playUpgradeSound, playUnlockSound);
 
   // Desktop detection
   const isDesktop = useDesktopDetection();
@@ -83,7 +83,7 @@ export const useBullRunGame = () => {
   useLevelUp(gameState, setGameState, isLoaded, levelUpSound, muted, setIsLevelUpModalOpen, confirmReset);
   useUpgradeUnlock(gameState, setGameState, isLoaded, unlockSound, muted, lastReqLevelRef);
   useModalScrollLock(anyModalOpen);
-  usePassiveIncome(gameState, setGameState, subThousandAccumulator, setSubThousandAccumulator, isDesktop);
+  usePassiveIncome(gameState, setGameState, isDesktop);
 
   // Display values
   const {
@@ -107,7 +107,7 @@ export const useBullRunGame = () => {
     currentButtonShadow,
     currentBarFrom,
     currentBarTo
-  } = useDisplayValues(gameState, subThousandAccumulator, isDesktop);
+  } = useDisplayValues(gameState, isDesktop);
 
 
   // Share functionality
