@@ -60,20 +60,21 @@
 .footer-left {
   grid-column: 1 / 3;
   display: flex;
-  gap: 0;
+  gap: 4px;
   flex-wrap: nowrap;
-  align-items: stretch;
+  align-items: center;
   height: 100%;
   justify-content: flex-start;
   margin: 0;
-  padding: 0;
+  padding: 8px 16px;
 }
 
 @media (max-width: 767px) {
   .footer-left {
     grid-column: 1;
-    gap: 0;
-    justify-content: space-between;
+    gap: 4px;
+    justify-content: center;
+    padding: 8px 12px;
   }
 }
 

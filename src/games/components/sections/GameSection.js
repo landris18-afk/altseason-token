@@ -157,7 +157,7 @@ export default function GameSection({
       </div>
 
       {/* Mobile: Full width layout */}
-      <div className="mobile-leaderboard-container relative z-10">
+      <div className="mobile-leaderboard-container relative z-0">
         <div className="leaderboard-container">
           {!showUpgrades ? (
             /* Main Panel with Header */

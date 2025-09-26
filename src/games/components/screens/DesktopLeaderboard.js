@@ -52,13 +52,13 @@ const DesktopLeaderboard = ({
                 leaderboardEnabled={leaderboardEnabled}
               />
               {leaderboardLoading && (
-                <div className="absolute inset-0 bg-gray-900/80 backdrop-blur-sm flex items-center justify-center z-10 pt-20">
+                <div className="absolute inset-0 bg-gray-900/80 backdrop-blur-sm flex items-center justify-center z-[1] pt-20">
                   <LeaderboardLoader />
                 </div>
               )}
             </div>
 
-            <div className="absolute bottom-0 left-0 right-0 z-20">
+            <div className="absolute bottom-0 left-0 right-0 z-[1]">
               <LeaderboardControls
                 viewMode={viewMode}
                 onViewModeChange={onViewModeChange}

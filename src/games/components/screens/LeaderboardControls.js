@@ -19,25 +19,39 @@ const LeaderboardControls = ({
   hasData = false,
   totalPlayers = 0
 }) => {
+  const AwardIcon = () => (
+    <img 
+      src="/images/award.png" 
+      alt="Award" 
+      className="award-icon"
+    />
+  );
+
   const renderViewModeButtons = () => (
     <div className="footer-left">
       <button 
         className={`toggle-btn ${viewMode === 'top10' ? 'active' : ''}`}
         onClick={() => onViewModeChange('top10')}
+        title="Top 10 Players"
       >
-        Top 10
+        <AwardIcon />
+        <span>10</span>
       </button>
       <button 
         className={`toggle-btn ${viewMode === 'top50' ? 'active' : ''}`}
         onClick={() => onViewModeChange('top50')}
+        title="Top 50 Players"
       >
-        Top 50
+        <AwardIcon />
+        <span>50</span>
       </button>
       <button 
         className={`toggle-btn ${viewMode === 'top100' ? 'active' : ''}`}
         onClick={() => onViewModeChange('top100')}
+        title="Top 100 Players"
       >
-        Top 100
+        <AwardIcon />
+        <span>100</span>
       </button>
       {/* Refresh button - visible on both mobile and desktop */}
       <button 

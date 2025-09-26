@@ -58,7 +58,7 @@ const UserDropdown = ({ onTransfer }) => {
 
       {/* Dropdown Menu */}
       {isOpen && (
-        <div className="fixed left-0 right-0 md:absolute md:right-0 md:left-auto md:top-14 md:w-64 top-19 z-50 bg-black/20 backdrop-blur-lg border-b-2 border-yellow-500/40 md:border-t-0 md:border md:border-gray-600/60 md:rounded-xl shadow-2xl overflow-hidden">
+        <div className="fixed left-0 right-0 md:absolute md:right-0 md:left-auto md:top-14 md:w-64 top-19 z-[10020] bg-gray-900/95 backdrop-blur-lg border-b-2 border-yellow-500/40 md:border-t-0 md:border md:border-gray-600/60 md:rounded-xl shadow-2xl overflow-y-auto max-h-96">
           <div className="py-2 md:py-1">
             {/* Transfer Option */}
             <button
