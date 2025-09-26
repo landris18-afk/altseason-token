@@ -21,6 +21,7 @@ import UpgradeHookAggregator from '../upgrades/UpgradeHookAggregator';
  * @param {Audio} props.unlockSound - Unlock hang
  * @param {Object} props.usesLeft - Maradék használatok
  * @param {Function} props.onBackToLeaderboard - Vissza a ranglistához függvény
+ * @param {boolean} props.isSaving - Mentés állapot flag
  * @returns {JSX.Element} Minimális upgrade panel komponens
  */
 const UpgradesPanel = (props) => {

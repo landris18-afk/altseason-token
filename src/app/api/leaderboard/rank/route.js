@@ -5,6 +5,7 @@
  */
 
 import { NextResponse } from 'next/server';
+import supabaseService from '../../../../lib/supabaseService';
 
 // Mock adatok (ugyanazok mint a fő ranglistában)
 const mockPlayers = [
@@ -78,6 +79,8 @@ export async function GET(request) {
     const marketCap = parseFloat(searchParams.get('marketCap'));
     const platform = searchParams.get('platform') || 'all';
 
+    console.log('🔢 Rank API called:', { marketCap, platform });
+
     // Validáció
     if (isNaN(marketCap) || marketCap < 0) {
       return NextResponse.json(
@@ -86,25 +89,46 @@ export async function GET(request) {
       );
     }
 
-    // Adatok szűrése platform szerint
-    let players = [...mockPlayers];
+    // Supabase-ból valódi adatok betöltése
+    let players = [];
+    let source = 'mock';
+    
+    try {
+      const leaderboardResult = await supabaseService.getLeaderboard();
+      if (leaderboardResult.success && leaderboardResult.data) {
+        players = leaderboardResult.data;
+        source = 'database';
+        console.log('📊 Using database data for rank calculation:', players.length, 'players');
+      } else {
+        console.log('⚠️ Database failed, using mock data');
+        players = [...mockPlayers];
+      }
+    } catch (error) {
+      console.error('❌ Database error, using mock data:', error);
+      players = [...mockPlayers];
+    }
+
+    // Platform szűrés
     if (platform !== 'all') {
       players = players.filter(player => player.platform === platform);
     }
-
+    
     // Rendezés Market Cap szerint csökkenő sorrendben
-    players.sort((a, b) => b.marketCap - a.marketCap);
+    players.sort((a, b) => (b.marketCap || 0) - (a.marketCap || 0));
 
-    // Rang meghatározása
+    // Rang számítás
     let rank = 1;
     for (const player of players) {
-      if (marketCap > player.marketCap) {
+      // Ha a játékos marketCap-je kisebb vagy egyenlő, akkor rosszabb rangot kap
+      if (marketCap <= (player.marketCap || 0)) {
+        rank++;
+      } else {
+        // Ha nagyobb, akkor jobb rangot kap, megállunk
         break;
       }
-      rank++;
     }
 
-    // Top 3 pozíció ellenőrzése
+    // Top pozíciók ellenőrzése
     const isTop3 = rank <= 3;
     const isTop10 = rank <= 10;
     const isTop50 = rank <= 50;
@@ -120,9 +144,12 @@ export async function GET(request) {
       isTop50,
       isTop100,
       totalPlayers: players.length,
-      percentile: Math.round(((players.length - rank + 1) / players.length) * 100),
-      lastUpdated: new Date().toISOString()
+      percentile: players.length > 0 ? Math.round(((players.length - rank + 1) / players.length) * 100) : 0,
+      lastUpdated: new Date().toISOString(),
+      source
     };
+
+    console.log('📊 Rank calculated:', response);
 
     return NextResponse.json(response, {
       status: 200,
@@ -133,7 +160,7 @@ export async function GET(request) {
     });
 
   } catch (error) {
-    console.error('Rank API error:', error);
+    console.error('❌ Rank API error:', error);
     
     return NextResponse.json(
       { 
@@ -144,4 +171,5 @@ export async function GET(request) {
     );
   }
 }
+
 

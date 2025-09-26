@@ -31,9 +31,15 @@ const SettingsModal = ({ isOpen, onClose }) => {
     }));
   };
 
-  const handleSave = () => {
-    saveSettings(localSettings);
-    onClose();
+  const handleSave = async () => {
+    try {
+      await saveSettings(localSettings);
+      onClose();
+    } catch (error) {
+      console.error('Error saving settings:', error);
+      // Still close the modal even if there's an error
+      onClose();
+    }
   };
 
   // Get login method info

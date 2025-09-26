@@ -44,7 +44,8 @@ const UpgradeContainer = ({
   panelState,
   onUpgradeClick,
   onCloseInsufficientFunds,
-  onBackToLeaderboard
+  onBackToLeaderboard,
+  isSaving = false
 }) => {
   const {
     insufficientFundsUpgrade,
@@ -56,7 +57,7 @@ const UpgradeContainer = ({
   return (
     <div className="bg-gray-800/50 md:rounded-2xl md:p-4 px-4 pt-2 flex flex-col h-full md:pt-4 md:overflow-y-auto overflow-hidden" key={forceUpdate}>
       {/* Header */}
-      <UpgradeHeader onBackToLeaderboard={onBackToLeaderboard} />
+      <UpgradeHeader onBackToLeaderboard={onBackToLeaderboard} isSaving={isSaving} />
 
       {/* Tab gombok */}
       <UpgradeTabs 

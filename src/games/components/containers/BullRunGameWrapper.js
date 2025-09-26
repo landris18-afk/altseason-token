@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import ModalManager from '../managers/ModalManager';
 import GameSection from '../sections/GameSection';
-import '../screens/LeaderboardLayout.css';
+import '../screens/css/LeaderboardLayout.css';
 
 /**
  * BullRunGameWrapper - Játék wrapper komponens
@@ -19,6 +19,8 @@ export default function BullRunGameWrapper({
   isLoaded,
   subThousandAccumulator,
   confirmReset,
+  isSaving,
+  isResetting,
   
   // Audio
   unlockSound,
@@ -66,18 +68,13 @@ export default function BullRunGameWrapper({
   showHeader = true,
   
   // Navigation
-  onBackToLeaderboard
+  onBackToLeaderboard,
+  
+  // Cache management
+  clearUserCache
 }) {
   // Mobile upgrades state
   const [showUpgrades, setShowUpgrades] = useState(false);
-  
-  console.log('🎮 BullRunGameWrapper - props received:', { 
-    isLoaded, 
-    onBackToLeaderboard, 
-    current, 
-    next, 
-    gameState: !!gameState 
-  });
 
   // Props csoportosítása a komponenseknek
   const gameRendererProps = {
@@ -93,6 +90,7 @@ export default function BullRunGameWrapper({
       marketCap,
       subThousandAccumulator,
       isDesktop,
+      isSaving,
       gameState,
       handlePump,
       setIsRulesModalOpen,
@@ -108,7 +106,7 @@ export default function BullRunGameWrapper({
       onSolanaUpgradeClick: () => setIsSolanaModalOpen(true),
       unlockSound,
       usesLeft: gameState.usesLeft,
-      onBackToLeaderboard: onBackToLeaderboard,
+      onBackToLeaderboard,
       showUpgrades: showUpgrades,
       setShowUpgrades: setShowUpgrades
     },
@@ -121,6 +119,7 @@ export default function BullRunGameWrapper({
       setIsResetModalOpen,
       confirmReset,
       onResetComplete: onBackToLeaderboard,
+      isResetting,
       isRulesModalOpen,
       setIsRulesModalOpen,
       isSolanaModalOpen,
@@ -130,9 +129,20 @@ export default function BullRunGameWrapper({
     }
   };
 
+  // Loading komponens
+  if (!isLoaded) {
+    return (
+      <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center">
+        <div className="text-center text-white">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-white mx-auto mb-4"></div>
+          <p className="text-xl font-semibold">Játék betöltése...</p>
+          <p className="text-sm text-gray-300 mt-2">Adatbázisból betöltjük az adatokat</p>
+        </div>
+      </div>
+    );
+  }
+
   // Mindig GameSection-et használunk (nincs GameModal)
-  console.log('🎮 BullRunGameWrapper - rendering GameSection directly');
-  console.log('🎮 BullRunGameWrapper - gameSectionProps:', gameRendererProps.gameSectionProps);
   return (
     <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm">
       {/* Game content - full screen */}

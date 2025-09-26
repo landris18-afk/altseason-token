@@ -1,7 +1,7 @@
 import MainGamePanel from '../panels/MainGamePanel';
 import UpgradesPanel from '../panels/UpgradesPanel';
 import { getUpgradeCategories, isUpgradeUnlocked, canAffordUpgrade } from '../../utils/upgradeUtils';
-import '../screens/LeaderboardLayout.css';
+import '../screens/css/LeaderboardLayout.css';
 
 export default function GameSection({
   // Main game panel props
@@ -22,6 +22,7 @@ export default function GameSection({
   setMuted,
   twitterUrl,
   muted,
+  isSaving,
   
   // Upgrades panel props
   upgrades,
@@ -40,6 +41,7 @@ export default function GameSection({
   showUpgrades,
   setShowUpgrades
 }) {
+  
   // Elérhető upgrade-ek számának kiszámítása
   const availableUpgrades = upgrades ? (() => {
     const { click, passive } = getUpgradeCategories(upgrades);
@@ -59,7 +61,8 @@ export default function GameSection({
         backgroundImage: 'url(/images/rockat_pump_bacground.jpg)',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat'
+        backgroundRepeat: 'no-repeat',
+        pointerEvents: isSaving ? 'none' : 'auto'
       }}
     >
       
@@ -106,17 +109,47 @@ export default function GameSection({
             onSolanaUpgradeClick={onSolanaUpgradeClick}
             unlockSound={unlockSound}
             usesLeft={usesLeft}
+            onBackToLeaderboard={onBackToLeaderboard}
+            isSaving={isSaving}
           />
           
           {/* Back button - positioned at top right of upgrades panel */}
           <button
             onClick={onBackToLeaderboard}
-            className="absolute top-4 right-4 bg-gray-800/80 hover:bg-gray-700/90 text-white/80 hover:text-white transition-all duration-200 rounded-full p-2 backdrop-blur-sm border border-yellow-400/30 hover:border-yellow-400/50 z-20"
-            title="Back to Leaderboard"
+            disabled={isSaving}
+            style={{ pointerEvents: 'auto' }}
+            className={`absolute top-4 right-4 transition-all duration-500 ease-in-out rounded-full backdrop-blur-sm border z-20 overflow-hidden ${
+              isSaving
+                ? 'bg-red-600 text-white border-red-500 cursor-not-allowed px-4 py-2'
+                : 'bg-gray-800/80 hover:bg-gray-700/90 text-white/80 hover:text-white border-yellow-400/30 hover:border-yellow-400/50 p-2'
+            }`}
+            style={isSaving ? { 
+              backgroundColor: '#dc2626', 
+              color: 'white', 
+              cursor: 'not-allowed',
+              width: 'auto',
+              minWidth: '120px',
+              pointerEvents: 'auto'
+            } : {
+              width: '40px',
+              height: '40px',
+              pointerEvents: 'auto'
+            }}
+            title={isSaving ? "Saving..." : "Back to Leaderboard"}
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
+            {isSaving ? (
+              <div className="flex items-center space-x-2">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                <span className="text-sm font-medium">Saving</span>
+                <div className="animate-spin rounded-full h-3 w-3 border-2 border-white border-t-transparent"></div>
+              </div>
+            ) : (
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              </svg>
+            )}
           </button>
         </div>
             </div>
@@ -148,12 +181,38 @@ export default function GameSection({
                 
                 <button
                   onClick={onBackToLeaderboard}
-                  className="bg-gray-800/90 hover:bg-gray-700/95 text-white/90 hover:text-white transition-all duration-200 rounded-xl px-3 py-2 backdrop-blur-sm border border-gray-600/60 hover:border-gray-500/80 shadow-lg hover:shadow-xl"
-                  title="Back to Leaderboard"
+                  disabled={isSaving}
+                  style={{ pointerEvents: 'auto' }}
+                  className={`rounded-xl border transition-all duration-500 ease-in-out overflow-hidden ${
+                    isSaving
+                      ? 'bg-red-600 text-white border-red-500 cursor-not-allowed px-4 py-2'
+                      : 'bg-gray-800/90 hover:bg-gray-700/95 text-white/90 hover:text-white border-gray-600/60 hover:border-gray-500/80 px-3 py-2'
+                  }`}
+                  style={isSaving ? { 
+                    backgroundColor: '#dc2626', 
+                    color: 'white', 
+                    cursor: 'not-allowed',
+                    width: 'auto',
+                    minWidth: '120px',
+                    pointerEvents: 'auto'
+                  } : {
+                    pointerEvents: 'auto'
+                  }}
+                  title={isSaving ? "Saving..." : "Back to Leaderboard"}
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                  </svg>
+                  {isSaving ? (
+                    <div className="flex items-center space-x-2">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                      </svg>
+                      <span className="text-sm font-medium">Saving</span>
+                      <div className="animate-spin rounded-full h-3 w-3 border-2 border-white border-t-transparent"></div>
+                    </div>
+                  ) : (
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    </svg>
+                  )}
                 </button>
               </div>
               
@@ -210,6 +269,8 @@ export default function GameSection({
                   onSolanaUpgradeClick={onSolanaUpgradeClick}
                   unlockSound={unlockSound}
                   usesLeft={usesLeft}
+                  onBackToLeaderboard={onBackToLeaderboard}
+                  isSaving={isSaving}
                 />
               </div>
             </div>

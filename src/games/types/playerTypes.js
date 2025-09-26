@@ -53,3 +53,4 @@ export {
   // Típusok exportálása (JSDoc kommentekkel)
 };
 
+

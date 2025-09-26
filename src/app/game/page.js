@@ -63,6 +63,9 @@ const GamePage = () => {
   // Játék hook
   const gameProps = useBullRunGame();
   
+  // Loading state a mentéshez
+  const [isSaving, setIsSaving] = useState(false);
+  
   // Player név Clerk user-ből - konzisztens név generálás
   const playerName = user ? (user.firstName || user.username || 'Player') : '';
   
@@ -73,7 +76,6 @@ const GamePage = () => {
 
   // Ha a showGame true, jelenítsük meg a játékot
   if (showGame) {
-    console.log('🎮 GamePage - showGame is true, rendering BullRunGameWrapper');
     return (
         <BullRunGameWrapper
           {...gameProps}
@@ -111,7 +113,28 @@ const GamePage = () => {
           currentBarTo={gameProps.currentBarTo}
           twitterUrl={gameProps.twitterUrl}
           showHeader={false}
-          onBackToLeaderboard={() => setShowGame(false)}
+          isSaving={isSaving}
+          onBackToLeaderboard={async (skipSave = false) => {
+            // Ha már ment, ne csináljunk semmit
+            if (isSaving) return;
+            
+            // Loading state bekapcsolása
+            setIsSaving(true);
+            
+            try {
+              // Először mentjük az adatokat (kivéve ha skipSave = true)
+              if (gameProps.clearUserCache) {
+                await gameProps.clearUserCache(skipSave);
+              }
+              
+              // Visszalépünk a ranglistára
+              setShowGame(false);
+              
+            } finally {
+              // Loading state kikapcsolása
+              setIsSaving(false);
+            }
+          }}
         />
       );
     }

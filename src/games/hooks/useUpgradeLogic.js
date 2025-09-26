@@ -1,5 +1,6 @@
 import { useCallback } from 'react';
 import { getUpgradeCost, fixUsesLeft } from '../utils/gameUtils';
+import { usePlayerSave } from './usePlayerSave';
 
 /**
  * useUpgradeLogic - Upgrade logika hook
@@ -22,6 +23,8 @@ export const useUpgradeLogic = (
   playUpgradeSound,
   playUnlockSound
 ) => {
+  const { autoSavePlayer } = usePlayerSave();
+
   // Upgrade vásárlás kezelése
   const handleUpgrade = useCallback((upgrade) => {
     const cost = getUpgradeCost(upgrade);
@@ -54,8 +57,10 @@ export const useUpgradeLogic = (
       if (wasLocked) {
         playUnlockSound();
       }
+
+      // Upgrade után NEM mentünk - csak kilépéskor és szintlépéskor
     }
-  }, [gameState.marketCap, setGameState, playUpgradeSound, playUnlockSound]);
+  }, [gameState, setGameState, playUpgradeSound, playUnlockSound, autoSavePlayer]);
 
   return { handleUpgrade };
 };

@@ -6,7 +6,7 @@
 
 import { useCallback } from 'react';
 import { useUser } from '@clerk/nextjs';
-import leaderboardService from '../services/leaderboardService';
+import supabaseService from '../../lib/supabaseService';
 import { useGameSettings } from './useGameSettings';
 import { useDesktopDetection } from './useDesktopDetection';
 
@@ -77,16 +77,40 @@ export const usePlayerSave = () => {
       return { success: false, reason: 'Invalid game state' };
     }
 
-    const gameData = {
-      marketCap: gameState.marketCap,
-      clickPower: gameState.clickPower || 0,
-      passiveIncome: gameState.passiveIncome || 0,
-      level: gameState.levelIndex + 1 || 1,
-      platform: isDesktop ? 'desktop' : 'mobile'
-    };
+    // Csak akkor mentjük, ha van bejelentkezett felhasználó
+    if (!user) {
+      console.log('No user logged in, skipping auto save');
+      return { success: false, reason: 'No user logged in' };
+    }
 
-    return await savePlayerToLeaderboard(gameData);
-  }, [savePlayerToLeaderboard, isDesktop]);
+    try {
+      // Először frissítjük a user adatokat a teljes Clerk user objektummal
+      console.log('Updating user data with Clerk user object');
+      await supabaseService.upsertUser(user);
+
+      // Teljes játék állapot mentése a game_states táblázatba
+      const gameData = {
+        ...gameState,
+        platform: isDesktop ? 'desktop' : 'mobile'
+      };
+
+      console.log('Auto-saving game state to database:', gameData);
+      
+      const result = await supabaseService.saveGameState(user.id, gameData);
+      
+      if (result.success) {
+        console.log('Game state auto-saved successfully');
+      } else {
+        console.error('Failed to auto-save game state:', result.error);
+      }
+      
+      return result;
+      
+    } catch (error) {
+      console.error('Failed to auto-save game state:', error);
+      return { success: false, error: error.message };
+    }
+  }, [user, isDesktop]);
 
   return {
     savePlayerToLeaderboard,

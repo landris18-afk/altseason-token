@@ -35,7 +35,9 @@ export const useBullRunGame = () => {
     subThousandAccumulator,
     setSubThousandAccumulator,
     lastReqLevelRef,
-    confirmReset
+    confirmReset,
+    clearUserCache,
+    isResetting
   } = useGameState();
 
   // Audio management
@@ -158,6 +160,12 @@ export const useBullRunGame = () => {
     currentBarTo,
     
     // Share
-    twitterUrl
+    twitterUrl,
+    
+    // Cache management
+    clearUserCache,
+    
+    // Reset state
+    isResetting
   };
 };

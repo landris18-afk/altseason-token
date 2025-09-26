@@ -91,12 +91,47 @@ export const useLeaderboard = (options = {}) => {
   }, [platform]);
 
   /**
-   * Ranglista frissítése
+   * Ranglista frissítése - 3 másodpercig loading állapotban
    */
-  const refresh = useCallback(() => {
+  const refresh = useCallback(async () => {
     leaderboardService.clearCache();
-    fetchLeaderboard();
-  }, [fetchLeaderboard]);
+    setLoading(true);
+    
+    try {
+      // Minimum 3 másodperc loading állapot
+      const startTime = Date.now();
+      
+      // Adatok lekérése
+      const limit = getLimitFromViewMode(viewMode);
+      const query = {
+        limit,
+        offset: 0,
+        sortBy: 'marketCap',
+        sortOrder: 'desc',
+        platform
+      };
+
+      const data = await leaderboardService.getLeaderboard(query);
+      
+      setPlayers(data.players || []);
+      setTotalPlayers(data.totalPlayers || 0);
+      setLastUpdated(data.lastUpdated || new Date());
+      
+      // Várunk, hogy minimum 3 másodperc teljen el
+      const elapsedTime = Date.now() - startTime;
+      const remainingTime = Math.max(0, 3000 - elapsedTime);
+      
+      if (remainingTime > 0) {
+        await new Promise(resolve => setTimeout(resolve, remainingTime));
+      }
+      
+    } catch (err) {
+      console.error('Leaderboard fetch error:', err);
+      setError(err.message || 'Failed to fetch leaderboard');
+    } finally {
+      setLoading(false);
+    }
+  }, [viewMode, platform]);
 
   /**
    * View mode váltása
@@ -154,10 +189,16 @@ export const usePlayerData = (playerStats, platform = 'desktop') => {
 
     setLoading(true);
     try {
-      const rank = await leaderboardService.getPlayerRank(playerStats.marketCap, platform);
-      setPlayerRank(rank);
+      // TODO: Rank API javítása után visszaállítani
+      // const rank = await leaderboardService.getPlayerRank(playerStats.marketCap, platform);
+      // setPlayerRank(rank);
+      
+      // Most null-t adunk vissza, hogy a fallback logika használja a ranglista adatokat
+      setPlayerRank(null);
+      console.log('📊 Rank API disabled, using fallback calculation');
     } catch (err) {
       console.error('Player rank fetch error:', err);
+      setPlayerRank(null);
     } finally {
       setLoading(false);
     }
@@ -175,4 +216,5 @@ export const usePlayerData = (playerStats, platform = 'desktop') => {
 };
 
 export default useLeaderboard;
+
 

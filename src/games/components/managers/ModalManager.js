@@ -16,6 +16,7 @@ export default function ModalManager({
   setIsResetModalOpen,
   confirmReset,
   onResetComplete,
+  isResetting,
   
   // Rules Modal
   isRulesModalOpen,
@@ -44,13 +45,14 @@ export default function ModalManager({
           confirmReset(() => {
             setIsResetModalOpen(false);
             if (onResetComplete) {
-              onResetComplete();
+              onResetComplete(true); // skipSave = true, mert reset történt
             }
           });
         }} 
         title="Reset Game" 
         confirmText="Yes, Reset" 
         cancelText="No, Keep Progress"
+        isLoading={isResetting}
       >
         <p>Are you sure you want to reset? All your progress and upgrades will be permanently deleted!</p>
       </CustomModal>

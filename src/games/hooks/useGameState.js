@@ -1,8 +1,9 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { getInitialState } from '../data/gameData';
 import { fixUsesLeft } from '../utils/gameUtils';
 import { usePlayerSave } from './usePlayerSave';
+import supabaseService from '../../lib/supabaseService';
 
 /**
  * useGameState - Játék állapot kezelő hook
@@ -54,45 +55,171 @@ export const useGameState = () => {
       if (typeof window !== 'undefined') {
         const userId = user?.id;
         
-        // Ha még nem történt inicializálás, akkor betöltjük a mentett adatokat
-        if (!hasInitializedRef.current) {
-          const storageKey = userId ? `bullRunGameState_${userId}` : 'bullRunGameState_v3';
-          const savedState = localStorage.getItem(storageKey);
-          
-          if (savedState) {
-            try {
-              const parsed = JSON.parse(savedState);
-              const initialState = getInitialState();
-              const fixedUsesLeft = fixUsesLeft(parsed.usesLeft);
-              const mergedUpgrades = initialState.upgrades.map(init => {
-                const savedUpgrade = parsed.upgrades && parsed.upgrades.find(u => u.id === init.id);
-                const usesLeft = fixedUsesLeft[init.id];
-                return {
-                  ...init,
-                  ...savedUpgrade,
-                  isUnlocked: init.id === 1 || (typeof usesLeft === 'number' && usesLeft > 0)
+        // Mindig betöltjük az adatokat (nem csak egyszer)
+        // if (!hasInitializedRef.current) {
+          // Ha nincs bejelentkezett user, akkor böngésző adatokat betöltjük
+          if (!userId) {
+            const browserState = localStorage.getItem('bullRunGameState_v3');
+            if (browserState) {
+              try {
+                const parsed = JSON.parse(browserState);
+                const initialState = getInitialState();
+                const fixedUsesLeft = fixUsesLeft(parsed.usesLeft);
+                const mergedUpgrades = initialState.upgrades.map(init => {
+                  const savedUpgrade = parsed.upgrades && parsed.upgrades.find(u => u.id === init.id);
+                  const usesLeft = fixedUsesLeft[init.id];
+                  return {
+                    ...init,
+                    ...savedUpgrade,
+                    isUnlocked: init.id === 1 || (typeof usesLeft === 'number' && usesLeft > 0)
+                  };
+                });
+                const newGameState = {
+                  ...initialState,
+                  ...parsed,
+                  usesLeft: fixedUsesLeft,
+                  upgrades: mergedUpgrades,
+                  minMarketCapThisLevel: parsed.minMarketCapThisLevel ?? parsed.marketCap ?? 0
                 };
-              });
-              const newGameState = {
-                ...initialState,
-                ...parsed,
-                usesLeft: fixedUsesLeft,
-                upgrades: mergedUpgrades,
-                minMarketCapThisLevel: parsed.minMarketCapThisLevel ?? parsed.marketCap ?? 0
-              };
-              setGameState(newGameState);
+                setGameState(newGameState);
+                hasLoadedFromStorage.current = true;
+                console.log('Böngésző játék állapot betöltve:', newGameState.marketCap);
+                
+                // Csak most jelöljük betöltöttnek, miután az adatok beállításra kerültek
+                setIsGameLoaded(true);
+              } catch (e) {
+                console.error('Hiba a böngésző állapot betöltésekor:', e);
+                setIsGameLoaded(true);
+              }
+            } else {
+              // Nincs localStorage adat, 0-ás értékekkel kezdjük
+              console.log('Nincs localStorage adat, 0-ás értékekkel kezdjük');
+              const initialState = getInitialState();
+              setGameState(initialState);
               hasLoadedFromStorage.current = true;
-              console.log('Mentett játék állapot betöltve:', newGameState.marketCap);
-            } catch (e) {
-              console.error('Hiba a mentett állapot betöltésekor:', e);
+              
+              // Csak most jelöljük betöltöttnek, miután az adatok beállításra kerültek
+              setIsGameLoaded(true);
             }
+          } else {
+            // Bejelentkezett user: MINDIG adatbázisból betölt, localStorage cache törlése
+            console.log('Bejelentkezett user: MINDIG adatbázisból betölt');
+            
+            // Először ellenőrizzük és frissítjük a user adatokat
+            const checkAndUpdateUserData = async () => {
+              try {
+                console.log('Checking user data on login...');
+                await supabaseService.upsertUser(user);
+                console.log('User data updated successfully');
+              } catch (error) {
+                console.error('Error updating user data on login:', error);
+              }
+            };
+            
+            checkAndUpdateUserData();
+            
+            // Töröljük a localStorage cache-t, hogy friss adatbázis adatokat kapjunk
+            const userStorageKey = `bullRunGameState_${userId}`;
+            localStorage.removeItem(userStorageKey);
+            
+            // Adatbázisból betöltés és localStorage-ba mentés
+            const loadFromDatabaseAndCache = async () => {
+              try {
+                console.log('Adatbázisból betöltés...');
+                const response = await fetch(`/api/game/load?userId=${userId}`);
+                const result = await response.json();
+                
+                console.log('API válasz:', result);
+                
+                if (result.success && result.data) {
+                  const initialState = getInitialState();
+                  
+                  // Supabase adatok átalakítása játék formátumra
+                  const dbData = result.data;
+                  const fixedUsesLeft = fixUsesLeft(dbData.usesLeft || {});
+                  const mergedUpgrades = initialState.upgrades.map(init => {
+                    const savedUpgrade = dbData.upgrades && dbData.upgrades.find(u => u.id === init.id);
+                    const usesLeft = fixedUsesLeft[init.id];
+                    return {
+                      ...init,
+                      ...savedUpgrade,
+                      isUnlocked: init.id === 1 || (typeof usesLeft === 'number' && usesLeft > 0)
+                    };
+                  });
+                  
+                  const newGameState = {
+                    ...initialState,
+                    marketCap: dbData.market_cap || 0,
+                    clickPower: dbData.click_power || 1,
+                    passiveIncome: dbData.passive_income || 0,
+                    levelIndex: dbData.level_index || 0,
+                    totalClicks: dbData.total_clicks || 0,
+                    totalEarned: dbData.total_earned || 0,
+                    usesLeft: fixedUsesLeft,
+                    upgrades: mergedUpgrades,
+                    minMarketCapThisLevel: dbData.minMarketCapThisLevel ?? dbData.market_cap ?? 0,
+                    achievements: dbData.achievements || [],
+                    settings: dbData.settings || {}
+                  };
+                  
+                  // Betöltjük a játék állapotot
+                  setGameState(newGameState);
+                  hasLoadedFromStorage.current = true;
+                  
+                  // Elmentjük localStorage-ba a gyors játékélményért
+                  localStorage.setItem(userStorageKey, JSON.stringify(newGameState));
+                  
+                  console.log('Adatbázis játék állapot betöltve és cache-elve:', newGameState.marketCap);
+                  
+                  // Csak most jelöljük betöltöttnek, miután az adatok beállításra kerültek
+                  setIsGameLoaded(true);
+                } else {
+                  // Nincs adatbázis adat, 0-ás értékekkel kezdjük
+                  console.log('Nincs adatbázis adat, 0-ás értékekkel kezdjük');
+                  const initialState = getInitialState();
+                  setGameState({
+                    ...initialState,
+                    marketCap: 0,
+                    clickPower: 1,
+                    passiveIncome: 0,
+                    levelIndex: 0,
+                    totalClicks: 0,
+                    totalEarned: 0,
+                    minMarketCapThisLevel: 0
+                  });
+                  hasLoadedFromStorage.current = true;
+                  
+                  // Csak most jelöljük betöltöttnek, miután az adatok beállításra kerültek
+                  setIsGameLoaded(true);
+                }
+              } catch (error) {
+                console.error('Hiba az adatbázis állapot betöltésekor:', error);
+                console.log('Hiba esetén 0-ás értékekkel kezdjük');
+                const initialState = getInitialState();
+                setGameState({
+                  ...initialState,
+                  marketCap: 0,
+                  clickPower: 1,
+                  passiveIncome: 0,
+                  levelIndex: 0,
+                  totalClicks: 0,
+                  totalEarned: 0,
+                  minMarketCapThisLevel: 0
+                });
+                hasLoadedFromStorage.current = true;
+                
+                // Csak most jelöljük betöltöttnek, miután az adatok beállításra kerültek
+                setIsGameLoaded(true);
+              }
+            };
+            
+            loadFromDatabaseAndCache();
           }
           
           hasInitializedRef.current = true;
           lastUserIdRef.current = userId;
-          setIsGameLoaded(true);
           return;
-        }
+        // }
         
         // Ha már inicializálva volt, ellenőrizzük hogy új bejelentkezés történt-e
         const isNewLogin = lastUserIdRef.current !== null && 
@@ -146,7 +273,7 @@ export const useGameState = () => {
     }
   }, [gameState]);
 
-  // Állapot mentése localStorage-ba (debounced)
+  // Állapot mentése localStorage-ba (mindenkinek a gyors játékélményért)
   useEffect(() => {
     if (isGameLoaded && hasLoadedFromStorage.current) {
       // Clear previous timeout
@@ -171,47 +298,48 @@ export const useGameState = () => {
     };
   }, [gameState, isGameLoaded, user?.id]);
 
-  // Automatikus játékos mentés (pl. level up-kor vagy nagyobb marketCap-nél)
-  useEffect(() => {
-    if (!gameState || !isGameLoaded || !user) return;
-    
-    // Mentjük a játékost ha elérte az 1 dollárt (1 marketCap)
-    const shouldAutoSave = gameState.marketCap >= 1;
-    
-    if (shouldAutoSave) {
-      // Debounce: csak 2 másodpercenként mentünk
-      const timeoutId = setTimeout(() => {
-        autoSavePlayer(gameState).then(result => {
-          if (result.success) {
-            console.log('Auto-saved player to leaderboard');
-          }
-        }).catch(error => {
-          console.error('Auto-save failed:', error);
-        });
-      }, 2000);
-      
-      return () => clearTimeout(timeoutId);
-    }
-  }, [gameState?.marketCap, gameState?.levelIndex, isGameLoaded, user, autoSavePlayer]);
+  // Automatikus mentés eltávolítva - most csak trigger alapú mentés van
+  // (pump gomb, fejlesztés vásárlás, level up)
+
+  // Reset loading state
+  const [isResetting, setIsResetting] = useState(false);
 
   // Játék reset funkció
   const confirmReset = async (onResetComplete) => {
     const userId = user?.id;
     const storageKey = userId ? `bullRunGameState_${userId}` : 'bullRunGameState_v3';
-    localStorage.removeItem(storageKey);
+    
+    // Set loading state
+    setIsResetting(true);
     
     // Clear save timeout
     if (saveTimeoutRef.current) {
       clearTimeout(saveTimeoutRef.current);
     }
     
-    // Mentjük a játékos eredményét a reset előtt
-    try {
-      await autoSavePlayer(gameState);
-      console.log('Player data saved before reset');
-    } catch (error) {
-      console.error('Failed to save player data before reset:', error);
+    // Bejelentkezett felhasználó: adatbázisból is töröljük a játék adatokat
+    if (userId) {
+      try {
+        console.log('🗑️ Starting database deletion for user:', userId);
+        // Töröljük a játék állapotot az adatbázisból
+        const deleteResult = await supabaseService.deleteGameState(userId);
+        if (deleteResult.success) {
+          console.log('✅ Game state deleted from database successfully');
+        } else {
+          console.error('❌ Failed to delete game state from database:', deleteResult.error);
+          // Ha nem sikerült törölni, akkor is folytatjuk
+        }
+        
+        // A ranglista adatok automatikusan törlődnek a game_states törlésekor
+      } catch (error) {
+        console.error('❌ Error deleting data from database:', error);
+        // Ha hiba van, akkor is folytatjuk
+      }
     }
+    
+    // localStorage törlése
+    localStorage.removeItem(storageKey);
+    console.log('🗑️ localStorage cleared');
     
     // Reset the loaded flag
     hasLoadedFromStorage.current = false;
@@ -246,11 +374,36 @@ export const useGameState = () => {
       lastReqLevelRef.current[key] = undefined;
     });
     
-    // Visszahívás a reset befejezésére
+    // Clear loading state
+    setIsResetting(false);
+    
+    // Visszahívás a reset befejezésére - azonnal átirányítás
     if (onResetComplete) {
-      onResetComplete();
+      onResetComplete(); // A ModalManager kezeli a skipSave-t
     }
   };
+
+  // localStorage törlése minden felhasználónak (játék bezárásakor)
+  const clearUserCache = useCallback(async (skipSave = false) => {
+    if (user?.id) {
+      // Bejelentkezett felhasználó: először mentjük az aktuális állapotot az adatbázisba (kivéve ha skipSave = true)
+      if (!skipSave) {
+        try {
+          // Azonnal mentjük, nem várunk
+          await autoSavePlayer(gameState);
+        } catch (error) {
+          console.error('Error saving game state to database:', error);
+        }
+      }
+      
+      // Majd töröljük a cache-t
+      const userStorageKey = `bullRunGameState_${user.id}`;
+      localStorage.removeItem(userStorageKey);
+    } else {
+      // Névtelen felhasználó cache törlése
+      localStorage.removeItem('bullRunGameState_v3');
+    }
+  }, [user?.id, gameState, autoSavePlayer]);
 
   return {
     gameState,
@@ -261,6 +414,8 @@ export const useGameState = () => {
     setSubThousandAccumulator,
     lastReqLevelRef,
     confirmReset,
+    clearUserCache,
+    isResetting,
     isDesktop: typeof window !== 'undefined' && window.innerWidth >= 768
   };
 };

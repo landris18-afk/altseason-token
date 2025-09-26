@@ -53,14 +53,21 @@ export const mockLeaderboardData = americanNames.map((name, index) => ({
  * @returns {string} Formázott score string
  */
 export const formatScore = (score) => {
-  if (score >= 1000000000) {
-    return `$${(score / 1000000000).toFixed(1)}B`;
-  } else if (score >= 1000000) {
-    return `$${(score / 1000000).toFixed(1)}M`;
-  } else if (score >= 1000) {
-    return `$${(score / 1000).toFixed(1)}K`;
+  // Ellenőrizzük, hogy a score létezik és szám
+  if (score === null || score === undefined || isNaN(score)) {
+    return '$0';
+  }
+  
+  const numScore = Number(score);
+  
+  if (numScore >= 1000000000) {
+    return `$${(numScore / 1000000000).toFixed(1)}B`;
+  } else if (numScore >= 1000000) {
+    return `$${(numScore / 1000000).toFixed(1)}M`;
+  } else if (numScore >= 1000) {
+    return `$${(numScore / 1000).toFixed(1)}K`;
   } else {
-    return `$${score.toLocaleString()}`;
+    return `$${numScore.toLocaleString()}`;
   }
 };
 

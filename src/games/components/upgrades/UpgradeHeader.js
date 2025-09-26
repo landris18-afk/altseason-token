@@ -13,9 +13,10 @@ import React from 'react';
  * UpgradeHeader - Upgrade panel header komponens
  * 
  * @param {Function} onBackToLeaderboard - Vissza a ranglistához függvény
+ * @param {boolean} isSaving - Mentés állapot flag
  * @returns {JSX.Element} Header komponens
  */
-const UpgradeHeader = ({ onBackToLeaderboard }) => {
+const UpgradeHeader = ({ onBackToLeaderboard, isSaving = false }) => {
   return (
     <div className="mb-4">
       {/* Desktop: normál header */}
@@ -25,12 +26,31 @@ const UpgradeHeader = ({ onBackToLeaderboard }) => {
           {onBackToLeaderboard && (
             <button
               onClick={onBackToLeaderboard}
-              className="bg-gray-800/80 hover:bg-gray-700/90 text-white/80 hover:text-white transition-all duration-200 rounded-full p-2 backdrop-blur-sm border border-yellow-400/30 hover:border-yellow-400/50"
-              title="Back to Leaderboard"
+              disabled={isSaving}
+              className={`rounded-full p-2 border transition-all duration-200 ${
+                isSaving
+                  ? 'bg-red-600 text-white border-red-500 cursor-not-allowed'
+                  : 'bg-gray-800/80 hover:bg-gray-700/90 text-white/80 hover:text-white border-yellow-400/30 hover:border-yellow-400/50'
+              }`}
+              style={isSaving ? { 
+                backgroundColor: '#dc2626', 
+                color: 'white', 
+                cursor: 'not-allowed'
+              } : {}}
+              title={isSaving ? "Saving..." : "Back to Leaderboard"}
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-              </svg>
+              {isSaving ? (
+                <div className="flex items-center space-x-1">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                  </svg>
+                  <span className="text-xs">💾</span>
+                </div>
+              ) : (
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+              )}
             </button>
           )}
         </div>

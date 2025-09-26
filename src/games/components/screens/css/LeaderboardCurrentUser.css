@@ -179,8 +179,8 @@
   .mobile-leaderboard-container .table-header,
   .mobile-leaderboard-container .table-footer {
     grid-template-columns: 50px 1fr 180px;
-    padding: 8px 10px 8px 10px;
-    align-items: center;
+    padding: 0;
+    align-items: stretch;
   }
   
   .mobile-leaderboard-container .header-score {
@@ -243,8 +243,8 @@
   
   .mobile-leaderboard-container .table-footer {
     grid-template-columns: 50px 1fr 150px;
-    padding: 4px 10px 4px 10px;
-    align-items: center;
+    padding: 0;
+    align-items: stretch;
   }
   
   .mobile-leaderboard-container .table-header {
@@ -271,8 +271,8 @@
   .mobile-leaderboard-container .table-header,
   .mobile-leaderboard-container .table-footer {
     grid-template-columns: 35px 1fr 100px;
-    padding: 8px 5px;
-    gap: 4px;
+    padding: 0;
+    gap: 0;
   }
   
   .mobile-leaderboard-container .footer-left {
@@ -281,5 +281,73 @@
   
   .mobile-leaderboard-container .footer-right {
     grid-column: 3 / 5;
+  }
+}
+
+
+/* Leaderboard Stats Save Button Styles */
+.stats-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.save-leaderboard-btn {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);
+}
+
+.save-leaderboard-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(16, 185, 129, 0.4);
+}
+
+.save-leaderboard-btn:disabled {
+  background: #6b7280;
+  cursor: not-allowed;
+  opacity: 0.6;
+  transform: none;
+  box-shadow: none;
+}
+
+.save-message {
+  margin-top: 12px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-align: center;
+}
+
+.save-message.success {
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.save-message.error {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+@media (max-width: 767px) {
+  .stats-buttons {
+    flex-direction: column;
+    gap: 6px;
+  }
+  
+  .save-leaderboard-btn {
+    font-size: 0.8rem;
+    padding: 6px 12px;
   }
 }

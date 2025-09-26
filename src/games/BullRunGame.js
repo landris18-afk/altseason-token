@@ -16,5 +16,7 @@ export default function BullRunGame({ showHeader = true } = {}) {
   // Master hook - minden game logika egy helyen
   const gameData = useBullRunGame();
 
-  return <BullRunGameWrapper {...gameData} showHeader={showHeader} />;
+  return (
+    <BullRunGameWrapper {...gameData} showHeader={showHeader} />
+  );
 }

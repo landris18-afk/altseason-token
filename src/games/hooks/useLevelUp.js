@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { gameLevels } from '../data/gameLevels';
+import { usePlayerSave } from './usePlayerSave';
 
 /**
  * useLevelUp - Szintlépés hook
@@ -27,6 +28,7 @@ export const useLevelUp = (
   setIsLevelUpModalOpen,
   confirmReset
 ) => {
+  const { autoSavePlayer } = usePlayerSave();
   // Szintlépés kezelése
   useEffect(() => {
     if (isLoaded) {
@@ -46,11 +48,26 @@ export const useLevelUp = (
           levelUpSound.play().catch(() => {});
         }
         setIsLevelUpModalOpen(true);
-        setGameState(prevState => ({
-          ...prevState,
-          levelIndex: prevState.levelIndex + 1,
-          minMarketCapThisLevel: nextLevel.threshold // A következő szint thresholdjától indul
-        }));
+        setGameState(prevState => {
+          const newState = {
+            ...prevState,
+            levelIndex: prevState.levelIndex + 1,
+            minMarketCapThisLevel: nextLevel.threshold // A következő szint thresholdjától indul
+          };
+          
+          // Szintlépés után mentés az adatbázisba
+          setTimeout(() => {
+            autoSavePlayer(newState).then(result => {
+              if (result.success) {
+                console.log('🎉 Auto-saved player after level up to level:', newState.levelIndex);
+              }
+            }).catch(error => {
+              console.error('Auto-save failed after level up:', error);
+            });
+          }, 1000); // 1 másodperc késleltetés hogy a state frissüljön
+          
+          return newState;
+        });
       }
     }
   }, [gameState.marketCap, gameState.levelIndex, isLoaded, levelUpSound, muted, setIsLevelUpModalOpen, setGameState, confirmReset]);

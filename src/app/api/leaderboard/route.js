@@ -5,9 +5,7 @@
  */
 
 import { NextResponse } from 'next/server';
-
-// Valós adatok tárolása memóriában (ideiglenesen, amíg nincs valódi adatbázis)
-let leaderboardData = [];
+import supabaseService from '../../../lib/supabaseService';
 
 /**
  * GET - Ranglista adatok lekérdezése
@@ -16,6 +14,7 @@ let leaderboardData = [];
  */
 export async function GET(request) {
   try {
+    console.log('Leaderboard API GET called');
     const { searchParams } = new URL(request.url);
     
     // Query paraméterek kinyerése
@@ -25,51 +24,27 @@ export async function GET(request) {
     const sortOrder = searchParams.get('sortOrder') || 'desc';
     const platform = searchParams.get('platform') || 'all';
 
-    // Adatok szűrése és rendezése
-    let players = [...leaderboardData];
+    console.log('Leaderboard API params:', { limit, offset, sortBy, sortOrder, platform });
 
-    // Platform szűrés
-    if (platform !== 'all') {
-      players = players.filter(player => player.platform === platform);
-    }
-
-    // Rendezés
-    players.sort((a, b) => {
-      const aValue = a[sortBy] || 0;
-      const bValue = b[sortBy] || 0;
-      
-      if (sortOrder === 'asc') {
-        return aValue - bValue;
-      } else {
-        return bValue - aValue;
-      }
+    // Supabase alapú adatok lekérdezése
+    const result = await supabaseService.getLeaderboard({
+      limit,
+      offset,
+      platform
     });
 
-    // Rang hozzáadása
-    players = players.map((player, index) => ({
-      ...player,
-      rank: offset + index + 1
-    }));
+    console.log('Leaderboard API result:', result);
 
-    // Limit és offset alkalmazása
-    const totalPlayers = players.length;
-    const paginatedPlayers = players.slice(offset, offset + limit);
+    if (!result.success) {
+      console.error('Leaderboard API error:', result.error);
+      return NextResponse.json(
+        { error: 'Database Error', message: result.error },
+        { status: 500 }
+      );
+    }
 
-    // Válasz összeállítása
-    const response = {
-      players: paginatedPlayers,
-      totalPlayers,
-      lastUpdated: new Date().toISOString(),
-      query: {
-        limit,
-        offset,
-        sortBy,
-        sortOrder,
-        platform
-      }
-    };
-
-    return NextResponse.json(response, {
+    console.log('Leaderboard API returning data:', result.data);
+    return NextResponse.json(result.data, {
       status: 200,
       headers: {
         'Cache-Control': 'public, max-age=30', // 30 másodperc cache
@@ -91,7 +66,7 @@ export async function GET(request) {
 }
 
 /**
- * POST - Új játékos hozzáadása a ranglistához
+ * POST - Játékos adatok mentése (most már csak game_states táblázatot használunk)
  * @param {Request} request - HTTP kérés
  * @returns {Response} Válasz
  */
@@ -100,56 +75,48 @@ export async function POST(request) {
     const body = await request.json();
     
     // Validáció
-    if (!body.name || !body.marketCap) {
+    if (!body.userId) {
       return NextResponse.json(
-        { error: 'Bad Request', message: 'Name and marketCap are required' },
+        { error: 'Bad Request', message: 'User ID is required' },
         { status: 400 }
       );
     }
 
-    // Új játékos létrehozása
-    const newPlayer = {
-      id: body.userId || Date.now().toString(),
-      name: body.name,
-      marketCap: body.marketCap,
+    // Játék állapot mentése a game_states táblázatba
+    const gameState = {
+      marketCap: body.marketCap || 0,
       clickPower: body.clickPower || 0,
       passiveIncome: body.passiveIncome || 0,
-      level: body.level || 1,
-      platform: body.platform || 'desktop',
-      lastActive: new Date(),
-      isCurrentUser: body.isCurrentUser || false,
-      userId: body.userId || null
+      levelIndex: (body.level || 1) - 1,
+      totalClicks: body.totalClicks || 0,
+      totalEarned: body.totalEarned || 0,
+      upgrades: body.upgrades || [],
+      achievements: body.achievements || [],
+      settings: body.settings || {},
+      platform: body.platform || 'desktop'
     };
 
-    // Meglévő játékos keresése userId alapján
-    const existingPlayerIndex = leaderboardData.findIndex(player => player.userId === body.userId);
-    
-    if (existingPlayerIndex >= 0) {
-      // Meglévő játékos frissítése
-      leaderboardData[existingPlayerIndex] = { ...leaderboardData[existingPlayerIndex], ...newPlayer };
-      console.log('Updated existing player:', newPlayer.name);
+    // Supabase alapú mentés
+    const result = await supabaseService.saveGameState(body.userId, gameState);
+
+    if (result.success) {
+      return NextResponse.json(
+        { 
+          message: 'Game state saved successfully',
+          data: result.data,
+          success: true
+        },
+        { status: 201 }
+      );
     } else {
-      // Új játékos hozzáadása
-      leaderboardData.push(newPlayer);
-      console.log('Added new player:', newPlayer.name);
+      return NextResponse.json(
+        { 
+          error: 'Save Failed',
+          message: result.error || 'Failed to save game state'
+        },
+        { status: 500 }
+      );
     }
-
-    // Rendezés marketCap szerint csökkenő sorrendben
-    leaderboardData.sort((a, b) => b.marketCap - a.marketCap);
-
-    // Top 100 megtartása (memória optimalizálás)
-    if (leaderboardData.length > 100) {
-      leaderboardData = leaderboardData.slice(0, 100);
-    }
-
-    return NextResponse.json(
-      { 
-        message: 'Player saved successfully',
-        player: newPlayer,
-        totalPlayers: leaderboardData.length
-      },
-      { status: 201 }
-    );
 
   } catch (error) {
     console.error('Leaderboard POST error:', error);
@@ -157,7 +124,7 @@ export async function POST(request) {
     return NextResponse.json(
       { 
         error: 'Internal Server Error',
-        message: 'Failed to save player to leaderboard'
+        message: 'Failed to save game state'
       },
       { status: 500 }
     );

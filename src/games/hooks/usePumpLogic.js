@@ -1,5 +1,7 @@
 import { useCallback } from 'react';
 import { gameLevels } from '../data/gameLevels';
+import { usePlayerSave } from './usePlayerSave';
+import { useDesktopDetection } from './useDesktopDetection';
 
 /**
  * usePumpLogic - Pump logika hook
@@ -24,6 +26,9 @@ export const usePumpLogic = (
   setSubThousandAccumulator,
   playPumpSound
 ) => {
+  const { autoSavePlayer } = usePlayerSave();
+  const isDesktop = useDesktopDetection();
+
   const handlePump = useCallback(() => {
     // Maximum 5T
     if (gameState.marketCap >= 5e12) return;
@@ -241,9 +246,12 @@ export const usePumpLogic = (
         }
       }
     }
-  }, [gameState, subThousandAccumulator, setSubThousandAccumulator, setGameState, playPumpSound]);
+
+    // Pump után NEM mentünk - csak kilépéskor és szintlépéskor
+  }, [gameState, subThousandAccumulator, setSubThousandAccumulator, setGameState, playPumpSound, autoSavePlayer]);
 
   return { handlePump };
 };
+
 
 
