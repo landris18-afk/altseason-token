@@ -205,7 +205,7 @@
   
   .mobile-leaderboard-container .current-user-score {
     white-space: nowrap;
-    font-size: 0.9rem;
+    font-size: 1.2rem;
     overflow: hidden;
     text-overflow: ellipsis;
   }
@@ -245,6 +245,7 @@
     grid-template-columns: 50px 1fr 150px;
     padding: 0;
     align-items: stretch;
+    min-height: 60px;
   }
   
   .mobile-leaderboard-container .table-header {
@@ -260,9 +261,10 @@
   }
   
   .mobile-leaderboard-container .toggle-btn {
-    font-size: 0.65rem;
-    padding: 4px 6px;
-    min-width: 40px;
+    font-size: 0.8rem;
+    padding: 8px 12px;
+    min-width: 50px;
+    min-height: 50px;
   }
 }
 

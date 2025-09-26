@@ -12,21 +12,15 @@ class SupabaseGameState {
    * Játék állapot mentése - server-side
    */
   async saveGameState(clerkId, gameState) {
-    console.log('saveGameState called with:', { clerkId, gameState: !!gameState });
-    console.log('Supabase configured:', supabaseAuth.isSupabaseConfigured());
-    console.log('User logged in:', supabaseAuth.isUserLoggedIn(clerkId));
-    console.log('supabaseAdmin available:', !!supabaseAdmin);
     
     // Csak bejelentkezett felhasználók adatait mentjük Supabase-be
     if (!supabaseAuth.isSupabaseConfigured() || !supabaseAuth.isUserLoggedIn(clerkId)) {
-      console.log('User not logged in or Supabase not configured, game state not saved to database');
       return { success: true, data: null };
     }
 
     // Ha client-side vagyunk, API endpoint-on keresztül mentjük
     if (typeof window !== 'undefined') {
       try {
-        console.log('Client-side save: calling API endpoint');
         const response = await fetch('/api/game/save', {
           method: 'POST',
           headers: {
@@ -38,14 +32,12 @@ class SupabaseGameState {
           })
         });
 
-        console.log('API response status:', response.status);
         
         if (!response.ok) {
           throw new Error(`API error: ${response.status}`);
         }
 
         const result = await response.json();
-        console.log('API response result:', result);
         return result;
       } catch (error) {
         console.error('Error saving game state via API:', error);
@@ -55,15 +47,11 @@ class SupabaseGameState {
 
     // Server-side: közvetlenül Supabase-be mentjük
     try {
-      console.log('🖥️ Server-side save: starting...');
       // Először a felhasználót biztosítjuk
-      console.log('👤 Upserting user with clerkId:', clerkId);
       const userResult = await supabaseAuth.upsertUser({ id: clerkId });
-      console.log('👤 User upsert result:', userResult);
       if (!userResult.success) throw new Error(userResult.error);
 
       const userId = userResult.data.id;
-      console.log('👤 User ID from database:', userId);
 
       // Játék állapot mentése
       const gameDataToSave = {
@@ -82,8 +70,6 @@ class SupabaseGameState {
         last_active: new Date().toISOString()
       };
       
-      console.log('💾 Saving game data to database:', gameDataToSave);
-      
       const { data, error } = await supabaseAdmin
         .from('game_states')
         .upsert(gameDataToSave, {
@@ -92,13 +78,10 @@ class SupabaseGameState {
         .select()
         .single();
 
-      console.log('💾 Database response:', { data, error });
-
       if (error) throw error;
-      console.log('✅ Game state saved successfully to database');
       return { success: true, data };
     } catch (error) {
-      console.error('❌ Error saving game state:', error);
+      console.error('Error saving game state:', error);
       return { success: false, error: error.message };
     }
   }
@@ -109,7 +92,6 @@ class SupabaseGameState {
   async loadGameState(clerkId) {
     // Csak bejelentkezett felhasználók adatait töltjük Supabase-ből
     if (!supabaseAuth.isSupabaseConfigured() || !supabaseAuth.isUserLoggedIn(clerkId)) {
-      console.log('User not logged in or Supabase not configured, no game state loaded from database');
       return { success: true, data: null };
     }
 
@@ -154,7 +136,6 @@ class SupabaseGameState {
    */
   async deleteGameState(clerkId) {
     if (!supabaseAuth.isSupabaseConfigured() || !supabaseAuth.isUserLoggedIn(clerkId)) {
-      console.log('User not logged in or Supabase not configured, cannot delete game state');
       return { success: false, error: 'User not logged in or Supabase not configured' };
     }
 
@@ -185,7 +166,6 @@ class SupabaseGameState {
       // Először megkeressük a user ID-t (csak server-side)
       const userResult = await supabaseAuth.getUserByClerkId(clerkId);
       if (!userResult.success || !userResult.data) {
-        console.log('User not found in database, trying to delete by clerk_id directly');
         
         // Ha nincs user rekord, próbáljuk törölni közvetlenül a clerk_id alapján
         const { error: gameStateError } = await supabaseAdmin

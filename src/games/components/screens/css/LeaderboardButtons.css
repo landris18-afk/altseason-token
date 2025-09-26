@@ -21,8 +21,15 @@
 
 @media (max-width: 767px) {
   .toggle-btn {
-    min-height: 40px;
-    font-size: 0.8rem;
+    min-height: 50px;
+    font-size: 0.9rem;
+    padding: 0 12px;
+    border-radius: 0;
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .toggle-btn:last-of-type {
+    border-right: none;
   }
 }
 
@@ -56,16 +63,33 @@
   overflow: hidden;
 }
 
-@media (max-width: 767px) {
-  .refresh-icon-btn {
-    min-height: 40px;
-  }
-}
-
 .refresh-icon-btn svg {
   width: 18px;
   height: 18px;
   stroke-width: 2.5;
+}
+
+@media (max-width: 767px) {
+  .refresh-icon-btn {
+    min-height: 50px;
+    padding: 0 24px;
+    border-radius: 0;
+  }
+  
+  .refresh-icon-btn svg {
+    width: 28px !important;
+    height: 28px !important;
+    stroke-width: 2.5;
+  }
+}
+
+/* Loading state for refresh button */
+.refresh-icon-btn.loading {
+  cursor: not-allowed;
+}
+
+.refresh-icon-btn.loading svg {
+  color: #ffd700 !important;
 }
 
 .refresh-icon-btn::before {

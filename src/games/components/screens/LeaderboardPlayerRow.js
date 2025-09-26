@@ -123,7 +123,7 @@ const LeaderboardPlayerRow = ({
           </div>
           <div className="cell-score">
             {renderScore()}
-            {player.userId && onToggleDetails && (
+            {player.clerkId && onToggleDetails && (
               <button
                 className="ml-2 text-yellow-400 hover:text-yellow-300 transition-colors"
                 title="Show detailed stats"
@@ -138,7 +138,7 @@ const LeaderboardPlayerRow = ({
         </div>
 
         {/* Mobile részletes adatok */}
-        {showDetails && player.userId && (
+        {showDetails && player.clerkId && (
           <div className="table-row current-user-details-mobile">
             <div className="cell-rank"></div>
             <div className="cell-name">

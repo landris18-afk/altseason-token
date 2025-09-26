@@ -83,7 +83,6 @@ export const useGameState = () => {
                 };
                 setGameState(newGameState);
                 hasLoadedFromStorage.current = true;
-                console.log('Böngésző játék állapot betöltve:', newGameState.marketCap);
                 
                 // Csak most jelöljük betöltöttnek, miután az adatok beállításra kerültek
                 setIsGameLoaded(true);
@@ -93,7 +92,6 @@ export const useGameState = () => {
               }
             } else {
               // Nincs localStorage adat, 0-ás értékekkel kezdjük
-              console.log('Nincs localStorage adat, 0-ás értékekkel kezdjük');
               const initialState = getInitialState();
               setGameState(initialState);
               hasLoadedFromStorage.current = true;
@@ -103,14 +101,11 @@ export const useGameState = () => {
             }
           } else {
             // Bejelentkezett user: MINDIG adatbázisból betölt, localStorage cache törlése
-            console.log('Bejelentkezett user: MINDIG adatbázisból betölt');
             
             // Először ellenőrizzük és frissítjük a user adatokat
             const checkAndUpdateUserData = async () => {
               try {
-                console.log('Checking user data on login...');
                 await supabaseService.upsertUser(user);
-                console.log('User data updated successfully');
               } catch (error) {
                 console.error('Error updating user data on login:', error);
               }
@@ -125,11 +120,8 @@ export const useGameState = () => {
             // Adatbázisból betöltés és localStorage-ba mentés
             const loadFromDatabaseAndCache = async () => {
               try {
-                console.log('Adatbázisból betöltés...');
                 const response = await fetch(`/api/game/load?userId=${userId}`);
                 const result = await response.json();
-                
-                console.log('API válasz:', result);
                 
                 if (result.success && result.data) {
                   const initialState = getInitialState();
@@ -169,13 +161,11 @@ export const useGameState = () => {
                   // Elmentjük localStorage-ba a gyors játékélményért
                   localStorage.setItem(userStorageKey, JSON.stringify(newGameState));
                   
-                  console.log('Adatbázis játék állapot betöltve és cache-elve:', newGameState.marketCap);
                   
                   // Csak most jelöljük betöltöttnek, miután az adatok beállításra kerültek
                   setIsGameLoaded(true);
                 } else {
                   // Nincs adatbázis adat, 0-ás értékekkel kezdjük
-                  console.log('Nincs adatbázis adat, 0-ás értékekkel kezdjük');
                   const initialState = getInitialState();
                   setGameState({
                     ...initialState,
@@ -194,7 +184,6 @@ export const useGameState = () => {
                 }
               } catch (error) {
                 console.error('Hiba az adatbázis állapot betöltésekor:', error);
-                console.log('Hiba esetén 0-ás értékekkel kezdjük');
                 const initialState = getInitialState();
                 setGameState({
                   ...initialState,
@@ -228,7 +217,6 @@ export const useGameState = () => {
         
         if (isNewLogin) {
           // Új bejelentkezés: nulláról kezdjük
-          console.log('Új bejelentkezés észlelve, nulláról kezdjük a játékot');
           const initialState = getInitialState();
           setGameState(initialState);
           hasLoadedFromStorage.current = false;
@@ -320,11 +308,9 @@ export const useGameState = () => {
     // Bejelentkezett felhasználó: adatbázisból is töröljük a játék adatokat
     if (userId) {
       try {
-        console.log('🗑️ Starting database deletion for user:', userId);
         // Töröljük a játék állapotot az adatbázisból
         const deleteResult = await supabaseService.deleteGameState(userId);
         if (deleteResult.success) {
-          console.log('✅ Game state deleted from database successfully');
         } else {
           console.error('❌ Failed to delete game state from database:', deleteResult.error);
           // Ha nem sikerült törölni, akkor is folytatjuk
@@ -339,7 +325,6 @@ export const useGameState = () => {
     
     // localStorage törlése
     localStorage.removeItem(storageKey);
-    console.log('🗑️ localStorage cleared');
     
     // Reset the loaded flag
     hasLoadedFromStorage.current = false;
@@ -385,33 +370,23 @@ export const useGameState = () => {
 
   // localStorage törlése minden felhasználónak (játék bezárásakor)
   const clearUserCache = useCallback(async (skipSave = false) => {
-    console.log('🔄 clearUserCache called with skipSave:', skipSave);
-    console.log('🔄 User ID:', user?.id);
-    console.log('🔄 Game state:', gameState);
-    
     if (user?.id) {
       // Bejelentkezett felhasználó: először mentjük az aktuális állapotot az adatbázisba (kivéve ha skipSave = true)
       if (!skipSave) {
         try {
-          console.log('💾 Saving game state to database before clearing cache...');
           // Azonnal mentjük, nem várunk
-          const saveResult = await autoSavePlayer(gameState);
-          console.log('💾 Save result:', saveResult);
+          await autoSavePlayer(gameState);
         } catch (error) {
-          console.error('❌ Error saving game state to database:', error);
+          console.error('Error saving game state to database:', error);
         }
-      } else {
-        console.log('⏭️ Skipping save due to skipSave=true');
       }
       
       // Majd töröljük a cache-t
       const userStorageKey = `bullRunGameState_${user.id}`;
       localStorage.removeItem(userStorageKey);
-      console.log('🗑️ Cleared localStorage for user:', user.id);
     } else {
       // Névtelen felhasználó cache törlése
       localStorage.removeItem('bullRunGameState_v3');
-      console.log('🗑️ Cleared localStorage for anonymous user');
     }
   }, [user?.id, gameState, autoSavePlayer]);
 

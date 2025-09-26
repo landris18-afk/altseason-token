@@ -84,7 +84,8 @@ export const useLeaderboardLogic = (playerStats, onStartGame) => {
     if (!isSignedIn || !user?.id || !leaderboardEnabled) return null;
     
     // Keresés a ranglista játékosok között - CSAK adatbázisból
-    const dbUser = leaderboardPlayers.find(player => player.userId === user.id);
+    // Először clerkId alapján keresünk, mert a user.id a Clerk ID
+    const dbUser = leaderboardPlayers.find(player => player.clerkId === user.id);
     
     if (dbUser) {
       // Ha van adatbázis adat, azt használjuk
@@ -121,7 +122,6 @@ export const useLeaderboardLogic = (playerStats, onStartGame) => {
     
     // Ha van playerRank az API-ból, használjuk azt
     if (playerRank) {
-      console.log('📊 Using API rank:', playerRank);
       return playerRank;
     }
     
@@ -137,11 +137,6 @@ export const useLeaderboardLogic = (playerStats, onStartGame) => {
       }
     }
     
-    console.log('📊 Calculated rank from leaderboard:', { 
-      currentUserMarketCap: currentUser.marketCap, 
-      rank, 
-      totalPlayers: leaderboardPlayers.length 
-    });
     
     return rank;
   })();

@@ -38,12 +38,8 @@ class SupabaseLeaderboard {
    * Ranglista lekérdezése - most a game_states táblázatból
    */
   async getLeaderboard(options = {}) {
-    console.log('getLeaderboard called with options:', options);
-    console.log('Supabase configured:', supabaseAuth.isSupabaseConfigured());
-    console.log('Supabase client:', !!supabase);
     
     if (!supabaseAuth.isSupabaseConfigured() || !supabase) {
-      console.log('Supabase not configured or client is null, using fallback leaderboard data');
       const { limit = 100, offset = 0, platform = 'all' } = options;
 
       let players = [...fallbackLeaderboardData];
@@ -78,12 +74,10 @@ class SupabaseLeaderboard {
     try {
       const { limit = 100, offset = 0, platform = 'all' } = options;
 
-      console.log('Querying game_states table with:', { limit, offset, platform });
 
       // Ranglista adatok lekérdezése a game_states táblázatból
       // Server-side: supabaseAdmin client-et használjuk
       const client = typeof window !== 'undefined' ? supabase : supabaseAdmin;
-      console.log('Using client:', typeof window !== 'undefined' ? 'client-side' : 'server-side');
       
       // Először lekérdezzük a game_states adatokat
       let query = client
@@ -99,9 +93,6 @@ class SupabaseLeaderboard {
 
       const { data: gameStates, error } = await query;
 
-      console.log('Supabase query result:', { gameStates, error });
-      console.log('Data length:', gameStates?.length);
-      console.log('First item:', gameStates?.[0]);
 
       if (error) throw error;
 
@@ -123,7 +114,6 @@ class SupabaseLeaderboard {
 
         // Ellenőrizzük, hogy a felhasználó engedélyezte-e a ranglistán való megjelenést
         if (settingsData && settingsData.enable_leaderboard === false) {
-          console.log('User disabled leaderboard participation, skipping:', userData?.clerk_id);
           return null; // Kihagyjuk ezt a felhasználót
         }
         
@@ -162,7 +152,6 @@ class SupabaseLeaderboard {
       // Null értékek kiszűrése (leaderboard participation = false)
       const validPlayers = playersWithRank.filter(player => player !== null);
 
-      console.log('Processed players:', validPlayers);
 
       return {
         success: true,
@@ -183,7 +172,6 @@ class SupabaseLeaderboard {
    */
   async getPlayerRank(marketCap, platform = 'all') {
     if (!supabaseAuth.isSupabaseConfigured()) {
-      console.log('Supabase not configured, returning default rank');
       return { success: true, data: { rank: 1, totalPlayers: 0, percentile: 100 } };
     }
 

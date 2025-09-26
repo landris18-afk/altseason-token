@@ -31,8 +31,22 @@
 
 @media (max-width: 767px) {
   .table-footer {
-    min-height: 40px;
+    min-height: 60px;
     border-top: 2px solid #ffd700;
+    grid-template-columns: 1fr auto;
+    gap: 0;
+    padding: 0;
+  }
+  
+  .footer-left {
+    grid-column: 1;
+    gap: 0;
+    justify-content: space-between;
+  }
+  
+  .refresh-icon-btn {
+    grid-column: 2;
+    justify-self: end;
   }
 }
 
@@ -53,6 +67,14 @@
   justify-content: flex-start;
   margin: 0;
   padding: 0;
+}
+
+@media (max-width: 767px) {
+  .footer-left {
+    grid-column: 1;
+    gap: 0;
+    justify-content: space-between;
+  }
 }
 
 .footer-right {

@@ -13,7 +13,6 @@ class SupabaseSettings {
    */
   async saveSettings(clerkId, settings) {
     if (!supabaseAuth.isSupabaseConfigured() || !supabaseAuth.isUserLoggedIn(clerkId)) {
-      console.log('User not logged in or Supabase not configured, settings not saved to database');
       return { success: true, data: null };
     }
 
@@ -75,7 +74,6 @@ class SupabaseSettings {
    */
   async loadSettings(clerkId) {
     if (!supabaseAuth.isSupabaseConfigured() || !supabaseAuth.isUserLoggedIn(clerkId)) {
-      console.log('User not logged in or Supabase not configured, no settings loaded from database');
       return { success: true, data: null };
     }
 

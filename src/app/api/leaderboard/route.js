@@ -14,7 +14,6 @@ import supabaseService from '../../../lib/supabaseService';
  */
 export async function GET(request) {
   try {
-    console.log('Leaderboard API GET called');
     const { searchParams } = new URL(request.url);
     
     // Query paraméterek kinyerése
@@ -24,7 +23,6 @@ export async function GET(request) {
     const sortOrder = searchParams.get('sortOrder') || 'desc';
     const platform = searchParams.get('platform') || 'all';
 
-    console.log('Leaderboard API params:', { limit, offset, sortBy, sortOrder, platform });
 
     // Supabase alapú adatok lekérdezése
     const result = await supabaseService.getLeaderboard({
@@ -33,7 +31,6 @@ export async function GET(request) {
       platform
     });
 
-    console.log('Leaderboard API result:', result);
 
     if (!result.success) {
       console.error('Leaderboard API error:', result.error);
@@ -43,7 +40,6 @@ export async function GET(request) {
       );
     }
 
-    console.log('Leaderboard API returning data:', result.data);
     return NextResponse.json(result.data, {
       status: 200,
       headers: {

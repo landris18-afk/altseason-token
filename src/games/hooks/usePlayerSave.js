@@ -32,13 +32,11 @@ export const usePlayerSave = () => {
   const savePlayerToLeaderboard = useCallback(async (gameData) => {
     // Csak akkor mentjük, ha engedélyezve van a ranglista
     if (!leaderboardEnabled) {
-      console.log('Leaderboard is disabled, skipping save');
       return { success: false, reason: 'Leaderboard disabled' };
     }
 
     // Csak akkor mentjük, ha van bejelentkezett felhasználó
     if (!user) {
-      console.log('No user logged in, skipping save');
       return { success: false, reason: 'No user logged in' };
     }
 
@@ -53,11 +51,9 @@ export const usePlayerSave = () => {
         userId: user.id
       };
 
-      console.log('Saving player to leaderboard:', playerData);
       
       const result = await leaderboardService.savePlayer(playerData);
       
-      console.log('Player saved successfully:', result);
       return { success: true, data: result };
       
     } catch (error) {
@@ -72,48 +68,31 @@ export const usePlayerSave = () => {
    * @returns {Promise<Object>} Mentés eredménye
    */
   const autoSavePlayer = useCallback(async (gameState) => {
-    console.log('🎯 autoSavePlayer called with gameState:', gameState);
-    console.log('🎯 User:', user);
-    console.log('🎯 Market cap:', gameState?.marketCap);
-    
     if (!gameState || !gameState.marketCap) {
-      console.log('❌ Invalid game state for auto save - no marketCap');
       return { success: false, reason: 'Invalid game state' };
     }
 
     // Csak akkor mentjük, ha van bejelentkezett felhasználó
     if (!user) {
-      console.log('❌ No user logged in, skipping auto save');
       return { success: false, reason: 'No user logged in' };
     }
 
     try {
       // Először frissítjük a user adatokat a teljes Clerk user objektummal
-      console.log('👤 Updating user data with Clerk user object');
-      const userResult = await supabaseService.upsertUser(user);
-      console.log('👤 User upsert result:', userResult);
+      await supabaseService.upsertUser(user);
 
       // Teljes játék állapot mentése a game_states táblázatba
       const gameData = {
         ...gameState,
         platform: isDesktop ? 'desktop' : 'mobile'
       };
-
-      console.log('💾 Auto-saving game state to database:', gameData);
       
       const result = await supabaseService.saveGameState(user.id, gameData);
-      console.log('💾 Save game state result:', result);
-      
-      if (result.success) {
-        console.log('✅ Game state auto-saved successfully');
-      } else {
-        console.error('❌ Failed to auto-save game state:', result.error);
-      }
       
       return result;
       
     } catch (error) {
-      console.error('❌ Failed to auto-save game state:', error);
+      console.error('Failed to auto-save game state:', error);
       return { success: false, error: error.message };
     }
   }, [user, isDesktop]);

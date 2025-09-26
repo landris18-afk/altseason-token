@@ -180,7 +180,7 @@ const LeaderboardTable = ({
       .filter(player => !player.isCurrentUser || leaderboardEnabled)
       .map((player, index) => {
         const rank = index + 1;
-        const isCurrentUser = player.userId && currentUser && player.userId === currentUser.userId;
+        const isCurrentUser = player.clerkId && currentUser && player.clerkId === currentUser.userId;
         const showDetails = expandedPlayers.has(player.id);
 
         return (
@@ -199,7 +199,7 @@ const LeaderboardTable = ({
 
   return (
     <div className="leaderboard-table">
-      {leaderboardEnabled && renderCurrentUserRow()}
+      {leaderboardEnabled && currentUser && renderCurrentUserRow()}
       {renderTableHeader()}
       <div className="table-body">
         {renderPlayerRows()}
