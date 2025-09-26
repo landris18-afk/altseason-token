@@ -79,7 +79,6 @@
   font-size: 0.65rem;
   font-weight: 700;
   border: 1px solid rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(10px);
   text-transform: none; /* Changed from uppercase to none */
   letter-spacing: 0.05em;
   display: flex;

@@ -52,7 +52,7 @@ const DesktopLeaderboard = ({
                 leaderboardEnabled={leaderboardEnabled}
               />
               {leaderboardLoading && (
-                <div className="absolute inset-0 bg-gray-900/80 backdrop-blur-sm flex items-center justify-center z-[1] pt-20">
+                <div className="absolute inset-0 bg-gray-900/80 flex items-center justify-center z-[1] pt-20">
                   <LeaderboardLoader />
                 </div>
               )}

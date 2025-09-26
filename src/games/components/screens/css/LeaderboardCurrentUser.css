@@ -94,7 +94,6 @@
   font-size: 0.75rem;
   font-weight: 700;
   border: 1px solid rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(10px);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   box-shadow: 0 2px 8px rgba(251, 191, 36, 0.3);
@@ -167,7 +166,6 @@
   font-size: 0.75rem;
   font-weight: 700;
   border: 1px solid rgba(251, 191, 36, 0.4);
-  backdrop-filter: blur(10px);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   box-shadow: 0 2px 8px rgba(251, 191, 36, 0.3);

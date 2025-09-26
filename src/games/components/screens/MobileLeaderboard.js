@@ -33,7 +33,7 @@ const MobileLeaderboard = ({
     <div className="mobile-leaderboard-container">
       <div className="leaderboard-container">
         {/* Mobile Header */}
-        <div className="md:hidden flex justify-between items-center mb-4 px-6 py-4 bg-gray-800/20 backdrop-blur-md border-b border-yellow-400">
+        <div className="md:hidden flex justify-between items-center mb-4 px-6 py-4 bg-gray-800/20 border-b border-yellow-400">
           <button 
             className="start-game-btn" 
             onClick={() => {
@@ -53,7 +53,7 @@ const MobileLeaderboard = ({
             )}
             <button
               onClick={onClose}
-              className="bg-gray-800/90 hover:bg-gray-700/95 text-white/90 hover:text-white transition-all duration-200 rounded-xl px-3 py-2 backdrop-blur-sm border border-gray-600/60 hover:border-gray-500/80 shadow-lg hover:shadow-xl"
+              className="bg-gray-800/90 hover:bg-gray-700/95 text-white/90 hover:text-white transition-all duration-200 rounded-xl px-3 py-2 border border-gray-600/60 hover:border-gray-500/80 shadow-lg hover:shadow-xl"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -87,7 +87,7 @@ const MobileLeaderboard = ({
               leaderboardEnabled={leaderboardEnabled}
             />
             {leaderboardLoading && (
-              <div className="absolute inset-0 bg-gray-900/80 backdrop-blur-sm flex items-center justify-center z-[1] pt-20">
+              <div className="absolute inset-0 bg-gray-900/80 flex items-center justify-center z-[1] pt-20">
                 <LeaderboardLoader />
               </div>
             )}

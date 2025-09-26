@@ -91,14 +91,14 @@ export const useLeaderboard = (options = {}) => {
   }, [platform]);
 
   /**
-   * Ranglista frissítése - 3 másodpercig loading állapotban
+   * Ranglista frissítése - 4 másodpercig loading állapotban
    */
   const refresh = useCallback(async () => {
     leaderboardService.clearCache();
     setLoading(true);
     
     try {
-      // Minimum 3 másodperc loading állapot
+      // Minimum 4 másodperc loading állapot
       const startTime = Date.now();
       
       // Adatok lekérése
@@ -117,9 +117,9 @@ export const useLeaderboard = (options = {}) => {
       setTotalPlayers(data.totalPlayers || 0);
       setLastUpdated(data.lastUpdated || new Date());
       
-      // Várunk, hogy minimum 3 másodperc teljen el
+      // Várunk, hogy minimum 4 másodperc teljen el
       const elapsedTime = Date.now() - startTime;
-      const remainingTime = Math.max(0, 3000 - elapsedTime);
+      const remainingTime = Math.max(0, 4000 - elapsedTime);
       
       if (remainingTime > 0) {
         await new Promise(resolve => setTimeout(resolve, remainingTime));

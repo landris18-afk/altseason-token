@@ -45,7 +45,7 @@ const UserDropdown = ({ onTransfer }) => {
       {/* User Icon Button with Greeting */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-3 px-4 py-2.5 h-10 bg-gray-800/90 hover:bg-gray-700/95 text-white/90 hover:text-white transition-all duration-200 rounded-xl backdrop-blur-sm border border-gray-600/60 hover:border-gray-500/80 shadow-lg hover:shadow-xl"
+        className="flex items-center gap-3 px-4 py-2.5 h-10 bg-gray-800/90 hover:bg-gray-700/95 text-white/90 hover:text-white transition-all duration-200 rounded-xl border border-gray-600/60 hover:border-gray-500/80 shadow-lg hover:shadow-xl"
         title="User Menu"
       >
         <span className="text-sm font-medium">
@@ -58,7 +58,7 @@ const UserDropdown = ({ onTransfer }) => {
 
       {/* Dropdown Menu */}
       {isOpen && (
-        <div className="fixed left-0 right-0 md:absolute md:right-0 md:left-auto md:top-14 md:w-64 top-19 z-[10020] bg-gray-900/95 backdrop-blur-lg border-b-2 border-yellow-500/40 md:border-t-0 md:border md:border-gray-600/60 md:rounded-xl shadow-2xl overflow-y-auto max-h-96">
+        <div className="fixed left-0 right-0 md:absolute md:right-0 md:left-auto md:top-14 md:w-64 top-19 z-[10020] bg-gray-900/95 border-b-2 border-yellow-500/40 md:border-t-0 md:border md:border-gray-600/60 md:rounded-xl shadow-2xl overflow-y-auto max-h-96">
           <div className="py-2 md:py-1">
             {/* Transfer Option */}
             <button

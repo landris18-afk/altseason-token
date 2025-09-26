@@ -53,7 +53,7 @@ const LeaderboardHeader = ({
           )}
           <button
             onClick={onClose}
-            className="flex items-center justify-center w-10 h-10 bg-gray-800/90 hover:bg-gray-700/95 text-white/90 hover:text-white transition-all duration-200 rounded-xl backdrop-blur-sm border border-gray-600/60 hover:border-gray-500/80 shadow-lg hover:shadow-xl"
+            className="flex items-center justify-center w-10 h-10 bg-gray-800/90 hover:bg-gray-700/95 text-white/90 hover:text-white transition-all duration-200 rounded-xl border border-gray-600/60 hover:border-gray-500/80 shadow-lg hover:shadow-xl"
             title="Close"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
