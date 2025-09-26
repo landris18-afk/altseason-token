@@ -202,7 +202,7 @@ export const usePlayerData = (playerStats, platform = 'desktop') => {
     } finally {
       setLoading(false);
     }
-  }, [playerStats?.marketCap, platform]);
+  }, [playerStats?.marketCap]);
 
   useEffect(() => {
     fetchPlayerRank();

@@ -248,7 +248,7 @@ export const useGameState = () => {
     // Add a small delay to ensure everything is properly initialized
     const timer = setTimeout(loadGameState, 100);
     return () => clearTimeout(timer);
-  }, [user?.id]);
+  }, [user]);
 
   // Minden esetben beállítjuk az isGameLoaded-et true-ra, ha nincs user.id
   useEffect(() => {

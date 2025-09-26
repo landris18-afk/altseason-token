@@ -248,7 +248,7 @@ export const usePumpLogic = (
     }
 
     // Pump után NEM mentünk - csak kilépéskor és szintlépéskor
-  }, [gameState, subThousandAccumulator, setSubThousandAccumulator, setGameState, playPumpSound, autoSavePlayer]);
+  }, [gameState, subThousandAccumulator, setSubThousandAccumulator, setGameState, playPumpSound]);
 
   return { handlePump };
 };

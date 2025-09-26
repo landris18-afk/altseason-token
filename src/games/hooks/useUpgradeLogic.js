@@ -60,7 +60,7 @@ export const useUpgradeLogic = (
 
       // Upgrade után NEM mentünk - csak kilépéskor és szintlépéskor
     }
-  }, [gameState, setGameState, playUpgradeSound, playUnlockSound, autoSavePlayer]);
+  }, [gameState, setGameState, playUpgradeSound, playUnlockSound]);
 
   return { handleUpgrade };
 };

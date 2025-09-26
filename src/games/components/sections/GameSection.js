@@ -117,7 +117,6 @@ export default function GameSection({
           <button
             onClick={onBackToLeaderboard}
             disabled={isSaving}
-            style={{ pointerEvents: 'auto' }}
             className={`absolute top-4 right-4 transition-all duration-500 ease-in-out rounded-full backdrop-blur-sm border z-20 overflow-hidden ${
               isSaving
                 ? 'bg-red-600 text-white border-red-500 cursor-not-allowed px-4 py-2'
@@ -182,7 +181,6 @@ export default function GameSection({
                 <button
                   onClick={onBackToLeaderboard}
                   disabled={isSaving}
-                  style={{ pointerEvents: 'auto' }}
                   className={`rounded-xl border transition-all duration-500 ease-in-out overflow-hidden ${
                     isSaving
                       ? 'bg-red-600 text-white border-red-500 cursor-not-allowed px-4 py-2'

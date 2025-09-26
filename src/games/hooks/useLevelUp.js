@@ -70,5 +70,5 @@ export const useLevelUp = (
         });
       }
     }
-  }, [gameState.marketCap, gameState.levelIndex, isLoaded, levelUpSound, muted, setIsLevelUpModalOpen, setGameState, confirmReset]);
+  }, [gameState.marketCap, gameState.levelIndex, isLoaded, levelUpSound, muted, setIsLevelUpModalOpen, setGameState, confirmReset, autoSavePlayer]);
 };
